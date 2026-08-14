@@ -1,8 +1,7 @@
 {
   "hero": {
-    "title": "Trouvez un emploi ou un stage rapidement",
-    "subtitle": "Toutes les opportunités d'emploi, de stage et de formation vérifiées au Mali.",
-    "badge": "Offres d'emploi au Mali",
+    "title": "Trouvez un emploi, un stage ou une formation",
+    "subtitle": "Accédez aux meilleures opportunités de carrière et aux programmes qualifiants partout au Mali.",
     "primaryAction": {
       "label": "Voir les offres disponibles",
       "href": "/offres"
