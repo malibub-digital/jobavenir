@@ -1,0 +1,106 @@
+{
+  "title": "Job Avenir Mali",
+  "tagline": "Toutes les offres d'emploi, stages et formations au Mali",
+  "description": "JobAvenir Mali regroupe et vérifie les offres d'emploi, de stage et de formation pour les jeunes du Mali.",
+  "institution": "RÉPUBLIQUE DU MALI",
+  "logoUrl": "/images/logo-mali.svg",
+  "contact": {
+    "email": "contact@jobavenir.ml",
+    "phone": "+223 20 22 00 00",
+    "address": "Hamdallaye ACI 2000, Bamako, République du Mali",
+    "hours": "Du Lundi au Vendredi de 8h00 à 16h00"
+  },
+  "socialLinks": [
+    {
+      "platform": "Facebook",
+      "url": "https://facebook.com/jobavenirmali"
+    },
+    {
+      "platform": "Twitter",
+      "url": "https://twitter.com/jobavenir_ml"
+    }
+  ],
+  "navigation": {
+    "links": [
+      {
+        "label": "Accueil",
+        "href": "/"
+      },
+      {
+        "label": "Toutes les offres",
+        "href": "/offres"
+      },
+      {
+        "label": "À propos",
+        "href": "/a-propos"
+      },
+      {
+        "label": "Contact",
+        "href": "/contact"
+      }
+    ]
+  },
+  "footerLinks": [
+    {
+      "colTitle": "Offres",
+      "links": [
+        {
+          "label": "Toutes les offres",
+          "href": "/offres"
+        },
+        {
+          "label": "Stages",
+          "href": "/offres?type=Stage"
+        },
+        {
+          "label": "Emplois CDI",
+          "href": "/offres?type=CDI"
+        }
+      ]
+    },
+    {
+      "colTitle": "Institution et services",
+      "links": [
+        {
+          "label": "Présentation de JobAvenir",
+          "href": "/a-propos"
+        },
+        {
+          "label": "Partenaires et Entités",
+          "href": "/a-propos#partenaires"
+        },
+        {
+          "label": "Administration CMS",
+          "href": "/admin"
+        }
+      ]
+    },
+    {
+      "colTitle": "Informations et support",
+      "links": [
+        {
+          "label": "Mentions légales",
+          "href": "/mentions-legales"
+        },
+        {
+          "label": "Accessibilité",
+          "href": "/accessibilite"
+        },
+        {
+          "label": "Nous contacter",
+          "href": "/contact"
+        }
+      ]
+    }
+  ],
+  "emergencyNotice": {
+    "enabled": false,
+    "type": "info",
+    "message": "",
+    "ctaLabel": "",
+    "ctaHref": ""
+  },
+  "header": "RÉPUBLIQUE DU MALI — JobAvenir Mali",
+  "faq": [],
+  "meta": {}
+}

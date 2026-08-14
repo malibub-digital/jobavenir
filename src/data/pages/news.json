@@ -1,0 +1,27 @@
+{
+  "header": {
+    "badge": "Démonstration d'Actualités Officielles",
+    "title": "Actualités & Communiqués",
+    "subtitle": "Suivez en direct l'actualité des services publics, annonces consulaires, opportunités d'emploi et avis aux usagers."
+  },
+  "items": [
+    {
+      "slug": "permanence-ete"
+    },
+    {
+      "slug": "guichet-apej"
+    },
+    {
+      "slug": "digitalisation-formulaires"
+    },
+    {
+      "slug": "retrait-cartes"
+    },
+    {
+      "slug": "test-1"
+    },
+    {
+      "slug": "test"
+    }
+  ]
+}

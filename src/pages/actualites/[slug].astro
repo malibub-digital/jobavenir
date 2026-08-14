@@ -1,0 +1,110 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import CmsImageField from '@malihub/sites-core/components/CmsImageField.astro';
+import siteConfig from '../../../site.config.json';
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+export function getStaticPaths() {
+  const contentDir = path.join(process.cwd(), 'src', 'content', 'actualites');
+  if (fs.existsSync(contentDir)) {
+    const files = fs.readdirSync(contentDir).filter((f) => f.endsWith('.md'));
+    return files.map((file) => ({
+      params: { slug: file.replace(/\.md$/, '') }
+    }));
+  }
+  return [
+    { params: { slug: 'permanence-ete' } },
+    { params: { slug: 'guichet-apej' } },
+    { params: { slug: 'retrait-cartes' } },
+    { params: { slug: 'digitalisation-formulaires' } },
+  ];
+}
+
+const { slug } = Astro.params;
+const targetSlug = slug || 'permanence-ete';
+const filePath = path.join(process.cwd(), 'src', 'content', 'actualites', `${targetSlug}.md`);
+
+let article = {
+  title: 'Article introuvable',
+  date: '',
+  category: 'Général',
+  author: 'Service Communication',
+  image: '',
+  excerpt: '',
+  content: '<p>Contenu indisponible.</p>'
+};
+
+if (fs.existsSync(filePath)) {
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const parsed = matter(fileContent);
+  article = {
+    title: parsed.data.title || targetSlug,
+    date: parsed.data.date || '',
+    category: parsed.data.category || 'Général',
+    author: parsed.data.author || 'Service Communication',
+    image: parsed.data.image || '',
+    excerpt: parsed.data.excerpt || '',
+    content: parsed.content || ''
+  };
+}
+
+const cmsBase = `src/content/actualites/${targetSlug}.md`;
+---
+
+<BaseLayout title={`${article.title} — ${siteConfig.title}`} description={article.excerpt || article.title}>
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/40 min-h-screen">
+    <div class="ml-container max-w-4xl mx-auto px-4">
+      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
+        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+        <span>/</span>
+        <a href="/actualites" class="hover:underline text-[var(--ml-color-neutral-600)]">Actualités</a>
+        <span>/</span>
+        <span class="text-[var(--ml-color-neutral-800)] font-semibold truncate max-w-xs" data-cms-bind={`${cmsBase}::title`}>{article.title}</span>
+      </nav>
+
+      <article class="bg-white border border-[var(--ml-color-neutral-200)] rounded-3xl overflow-hidden shadow-sm p-6 md:p-10">
+        <div class="flex items-center gap-3 text-xs text-[var(--ml-color-neutral-500)] mb-4">
+          <span class="bg-[var(--ml-color-green-100)] text-[var(--ml-color-green-800)] font-bold px-3 py-1 rounded-full" data-cms-bind={`${cmsBase}::category`}>{article.category}</span>
+          <time data-cms-bind={`${cmsBase}::date`}>{article.date}</time>
+          <span>•</span>
+          <span data-cms-bind={`${cmsBase}::author`}>Par {article.author}</span>
+        </div>
+
+        <h1 class="text-2xl md:text-4xl font-black text-[var(--ml-color-neutral-900)] font-title mb-6 leading-snug" data-cms-bind={`${cmsBase}::title`}>
+          {article.title}
+        </h1>
+
+        <div class="mb-8 rounded-2xl overflow-hidden max-h-[400px]">
+          <CmsImageField
+            bind={`${cmsBase}::image`}
+            src={article.image || '/images/actualites/hero.png'}
+            alt={article.title}
+            imgClass="w-full h-72 md:h-96 object-cover rounded-2xl"
+          />
+        </div>
+
+        <div class="prose max-w-none whitespace-pre-line leading-relaxed text-[var(--ml-color-neutral-800)]" set:html={article.content} data-cms-bind={`${cmsBase}::content`} data-cms-type="markdown" />
+
+        <div class="mt-10 pt-6 border-t border-[var(--ml-color-neutral-200)] flex justify-between items-center">
+          <a href="/actualites" class="text-xs font-bold text-[var(--ml-color-green-700)] hover:text-[var(--ml-color-green-800)] inline-flex items-center gap-2 no-underline">
+            <span>&larr;</span>
+            <span>Retour à toutes les actualités</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

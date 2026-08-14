@@ -1,0 +1,26 @@
+{
+  "hero": {
+    "title": "Trouvez un emploi ou un stage rapidement",
+    "subtitle": "Toutes les opportunités d'emploi, de stage et de formation vérifiées au Mali.",
+    "badge": "Offres d'emploi au Mali",
+    "primaryAction": {
+      "label": "Voir les offres disponibles",
+      "href": "/offres"
+    },
+    "secondaryAction": {
+      "label": "En savoir plus",
+      "href": "/a-propos"
+    }
+  },
+  "stats": [
+    { "value": "1 250+", "label": "Offres publiées" },
+    { "value": "450+", "label": "Entreprises et partenaires" },
+    { "value": "88%", "label": "Candidats satisfaits" },
+    { "value": "8 Régions", "label": "Partout au Mali" }
+  ],
+  "whyUs": {
+    "badge": "Simple et rapide",
+    "title": "Pourquoi utiliser JobAvenir ?",
+    "subtitle": "Accédez directement aux annonces d'emploi et de stage sans perdre de temps."
+  }
+}

@@ -1,0 +1,114 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import CollectionAddButton from '@malihub/sites-core/components/CollectionAddButton.astro';
+import CollectionItemControls from '@malihub/sites-core/components/CollectionItemControls.astro';
+import siteConfig from '../../site.config.json';
+
+const faqList = siteConfig.faq || [];
+---
+
+<BaseLayout title={`Foire Aux Questions (FAQ) — ${siteConfig.title}`} description="Questions fréquemment posées sur les démarches consulaires, l'emploi et l'accueil des usagers.">
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/50 min-h-screen">
+    <div class="ml-container max-w-4xl mx-auto px-4" data-cms-collection="siteConfig.faq">
+      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
+        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+        <span>/</span>
+        <span class="text-[var(--ml-color-neutral-800)] font-semibold">FAQ</span>
+      </nav>
+
+      <div class="mb-10">
+        <h1 class="text-3xl md:text-4xl font-black text-[var(--ml-color-neutral-900)] font-title" data-cms-bind="faqPage.title">Foire Aux Questions (FAQ)</h1>
+        <p class="text-[var(--ml-color-neutral-600)] mt-2" data-cms-bind="faqPage.subtitle">Retrouvez les réponses aux questions les plus fréquemment posées par les usagers.</p>
+      </div>
+
+      <!-- Liste d'Accordéons DSML pour la FAQ -->
+      <div class="space-y-4">
+        {faqList.map((item, index) => (
+          <div class="ml-accordion bg-white !p-6 border border-[var(--ml-color-neutral-200)] rounded-2xl shadow-sm hover:shadow-md transition-all relative group" style="padding: 1.25rem 1.5rem !important; border-bottom: 1px solid var(--ml-color-neutral-200);" data-cms-item-index={index}>
+            <div class="ml-accordion-header flex items-center justify-between gap-4">
+              <button
+                type="button"
+                class="ml-accordion-title text-base font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0 flex-1 text-left cursor-pointer focus:outline-none"
+                aria-expanded={index === 0 ? "true" : "false"}
+              >
+                <span data-cms-bind={`siteConfig.faq.[${index}].question`}>
+                  {item.question}
+                </span>
+              </button>
+
+              <CollectionItemControls
+                collectionPath="siteConfig.faq"
+                index={index}
+                isFirst={index === 0}
+                isLast={index === faqList.length - 1}
+              />
+            </div>
+
+            <div class="ml-accordion-content pt-3 mt-3 border-t border-[var(--ml-color-neutral-100)]">
+              <p class="text-[var(--ml-color-neutral-600)] text-sm leading-relaxed m-0" data-cms-bind={`siteConfig.faq.[${index}].answer`}>
+                {item.answer}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <CollectionAddButton
+        collectionPath="siteConfig.faq"
+        label="Ajouter une question à la FAQ"
+        defaultData={{ question: "Nouvelle question posée ?", answer: "Explication et réponse de l'administration." }}
+        class="mt-8"
+      />
+
+      <div class="mt-14 bg-gradient-to-br from-[var(--ml-color-green-50)] to-white border border-[var(--ml-color-green-300)] rounded-2xl p-8 text-center shadow-sm">
+        <h3 class="text-xl font-extrabold text-[var(--ml-color-green-900)] font-title m-0 mb-2">Vous ne trouvez pas réponse à votre question ?</h3>
+        <p class="text-[var(--ml-color-neutral-600)] text-sm mb-6 max-w-md mx-auto">Notre équipe d'assistance administrative est à votre disposition pour vous orienter.</p>
+        <a href="/contact" class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--ml-color-green-700)] text-white font-bold rounded-xl hover:bg-[var(--ml-color-green-800)] transition-all shadow-md no-underline text-sm">
+          <span>Nous Contacter</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
+
+<style>
+  .ml-accordion-title::after {
+    content: none !important;
+  }
+  .ml-accordion-content {
+    display: none;
+  }
+  .ml-accordion-header:has(.ml-accordion-title[aria-expanded="true"]) + .ml-accordion-content,
+  .ml-accordion-title[aria-expanded="true"] + .ml-accordion-content {
+    display: block !important;
+  }
+</style>
+
+<script>
+  function setupFaqAccordions() {
+    document.querySelectorAll('.ml-accordion-title').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // Ignorer le clic si la cible était un bouton du CollectionItemControls
+        if ((e.target as HTMLElement).closest('.ml-cms-item-controls-toolbar, .ml-action-toolbar')) return;
+        
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !isExpanded ? 'true' : 'false');
+      });
+    });
+  }
+
+  setupFaqAccordions();
+  document.addEventListener('astro:after-swap', setupFaqAccordions);
+</script>

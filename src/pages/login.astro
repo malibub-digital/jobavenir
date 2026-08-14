@@ -1,0 +1,243 @@
+---
+export const prerender = false;
+
+import BaseLayout from "@malihub/sites-core/layouts/BaseLayout.astro";
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from "@malihub/sites-core/components/Footer.astro";
+import siteConfig from "../../site.config.json";
+import { hashSha256 } from "@malihub/sites-core/utils/auth.js";
+
+const rawSecret =
+  import.meta.env.CMS_ADMIN_SECRET ||
+  process.env.CMS_ADMIN_SECRET ||
+  "admin123";
+const hashedSecret = await hashSha256(rawSecret);
+---
+
+<BaseLayout title={`Connexion — ${siteConfig.title}`}>
+  <MinimalHeader slot="header" />
+
+  <div
+    class="py-12 md:py-16 bg-[var(--ml-color-river-50)]/40 min-h-[68vh] flex items-center justify-center"
+  >
+    <div class="w-full max-w-[440px] mx-auto px-4">
+      <div
+        class="bg-white border border-[var(--ml-color-neutral-200)] rounded-2xl p-6 md:p-8 shadow-sm"
+      >
+        <div class="text-center mb-6">
+          <div
+            class="w-12 h-12 rounded-full bg-[var(--ml-color-river-100)] text-[var(--ml-color-river-700)] flex items-center justify-center mx-auto mb-3 text-xl font-bold"
+          >
+            🔒
+          </div>
+          <h1
+            class="text-xl font-bold text-[var(--ml-color-neutral-900)] font-title"
+          >
+            Espace de Connexion
+          </h1>
+          <p class="text-xs text-[var(--ml-color-neutral-600)] mt-1">
+            Choisissez votre mode d'accès
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div
+            class="p-4 rounded-xl border border-[var(--ml-color-river-200)] bg-[var(--ml-color-river-50)]/60"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <span
+                class="text-xs font-bold text-[var(--ml-color-river-900)] flex items-center gap-1.5"
+              >
+                🇲🇱 Mali Connect (FID)
+              </span>
+              <span
+                class="text-[9px] font-bold bg-[var(--ml-color-river-200)] text-[var(--ml-color-river-800)] px-2 py-0.5 rounded-full uppercase tracking-wider"
+              >
+                Recommandé
+              </span>
+            </div>
+            <p class="text-xs text-[var(--ml-color-neutral-600)] mb-3">
+              Identifiant citoyen unique pour accéder à l'ensemble des services
+              publics de l'État.
+            </p>
+            <button
+              type="button"
+              disabled
+              class="w-full py-2.5 px-3 bg-[var(--ml-color-river-700)] opacity-60 text-white font-semibold rounded-xl text-xs flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 cursor-not-allowed text-left"
+            >
+              <span>Se connecter avec Mali Connect</span>
+              <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded shrink-0"
+                >Bientôt disponible</span
+              >
+            </button>
+          </div>
+
+          <div
+            class="p-4 rounded-xl border border-[var(--ml-color-neutral-200)] bg-white"
+          >
+            <h2
+              class="text-xs font-bold text-[var(--ml-color-neutral-800)] mb-1"
+            >
+              Compte Usager / E-mail
+            </h2>
+            <p class="text-xs text-[var(--ml-color-neutral-500)] mb-3">
+              Connexion par adresse e-mail et mot de passe usager.
+            </p>
+            <form onsubmit="event.preventDefault();" class="space-y-3">
+              <div>
+                <input
+                  type="email"
+                  disabled
+                  placeholder="nom@exemple.ml"
+                  class="ml-input text-xs cursor-not-allowed"
+                />
+              </div>
+              <button
+                type="button"
+                disabled
+                class="w-full py-2 px-3 bg-[var(--ml-color-neutral-100)] text-[var(--ml-color-neutral-400)] font-medium rounded-lg text-xs cursor-not-allowed border border-[var(--ml-color-neutral-200)]"
+              >
+                Service usager indisponible
+              </button>
+            </form>
+          </div>
+
+          <details
+            class="group border border-[var(--ml-color-neutral-200)] rounded-xl overflow-hidden bg-[var(--ml-color-neutral-50)]/50"
+          >
+            <summary
+              class="p-3.5 text-xs font-semibold text-[var(--ml-color-neutral-700)] cursor-pointer flex items-center justify-between hover:bg-[var(--ml-color-neutral-100)] transition-colors select-none"
+            >
+              <span class="flex items-center gap-2">
+                ⚙️ <span>Accès Administration</span>
+              </span>
+              <span
+                class="text-[10px] text-[var(--ml-color-neutral-400)] group-open:rotate-180 transition-transform"
+                >▼</span
+              >
+            </summary>
+
+            <div
+              class="p-4 bg-white border-t border-[var(--ml-color-neutral-200)]"
+            >
+              <form
+                id="admin-login-form"
+                data-secret={hashedSecret}
+                class="space-y-3"
+              >
+                <div>
+                  <label
+                    for="admin-password"
+                    class="block text-xs font-medium text-[var(--ml-color-neutral-700)] mb-1"
+                  >
+                    Mot de passe
+                  </label>
+                  <input
+                    type="password"
+                    id="admin-password"
+                    name="password"
+                    required
+                    placeholder="••••••••••••"
+                    class="ml-input text-xs"
+                  />
+                  <p
+                    id="admin-login-error"
+                    class="hidden text-xs text-red-600 mt-1 font-medium"
+                  >
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  id="admin-login-submit"
+                  class="w-full py-2 bg-[var(--ml-color-river-700)] hover:bg-[var(--ml-color-river-800)] text-white font-semibold rounded-lg text-xs transition-colors cursor-pointer"
+                >
+                  Se connecter
+                </button>
+              </form>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
+
+<script>
+  import {
+    hashSha256,
+    setAdminCookieToken,
+    checkAdminRateLimit,
+    recordAdminFailedAttempt,
+    resetAdminAttempts,
+  } from "@malihub/sites-core/utils/auth.js";
+
+  const form = document.getElementById(
+    "admin-login-form",
+  ) as HTMLFormElement | null;
+  const input = document.getElementById(
+    "admin-password",
+  ) as HTMLInputElement | null;
+  const errorMsg = document.getElementById("admin-login-error");
+  const submitBtn = document.getElementById(
+    "admin-login-submit",
+  ) as HTMLButtonElement | null;
+
+  async function updateRateLimitUI() {
+    const status = await checkAdminRateLimit();
+    if (!status.allowed) {
+      if (input) input.disabled = true;
+      if (submitBtn) submitBtn.disabled = true;
+      if (errorMsg) {
+        errorMsg.textContent = `Trop d'essais. Compte verrouillé pendant ${status.retryAfterSeconds} seconde(s).`;
+        errorMsg.classList.remove("hidden");
+      }
+    }
+  }
+
+  updateRateLimitUI();
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const limitStatus = await checkAdminRateLimit();
+    if (!limitStatus.allowed) {
+      updateRateLimitUI();
+      return;
+    }
+
+    if (submitBtn) submitBtn.disabled = true;
+
+    // Attente artificielle (timing delay)
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    const expectedHash = form.getAttribute("data-secret") || "";
+    const entered = (input?.value || "").trim();
+    const enteredHash = await hashSha256(entered);
+
+    if (expectedHash && enteredHash !== expectedHash) {
+      const failStatus = await recordAdminFailedAttempt();
+      if (submitBtn) submitBtn.disabled = false;
+      if (!failStatus.allowed) {
+        updateRateLimitUI();
+      } else {
+        if (errorMsg) {
+          errorMsg.textContent = "Mot de passe incorrect. Veuillez réessayer.";
+          errorMsg.classList.remove("hidden");
+        }
+      }
+      return;
+    }
+
+    await resetAdminAttempts();
+    setAdminCookieToken(enteredHash || "authenticated");
+    window.location.href = "/";
+  });
+</script>

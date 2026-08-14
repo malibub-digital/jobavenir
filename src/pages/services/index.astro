@@ -1,0 +1,114 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import ServiceCard from '@malihub/sites-core/components/ServiceCard.astro';
+import siteConfig from '../../../site.config.json';
+
+const allServices = [
+  {
+    title: 'Carte d\'Immatriculation Consulaire',
+    summary: 'Demande, établissement et renouvellement de la carte d\'immatriculation consulaire pour les citoyens maliens résidant à l\'étranger.',
+    category: 'Identité & Consulat',
+    cost: '10 000 FCFA',
+    processingTime: '48 heures',
+    href: '/services/carte-consulaire',
+    badgeText: 'Populaire',
+    icon: 'ml-icon-government-line',
+    variant: 'featured',
+    requirements: ['Extrait d\'acte de naissance', '2 photos d\'identité récentes', 'Justificatif de domicile', 'Ancienne carte ou pièce d\'identité']
+  },
+  {
+    title: 'Passeport Biométrique Malien',
+    summary: 'Procédure de prise d\'empreintes, dépôt de dossier et suivi de la délivrance du passeport biométrique officiel.',
+    category: 'Voyage & Identité',
+    cost: '85 000 FCFA',
+    processingTime: '2 à 3 semaines',
+    href: '/services/passeport',
+    badgeText: 'Essentiel',
+    icon: 'ml-icon-passport-line',
+    variant: 'indigo',
+    requirements: ['Numéro NINA ou Carte d\'Identité Nationale', 'Acte de naissance sécurisé', 'Reçu de paiement bancaire']
+  },
+  {
+    title: 'Accompagnement Emploi & Stage APEJ',
+    summary: 'Inscription au programme d\'insertion des jeunes diplômés, stages pratiques et financement de micro-projets d\'entrepreneuriat.',
+    category: 'Emploi & Jeunesse',
+    cost: 'Gratuit',
+    processingTime: 'Immédian en ligne',
+    href: '/services/emploi-apej',
+    badgeText: 'Programme APEJ',
+    icon: 'ml-icon-briefcase-line',
+    variant: 'mandingue',
+    requirements: ['Diplôme ou attestation d\'études', 'CV à jour', 'Copie d\'une pièce d\'identité']
+  },
+  {
+    title: 'Actes d\'État Civil & Certificats',
+    summary: 'Transcription d\'actes de naissance, célébration de mariage, délivrance de certificat de nationalité et légalisation de documents.',
+    category: 'État Civil',
+    cost: 'Gratuit',
+    processingTime: '24 à 48h',
+    href: '/services/etat-civil',
+    icon: 'ml-icon-file-text-line',
+    variant: 'accent',
+    requirements: ['Livret de famille ou déclaration officielle', 'Pièces d\'identité des requérants']
+  },
+  {
+    title: 'Légalisation & Authentification de Documents',
+    summary: 'Certification conforme de documents administratifs, procurations et actes notariés.',
+    category: 'Administratif',
+    cost: '2 500 FCFA / document',
+    processingTime: 'Sur place',
+    href: '/services/legalisation',
+    icon: 'ml-icon-award-line',
+    variant: 'ambre',
+    requirements: ['Original du document', 'Copie conforme', 'Pièce d\'identité du demandeur']
+  },
+  {
+    title: 'Guichet Unique de Création d\'Entreprise',
+    summary: 'Accompagnement des jeunes entrepreneurs pour l\'immatriculation et les formalités de création de société au Mali.',
+    category: 'Entrepreneuriat',
+    cost: 'Variable',
+    processingTime: '72 heures',
+    href: '/services/creation-entreprise',
+    icon: 'ml-icon-building-line',
+    variant: 'soleil',
+    requirements: ['Statuts de la société', 'Pièces d\'identité des associés', 'Justificatif de siège social']
+  }
+];
+---
+
+<BaseLayout title={`Démarches & Services — ${siteConfig.title}`} description="Consultez l'ensemble des démarches et services administratifs mis à disposition des usagers.">
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-stone-50 min-h-screen">
+    <div class="ml-container max-w-6xl mx-auto px-4">
+      <nav class="text-xs text-stone-500 mb-6 flex gap-2">
+        <a href="/" class="hover:underline">Accueil</a>
+        <span>/</span>
+        <span class="text-stone-800 font-semibold">Démarches & Services</span>
+      </nav>
+
+      <div class="mb-10">
+        <span class="inline-flex items-center gap-1.5 bg-[var(--ml-color-river-100)] text-[var(--ml-color-river-800)] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-[var(--ml-color-river-200)]">
+          ℹ️ Contenu d'Exemple & Démonstration
+        </span>
+        <h1 class="text-3xl font-extrabold text-stone-900 font-title">Catalogue des Démarches & Services (Modèle)</h1>
+        <p class="text-stone-600 mt-2">Retrouvez les fiches détaillées, pièces à fournir et modalités pour réaliser vos démarches. Ce catalogue illustre ce qu'une institution peut publier avec Sites Faciles.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {allServices.map((service) => (
+          <ServiceCard {...service} />
+        ))}
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

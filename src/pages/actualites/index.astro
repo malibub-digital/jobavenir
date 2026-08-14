@@ -1,0 +1,203 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import CollectionAddButton from '@malihub/sites-core/components/CollectionAddButton.astro';
+import CollectionItemControls from '@malihub/sites-core/components/CollectionItemControls.astro';
+import siteConfig from '../../../site.config.json';
+import newsData from '../../data/pages/news.json';
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+interface NewsItem {
+  slug: string;
+  title: string;
+  date: string;
+  category: string;
+  author: string;
+  excerpt: string;
+  image?: string;
+  cardVariant: 'featured' | 'accent' | 'indigo' | 'standard';
+  featured: boolean;
+}
+
+const contentDir = path.join(process.cwd(), 'src', 'content', 'actualites');
+const rawItemsMap = new Map<string, NewsItem>();
+
+if (fs.existsSync(contentDir)) {
+  const files = fs.readdirSync(contentDir).filter((f) => f.endsWith('.md'));
+  files.forEach((file) => {
+    const slug = file.replace(/\.md$/, '');
+    const raw = fs.readFileSync(path.join(contentDir, file), 'utf-8');
+    const parsed = matter(raw);
+    rawItemsMap.set(slug, {
+      slug,
+      title: parsed.data.title || slug,
+      date: parsed.data.date || '',
+      category: parsed.data.category || 'Général',
+      author: parsed.data.author || 'Rédaction',
+      excerpt: parsed.data.excerpt || '',
+      image: parsed.data.image,
+      cardVariant: parsed.data.cardVariant || 'standard',
+      featured: Boolean(parsed.data.featured)
+    });
+  });
+}
+
+// Order news items based on news.json items if provided, followed by any unlisted items
+const orderedSlugs = (newsData as any).items?.map((it: any) => it.slug) || [];
+let newsItems: NewsItem[] = [];
+
+orderedSlugs.forEach((slug: string) => {
+  if (rawItemsMap.has(slug)) {
+    newsItems.push(rawItemsMap.get(slug)!);
+    rawItemsMap.delete(slug);
+  }
+});
+
+// Append remaining articles
+rawItemsMap.forEach((item) => {
+  newsItems.push(item);
+});
+
+const cardBgStyles = {
+  featured: 'bg-gradient-to-br from-[var(--ml-color-green-50)] via-white to-white border-2 border-[var(--ml-color-green-500)] shadow-md hover:shadow-xl',
+  accent: 'bg-gradient-to-br from-[var(--ml-color-gold-50)] via-white to-white border border-[var(--ml-color-gold-400)] shadow-sm hover:shadow-lg',
+  indigo: 'bg-gradient-to-br from-[var(--ml-color-indigo-50)] via-white to-white border border-[var(--ml-color-indigo-300)] shadow-sm hover:shadow-lg',
+  standard: 'bg-white border border-[var(--ml-color-neutral-200)] hover:border-[var(--ml-color-green-300)] shadow-sm hover:shadow-md'
+};
+
+const badgeStyles = {
+  Consulat: 'bg-[var(--ml-color-green-600)] text-white font-bold',
+  Emploi: 'bg-[var(--ml-color-indigo-600)] text-white font-bold',
+  Communiqué: 'bg-[var(--ml-color-gold-400)] text-[var(--ml-color-bogolan-nuit)] font-bold',
+  Innovation: 'bg-[var(--ml-color-green-100)] text-[var(--ml-color-green-800)] font-bold'
+};
+---
+
+<BaseLayout title={`Actualités & Communiqués — ${siteConfig.title}`} description="Fil d'actualités officielles, annonces et communiqués aux usagers.">
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/50 min-h-screen">
+    <div class="ml-container max-w-6xl mx-auto px-4">
+      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
+        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+        <span>/</span>
+        <span class="text-[var(--ml-color-neutral-800)] font-semibold">Actualités</span>
+      </nav>
+
+      <!-- Banner Header Luminant (Palette Orange Mandingue & Bleu Fleuve/Indigo) -->
+      <div class="relative rounded-3xl overflow-hidden mb-10 bg-gradient-to-r from-[var(--ml-color-river-800)] via-[var(--ml-color-indigo-700)] to-[var(--ml-color-indigo-900)] text-white p-8 md:p-12 shadow-xl border-2 border-[var(--ml-color-mandingue-orange)]/50">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[var(--ml-color-mandingue-500)] via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative z-10 max-w-2xl">
+          <span class="inline-flex items-center gap-1.5 bg-white/15 text-[var(--ml-color-mandingue-100)] text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider mb-4 border border-white/20 backdrop-blur-md" data-cms-bind="src/data/pages/news.json::header.badge">
+            <span class="w-2 h-2 rounded-full bg-[var(--ml-color-mandingue-orange)] animate-pulse"></span>
+            {newsData.header.badge}
+          </span>
+          <h1 class="text-3xl md:text-4xl font-black font-title tracking-tight text-[var(--ml-color-mandingue-100)] mb-3 drop-shadow-md" data-cms-bind="src/data/pages/news.json::header.title">
+            {newsData.header.title}
+          </h1>
+          <p class="text-sm md:text-base text-white/95 leading-relaxed font-medium" data-cms-bind="src/data/pages/news.json::header.subtitle">
+            {newsData.header.subtitle}
+          </p>
+        </div>
+      </div>
+
+      <!-- Barre d'outils et Filtres par catégorie -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-10 pb-4 border-b border-[var(--ml-color-neutral-200)]">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold text-[var(--ml-color-neutral-600)] mr-2 uppercase tracking-wider">Filtrer par :</span>
+          <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-[var(--ml-color-green-700)] text-white border-none cursor-pointer shadow-sm">Tous</button>
+          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Consulat</button>
+          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Emploi & APEJ</button>
+          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Communiqués</button>
+        </div>
+
+        <CollectionAddButton collectionPath="actualites" collectionType="content" label="Publier un article" />
+      </div>
+
+      <!-- Mosaïque de cartes actualités DSML réordonnable -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" data-cms-collection="src/data/pages/news.json::items">
+        {newsItems.map((item, idx) => {
+          const cmsBase = `src/content/actualites/${item.slug}.md`;
+          return (
+            <article
+              class={`rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:-translate-y-1.5 relative group ${item.featured ? 'md:col-span-2 lg:col-span-2 flex-col md:flex-row' : ''} ${cardBgStyles[item.cardVariant]}`}
+              data-cms-item-index={idx}
+              data-cms-file={cmsBase}
+            >
+              {item.image && (
+                <div class={`overflow-hidden ${item.featured ? 'md:w-1/2 min-h-[260px]' : 'h-48'} relative`}>
+                  <img src={item.image} alt={item.title} class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" data-cms-bind={`${cmsBase}::image`} />
+                  <span class={`absolute top-4 left-4 text-[11px] uppercase tracking-wider px-3 py-1 rounded-full ${badgeStyles[item.category as keyof typeof badgeStyles] || badgeStyles.Innovation}`} data-cms-bind={`${cmsBase}::category`}>
+                    {item.category}
+                  </span>
+                </div>
+              )}
+
+              <div class={`p-6 flex flex-col justify-between ${item.featured ? 'md:w-1/2' : 'flex-1'}`}>
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    {!item.image ? (
+                      <span class={`text-[11px] uppercase tracking-wider px-3 py-1 rounded-full ${badgeStyles[item.category as keyof typeof badgeStyles] || badgeStyles.Innovation}`} data-cms-bind={`${cmsBase}::category`}>
+                        {item.category}
+                      </span>
+                    ) : (
+                      <div class="flex items-center gap-2 text-xs text-[var(--ml-color-neutral-500)]">
+                        <time data-cms-bind={`${cmsBase}::date`}>{item.date}</time>
+                        <span>•</span>
+                        <span data-cms-bind={`${cmsBase}::author`}>Par {item.author}</span>
+                      </div>
+                    )}
+
+                    <CollectionItemControls
+                      collectionPath="src/data/pages/news.json::items"
+                      index={idx}
+                      slug={item.slug}
+                      type="json"
+                      isFirst={idx === 0}
+                      isLast={idx === newsItems.length - 1}
+                    />
+                  </div>
+                  
+                  {!item.image && (
+                    <div class="flex items-center gap-2 text-xs text-[var(--ml-color-neutral-500)] mb-3">
+                      <time data-cms-bind={`${cmsBase}::date`}>{item.date}</time>
+                      <span>•</span>
+                      <span data-cms-bind={`${cmsBase}::author`}>Par {item.author}</span>
+                    </div>
+                  )}
+
+                  <h2 class="text-lg md:text-xl font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-3 leading-snug">
+                    <a href={`/actualites/${item.slug}`} class="hover:text-[var(--ml-color-green-700)] text-[var(--ml-color-neutral-900)] no-underline transition-colors">
+                      <span data-cms-bind={`${cmsBase}::title`}>{item.title}</span>
+                    </a>
+                  </h2>
+
+                  <p class="text-xs md:text-sm text-[var(--ml-color-neutral-600)] leading-relaxed mb-6" data-cms-bind={`${cmsBase}::excerpt`}>
+                    {item.excerpt}
+                  </p>
+                </div>
+
+                <div class="pt-4 border-t border-[var(--ml-color-neutral-200)]/60 flex items-center justify-between">
+                  <a href={`/actualites/${item.slug}`} class="text-xs font-bold text-[var(--ml-color-green-700)] hover:text-[var(--ml-color-green-800)] inline-flex items-center gap-1.5 group no-underline">
+                    <span>Lire l'article</span>
+                    <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

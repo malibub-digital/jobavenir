@@ -1,0 +1,319 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import siteConfig from '../../site.config.json';
+
+const colorPalettes = [
+  {
+    name: 'Vert République',
+    tagline: 'Sceau d\'État & Identité',
+    swatches: [
+      { name: 'Vert 50', hex: '#EAF3EC', class: 'bg-[var(--ml-color-green-50)] text-[var(--ml-color-green-900)]' },
+      { name: 'Vert 300', hex: '#55AA6F', class: 'bg-[var(--ml-color-green-300)] text-white' },
+      { name: 'Vert 500', hex: '#0B7A2F', class: 'bg-[var(--ml-color-green-500)] text-white font-bold' },
+      { name: 'Vert 700', hex: '#085020', class: 'bg-[var(--ml-color-green-700)] text-white' },
+      { name: 'Vert 900', hex: '#0A3D1C', class: 'bg-[var(--ml-color-green-900)] text-white' }
+    ]
+  },
+  {
+    name: 'Orange Mandingue',
+    tagline: 'Terre cuite & Dynamisme',
+    swatches: [
+      { name: 'Mandingue 50', hex: '#FFF3E0', class: 'bg-[var(--ml-color-mandingue-50)] text-[var(--ml-color-mandingue-900)]' },
+      { name: 'Mandingue 100', hex: '#FFE0B2', class: 'bg-[var(--ml-color-mandingue-100)] text-[var(--ml-color-mandingue-900)]' },
+      { name: 'Orange', hex: '#E65100', class: 'bg-[var(--ml-color-mandingue-orange)] text-white font-bold' },
+      { name: 'Mandingue 500', hex: '#F57C00', class: 'bg-[var(--ml-color-mandingue-500)] text-white' },
+      { name: 'Mandingue 900', hex: '#BF360C', class: 'bg-[var(--ml-color-mandingue-900)] text-white' }
+    ]
+  },
+  {
+    name: 'Bleu Fleuve Niger',
+    tagline: 'Eau, Sérénité & Connexion',
+    swatches: [
+      { name: 'River 50', hex: '#F0F7F9', class: 'bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-900)]' },
+      { name: 'River 200', hex: '#B5DDE7', class: 'bg-[var(--ml-color-river-200)] text-[var(--ml-color-river-900)]' },
+      { name: 'River 500', hex: '#1B7A94', class: 'bg-[var(--ml-color-river-500)] text-white font-bold' },
+      { name: 'River 700', hex: '#0F4858', class: 'bg-[var(--ml-color-river-700)] text-white' },
+      { name: 'River 900', hex: '#0C3642', class: 'bg-[var(--ml-color-river-900)] text-white' }
+    ]
+  },
+  {
+    name: 'Indigo & Djenné',
+    tagline: 'Étoffes & Savoirs',
+    swatches: [
+      { name: 'Indigo 50', hex: '#EEF2FF', class: 'bg-[var(--ml-color-indigo-50)] text-[var(--ml-color-indigo-900)]' },
+      { name: 'Indigo 300', hex: '#93C5FD', class: 'bg-[var(--ml-color-indigo-300)] text-[var(--ml-color-indigo-900)]' },
+      { name: 'Indigo 500', hex: '#3730A3', class: 'bg-[var(--ml-color-indigo-500)] text-white font-bold' },
+      { name: 'Indigo 700', hex: '#231E66', class: 'bg-[var(--ml-color-indigo-700)] text-white' },
+      { name: 'Indigo 900', hex: '#120F36', class: 'bg-[var(--ml-color-indigo-900)] text-white' }
+    ]
+  },
+  {
+    name: 'Bogolan & Terre',
+    tagline: 'Argile, Kaolin & Ocre',
+    swatches: [
+      { name: 'Kaolin', hex: '#FBF8F1', class: 'bg-[var(--ml-color-bogolan-kaolin)] text-[var(--ml-color-bogolan-nuit)]' },
+      { name: 'Sable', hex: '#EFE4D1', class: 'bg-[var(--ml-color-bogolan-sable)] text-[var(--ml-color-bogolan-nuit)]' },
+      { name: 'Ocre', hex: '#D97706', class: 'bg-[var(--ml-color-bogolan-ocre)] text-white' },
+      { name: 'Argile', hex: '#C25E25', class: 'bg-[var(--ml-color-bogolan-argile)] text-white font-bold' },
+      { name: 'Nuit', hex: '#1C1917', class: 'bg-[var(--ml-color-bogolan-nuit)] text-white' }
+    ]
+  }
+];
+
+const iconsShowcase = [
+  { name: 'Flèche Droite', iconClass: 'ml-icon-arrow-right-line' },
+  { name: 'Vérifié / Check', iconClass: 'ml-icon-checkbox-circle-fill' },
+  { name: 'Document / Fichier', iconClass: 'ml-icon-file-text-line' },
+  { name: 'Téléchargement', iconClass: 'ml-icon-download-line' },
+  { name: 'Utilisateur / Profil', iconClass: 'ml-icon-user-line' },
+  { name: 'Sécurité / Cadenas', iconClass: 'ml-icon-shield-line' },
+  { name: 'Information', iconClass: 'ml-icon-information-line' },
+  { name: 'Calendrier / Date', iconClass: 'ml-icon-calendar-event-line' },
+  { name: 'Recherche', iconClass: 'ml-icon-search-line' },
+  { name: 'Paramètres', iconClass: 'ml-icon-settings-5-line' }
+];
+---
+
+<BaseLayout title={`Bibliothèque de Composants DSML — ${siteConfig.title}`} description="Aperçu interactif et documentation visuelle des composants, palettes et formulaires certifiés par le Design System Mali.">
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/50 min-h-screen">
+    <div class="ml-container max-w-6xl mx-auto px-4">
+      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
+        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+        <span>/</span>
+        <span class="text-[var(--ml-color-neutral-800)] font-semibold">Composants DSML</span>
+      </nav>
+
+      <!-- Banner Header -->
+      <div class="relative rounded-3xl overflow-hidden mb-12 bg-gradient-to-r from-[var(--ml-color-river-800)] via-[var(--ml-color-indigo-700)] to-[var(--ml-color-indigo-900)] text-white p-8 md:p-12 shadow-xl border-2 border-[var(--ml-color-mandingue-orange)]/50">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[var(--ml-color-mandingue-500)] via-transparent to-transparent pointer-events-none"></div>
+        <div class="relative z-10 max-w-3xl">
+          <span class="inline-flex items-center gap-1.5 bg-white/15 text-[var(--ml-color-mandingue-100)] text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider mb-4 border border-white/20 backdrop-blur-md">
+            Charte Graphique Officielle
+          </span>
+          <h1 class="text-3xl md:text-4xl font-black font-title tracking-tight text-[var(--ml-color-mandingue-100)] mb-3 drop-shadow-md">Bibliothèque de Composants DSML</h1>
+          <p class="text-sm md:text-base text-white/95 leading-relaxed font-medium">
+            Explorez l'ensemble des palettes chromatiques, typographies, boutons, badges, icônes et composants de formulaires conçus pour garantir des interfaces institutionnelles harmonieuses et accessibles.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Nav Jump Anchor Bar -->
+      <div class="flex flex-wrap gap-2 mb-12 bg-white p-3 rounded-2xl border border-[var(--ml-color-neutral-200)] shadow-sm">
+        <a href="#palettes" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🎨 Palettes Chromatiques</a>
+        <a href="#boutons" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🔘 Boutons & Actions</a>
+        <a href="#badges" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🏷️ Badges & Statuts</a>
+        <a href="#icones" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">✨ Iconographie DSML</a>
+        <a href="#formulaires" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">📝 Formulaires Administratifs</a>
+        <a href="#motifs" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🏛️ Motifs Traditionnels</a>
+      </div>
+
+      <!-- SECTION 1: PALETTES DE COULEURS -->
+      <section id="palettes" class="mb-16 scroll-mt-24">
+        <div class="mb-6 border-b border-[var(--ml-color-neutral-300)] pb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-river-700)]">01 / Design Tokens</span>
+          <h2 class="text-2xl font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0">Palettes Chromatiques DSML</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {colorPalettes.map((palette) => (
+            <div class="bg-white p-6 rounded-2xl border border-[var(--ml-color-neutral-200)] shadow-sm">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="text-base font-bold text-[var(--ml-color-neutral-900)] font-title m-0">{palette.name}</h3>
+              </div>
+              <p class="text-xs text-[var(--ml-color-neutral-500)] mb-4">{palette.tagline}</p>
+
+              <div class="grid grid-cols-5 gap-1.5 rounded-xl overflow-hidden">
+                {palette.swatches.map((swatch) => (
+                  <div class={`p-3 text-center ${swatch.class} rounded-lg flex flex-col justify-between h-20 shadow-inner`}>
+                    <span class="text-[10px] font-extrabold leading-tight">{swatch.name}</span>
+                    <span class="text-[9px] opacity-80 uppercase tracking-tighter">{swatch.hex}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- SECTION 2: BOUTONS -->
+      <section id="boutons" class="mb-16 scroll-mt-24">
+        <div class="mb-6 border-b border-[var(--ml-color-neutral-300)] pb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-river-700)]">02 / Interactions</span>
+          <h2 class="text-2xl font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0">Boutons & Actions (.ml-btn)</h2>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl border border-[var(--ml-color-neutral-200)] shadow-sm space-y-8">
+          <div>
+            <h3 class="text-sm font-bold text-[var(--ml-color-neutral-700)] uppercase tracking-wider mb-4">Variantes de Boutons</h3>
+            <div class="flex flex-wrap gap-4 items-center">
+              <button class="ml-btn ml-btn-primary">ml-btn-primary</button>
+              <button class="ml-btn ml-btn-secondary">ml-btn-secondary</button>
+              <button class="ml-btn ml-btn-accent">ml-btn-accent</button>
+              <button class="ml-btn ml-btn-success">ml-btn-success</button>
+              <button class="ml-btn ml-btn-danger">ml-btn-danger</button>
+              <button class="ml-btn ml-btn-ghost">ml-btn-ghost</button>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-bold text-[var(--ml-color-neutral-700)] uppercase tracking-wider mb-4">Tailles & États</h3>
+            <div class="flex flex-wrap gap-4 items-center">
+              <button class="ml-btn ml-btn-primary ml-btn-sm">Taille Petite (sm)</button>
+              <button class="ml-btn ml-btn-primary">Taille Standard</button>
+              <button class="ml-btn ml-btn-primary ml-btn-lg">Taille Grande (lg)</button>
+              <button class="ml-btn ml-btn-primary disabled" disabled>Désactivé</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: BADGES -->
+      <section id="badges" class="mb-16 scroll-mt-24">
+        <div class="mb-6 border-b border-[var(--ml-color-neutral-300)] pb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-river-700)]">03 / Signalétique</span>
+          <h2 class="text-2xl font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0">Badges & Statuts (.ml-badge)</h2>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl border border-[var(--ml-color-neutral-200)] shadow-sm">
+          <div class="flex flex-wrap gap-3 items-center">
+            <span class="ml-badge">ml-badge (Défaut)</span>
+            <span class="ml-badge ml-badge-info">ml-badge-info</span>
+            <span class="ml-badge ml-badge-success">ml-badge-success</span>
+            <span class="ml-badge ml-badge-warning">ml-badge-warning</span>
+            <span class="ml-badge ml-badge-error">ml-badge-error</span>
+            <span class="ml-badge ml-badge-admin">ml-badge-admin</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: ICONOGRAPHIE -->
+      <section id="icones" class="mb-16 scroll-mt-24">
+        <div class="mb-6 border-b border-[var(--ml-color-neutral-300)] pb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-river-700)]">04 / Graphisme</span>
+          <h2 class="text-2xl font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0">Iconographie (.ml-icon-*)</h2>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          {iconsShowcase.map((item) => (
+            <div class="bg-white p-4 rounded-2xl border border-[var(--ml-color-neutral-200)] shadow-sm text-center flex flex-col items-center justify-center gap-2 hover:border-[var(--ml-color-river-400)] transition-colors">
+              <i class={`${item.iconClass} ml-icon--lg text-[var(--ml-color-river-700)]`}></i>
+              <span class="text-xs font-bold text-[var(--ml-color-neutral-800)]">{item.name}</span>
+              <code class="text-[10px] text-[var(--ml-color-neutral-500)] bg-[var(--ml-color-neutral-100)] px-2 py-0.5 rounded">{item.iconClass}</code>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- SECTION 5: FORMULAIRES -->
+      <section id="formulaires" class="mb-16 scroll-mt-24">
+        <div class="mb-6 border-b border-[var(--ml-color-neutral-300)] pb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-river-700)]">05 / Saisie de données</span>
+          <h2 class="text-2xl font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0">Composants de Formulaires</h2>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl border border-[var(--ml-color-neutral-200)] shadow-sm space-y-8">
+
+          <!-- Stepper Process -->
+          <div>
+            <h3 class="text-sm font-bold text-[var(--ml-color-neutral-700)] uppercase tracking-wider mb-4">Composant Stepper (Procédure Multi-Étapes)</h3>
+            <ol class="flex items-center w-full text-xs md:text-sm font-medium text-center text-[var(--ml-color-neutral-500)]">
+              <li class="flex md:w-full items-center text-[var(--ml-color-river-700)] after:content-[''] after:w-full after:h-1 after:border-b after:border-[var(--ml-color-river-500)] after:hidden md:after:inline-block after:mx-6">
+                <span class="flex items-center font-bold">
+                  <span class="w-7 h-7 rounded-full bg-[var(--ml-color-river-600)] text-white text-xs flex items-center justify-center mr-2 shadow-sm">1</span>
+                  <span>Identité Usager</span>
+                </span>
+              </li>
+              <li class="flex md:w-full items-center text-[var(--ml-color-mandingue-700)] after:content-[''] after:w-full after:h-1 after:border-b after:border-[var(--ml-color-mandingue-300)] after:hidden md:after:inline-block after:mx-6">
+                <span class="flex items-center font-bold">
+                  <span class="w-7 h-7 rounded-full bg-[var(--ml-color-mandingue-orange)] text-white text-xs flex items-center justify-center mr-2 shadow-sm ring-4 ring-[var(--ml-color-mandingue-50)]">2</span>
+                  <span>Téléversement Documents</span>
+                </span>
+              </li>
+              <li class="flex items-center text-[var(--ml-color-neutral-400)]">
+                <span class="w-7 h-7 rounded-full bg-[var(--ml-color-neutral-200)] text-[var(--ml-color-neutral-600)] text-xs flex items-center justify-center mr-2">3</span>
+                <span>Validation & Récépissé</span>
+              </li>
+            </ol>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-[var(--ml-color-neutral-200)]">
+
+            <!-- Inputs & Selects -->
+            <div class="space-y-4">
+              <div>
+                <label for="demo-input-text" class="block text-xs font-bold text-[var(--ml-color-neutral-800)] uppercase tracking-wider mb-2">Champ texte simple</label>
+                <input type="text" id="demo-input-text" placeholder="Entrez votre saisie..." class="w-full px-4 py-2.5 bg-white border border-[var(--ml-color-neutral-300)] rounded-xl text-sm focus:outline-none focus:border-[var(--ml-color-river-600)] focus:ring-2 focus:ring-[var(--ml-color-river-100)] transition-all" />
+              </div>
+
+              <div>
+                <label for="demo-select" class="block text-xs font-bold text-[var(--ml-color-neutral-800)] uppercase tracking-wider mb-2">Menu Déroulant (Select)</label>
+                <select id="demo-select" class="w-full px-4 py-2.5 bg-white border border-[var(--ml-color-neutral-300)] rounded-xl text-sm text-[var(--ml-color-neutral-900)] focus:outline-none focus:border-[var(--ml-color-river-600)] focus:ring-2 focus:ring-[var(--ml-color-river-100)] transition-all">
+                  <option value="">Sélectionnez une option...</option>
+                  <option value="1">Option 1 - Service public</option>
+                  <option value="2">Option 2 - Démarche administrative</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Upload Dropzone -->
+            <div>
+              <label class="block text-xs font-bold text-[var(--ml-color-neutral-800)] uppercase tracking-wider mb-2">Zone de Téléversement Fichier (Dropzone)</label>
+              <div class="flex justify-center px-6 pt-6 pb-6 border-2 border-dashed border-[var(--ml-color-mandingue-300)] rounded-2xl bg-[var(--ml-color-mandingue-50)]/40 hover:bg-[var(--ml-color-mandingue-50)] transition cursor-pointer text-center">
+                <div class="space-y-2">
+                  <i class="ml-icon-upload-cloud-line ml-icon--lg text-[var(--ml-color-mandingue-700)]"></i>
+                  <div class="text-xs text-[var(--ml-color-neutral-700)]">
+                    <span class="font-extrabold text-[var(--ml-color-mandingue-700)] hover:underline">Cliquer pour parcourir</span>
+                    <span> ou glisser le document</span>
+                  </div>
+                  <p class="text-[10px] text-[var(--ml-color-neutral-500)]">PDF, PNG, JPG (Max 5 Mo)</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION 6: MOTIFS TRADITIONNELS -->
+      <section id="motifs" class="mb-16 scroll-mt-24">
+        <div class="mb-6 border-b border-[var(--ml-color-neutral-300)] pb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-river-700)]">06 / Patrimoine Visuel</span>
+          <h2 class="text-2xl font-extrabold text-[var(--ml-color-neutral-900)] font-title m-0">Motifs & Filigranes (.ml-pattern-*)</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="ml-pattern-bogolan p-8 rounded-3xl text-white shadow-md">
+            <span class="text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full mb-4 inline-block">.ml-pattern-bogolan</span>
+            <h3 class="text-xl font-bold font-title mb-2 text-white">Motif Bogolan</h3>
+            <p class="text-xs opacity-90 leading-relaxed text-white">Inspiré des textiles sacrés teints à l'argile du Mandé. Géométrie pure et textures d'inspiration artisanale.</p>
+          </div>
+
+          <div class="ml-pattern-wax p-8 rounded-3xl text-white shadow-md">
+            <span class="text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full mb-4 inline-block">.ml-pattern-wax</span>
+            <h3 class="text-xl font-bold font-title mb-2 text-white">Rosace Soleil Wax</h3>
+            <p class="text-xs opacity-90 leading-relaxed text-white">Rosaces solaires et motifs d'étoffes festivales apportant rayonnement et prestige aux événements.</p>
+          </div>
+
+          <div class="ml-pattern-soleil p-8 rounded-3xl text-white shadow-md">
+            <span class="text-xs font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full mb-4 inline-block">.ml-pattern-soleil</span>
+            <h3 class="text-xl font-bold font-title mb-2 text-white">Soleil d'Or & Lumière</h3>
+            <p class="text-xs opacity-90 leading-relaxed text-white">Rayons solaires géométriques symbolisant la clarté et la transparence de l'action publique.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

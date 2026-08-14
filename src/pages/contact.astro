@@ -1,0 +1,78 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import siteConfig from '../../site.config.json';
+import contactData from '../data/pages/contact.json';
+---
+
+<BaseLayout title={`Contact et horaires — ${siteConfig.title}`} description="Adresse, coordonnées de contact, horaires d'ouverture et formulaires de contact.">
+  <MinimalHeader slot="header" showBackHome={true} />
+
+  <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/50 min-h-screen">
+    <div class="ml-container max-w-4xl mx-auto px-4">
+      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
+        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+        <span>/</span>
+        <span class="text-[var(--ml-color-neutral-800)] font-semibold">Contact</span>
+      </nav>
+
+      <div class="mb-10">
+        <h1 class="text-3xl md:text-4xl font-black text-[var(--ml-color-neutral-900)] font-title" data-cms-bind="src/data/pages/contact.json::title">{contactData.title}</h1>
+        <p class="text-[var(--ml-color-neutral-600)] mt-2" data-cms-bind="src/data/pages/contact.json::subtitle">{contactData.subtitle}</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-8 border border-[var(--ml-color-neutral-200)] rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          <h2 class="text-xl font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-6 border-b-2 border-[var(--ml-color-green-500)] pb-2 inline-block">Nos Coordonnées</h2>
+          <ul class="space-y-5 text-[var(--ml-color-neutral-700)] text-sm list-none p-0">
+            <li class="flex items-start gap-3">
+              <span class="font-bold text-[var(--ml-color-green-800)] min-w-[80px]">Adresse :</span>
+              <span data-cms-bind="siteConfig.contact.address">{siteConfig.contact.address}</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="font-bold text-[var(--ml-color-green-800)] min-w-[80px]">Téléphone :</span>
+              <span data-cms-bind="siteConfig.contact.phone">{siteConfig.contact.phone}</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="font-bold text-[var(--ml-color-green-800)] min-w-[80px]">Courriel :</span>
+              <a href={`mailto:${siteConfig.contact.email}`} class="text-[var(--ml-color-green-700)] hover:underline font-semibold" data-cms-bind="siteConfig.contact.email">{siteConfig.contact.email}</a>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="font-bold text-[var(--ml-color-green-800)] min-w-[80px]">Horaires :</span>
+              <span data-cms-bind="src/data/pages/contact.json::openingHours">{contactData.openingHours}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-gradient-to-br from-white to-[var(--ml-color-bogolan-kaolin)]/30 p-8 border border-[var(--ml-color-neutral-200)] rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+          <h2 class="text-xl font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-6 border-b-2 border-[var(--ml-color-gold-400)] pb-2 inline-block">Formulaire de Message</h2>
+          <form class="space-y-4" action="/contact-succes" method="GET">
+            <div>
+              <label for="nom" class="block text-xs font-bold text-[var(--ml-color-neutral-700)] uppercase tracking-wider mb-1.5">Nom complet</label>
+              <input type="text" id="nom" required class="w-full px-4 py-2.5 border border-[var(--ml-color-neutral-300)] rounded-xl text-sm focus:outline-none focus:border-[var(--ml-color-green-600)] focus:ring-2 focus:ring-[var(--ml-color-green-100)] transition-all bg-white" />
+            </div>
+            <div>
+              <label for="email" class="block text-xs font-bold text-[var(--ml-color-neutral-700)] uppercase tracking-wider mb-1.5">Adresse email</label>
+              <input type="email" id="email" required class="w-full px-4 py-2.5 border border-[var(--ml-color-neutral-300)] rounded-xl text-sm focus:outline-none focus:border-[var(--ml-color-green-600)] focus:ring-2 focus:ring-[var(--ml-color-green-100)] transition-all bg-white" />
+            </div>
+            <div>
+              <label for="message" class="block text-xs font-bold text-[var(--ml-color-neutral-700)] uppercase tracking-wider mb-1.5">Message</label>
+              <textarea id="message" rows="4" required class="w-full px-4 py-2.5 border border-[var(--ml-color-neutral-300)] rounded-xl text-sm focus:outline-none focus:border-[var(--ml-color-green-600)] focus:ring-2 focus:ring-[var(--ml-color-green-100)] transition-all bg-white"></textarea>
+            </div>
+            <button type="submit" class="w-full py-3 bg-[var(--ml-color-mandingue-orange)] hover:bg-[var(--ml-color-mandingue-700)] text-white font-bold rounded-xl transition-all shadow-md text-sm border-none cursor-pointer">
+              Envoyer le message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

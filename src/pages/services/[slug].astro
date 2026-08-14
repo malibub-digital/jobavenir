@@ -1,0 +1,261 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import SideMenu from '@malihub/sites-core/components/SideMenu.astro';
+import siteConfig from '../../../site.config.json';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'carte-consulaire' } },
+    { params: { slug: 'passeport' } },
+    { params: { slug: 'emploi-apej' } },
+    { params: { slug: 'etat-civil' } },
+    { params: { slug: 'legalisation' } },
+    { params: { slug: 'creation-entreprise' } }
+  ];
+}
+
+const serviceDetails: Record<string, any> = {
+  'carte-consulaire': {
+    title: 'Carte d\'Immatriculation Consulaire',
+    category: 'Identité & Consulat',
+    cost: '10 000 FCFA',
+    processingTime: '48 heures',
+    validity: '5 ans',
+    description: 'La carte d\'immatriculation consulaire certifie l\'inscription des citoyens maliens résidant à l\'étranger auprès du Consulat Général de la République du Mali.',
+    requirements: [
+      'Extrait d\'acte de naissance ou copie intégrale d\'acte de naissance',
+      '2 photographies d\'identité récentes au format officiel (35x45mm)',
+      'Justificatif de domicile récent (facture d\'électricité, contrat de bail ou attestation d\'hébergement)',
+      'Ancienne carte consulaire (en cas de renouvellement) ou pièce d\'identité officielle'
+    ],
+    steps: [
+      'Remplir la pré-demande en ligne et imprimer le formulaire récapitulatif',
+      'Prendre rendez-vous ou vous présenter au guichet consulaire aux horaires d\'ouverture',
+      'Effectuer le paiement des frais de dossier au guichet',
+      'Retirer votre carte consulaire sécurisée munie du QR code d\'authentification'
+    ]
+  },
+  'passeport': {
+    title: 'Passeport Biométrique Malien',
+    category: 'Voyage & Identité',
+    cost: '85 000 FCFA',
+    processingTime: '2 à 3 semaines',
+    validity: '5 ans (Majeurs) / 3 ans (Mineurs)',
+    description: 'Procédure officielle d\'établissement et d\'enrôlement biométrique pour l\'obtention du passeport diplomatique ou ordinaire de la République du Mali.',
+    requirements: [
+      'Numéro NINA (Numéro d\'Identification Nationale Achevé) ou Carte RAVEC',
+      'Copie de l\'acte de naissance sécurisé',
+      'Reçu de paiement de la taxe de chancellerie (85 000 FCFA)',
+      'Ancien passeport (si renouvellement) ou déclaration de perte visée par les autorités'
+    ],
+    steps: [
+      'Effectuer le paiement des frais sur la plateforme de paiement certifiée',
+      'Prendre rendez-vous pour la prise d\'empreintes et la photo biométrique',
+      'Présenter le dossier complet le jour du rendez-vous',
+      'Suivre l\'avancement de la fabrication par SMS / email et retirer le passeport'
+    ]
+  },
+  'emploi-apej': {
+    title: 'Accompagnement Emploi & Stage APEJ',
+    category: 'Emploi & Jeunesse',
+    cost: 'Gratuit',
+    processingTime: 'Immédiat en ligne',
+    validity: 'Durée du programme',
+    description: 'Dispositif de l\'Agence Pour la Promotion de l\'Emploi des Jeunes offrant du coaching professionnel, des stages pratiques et des bourses d\'entrepreneuriat.',
+    requirements: [
+      'Copie d\'une pièce d\'identité nationale malienne en cours de validité',
+      'Curriculum Vitae (CV) à jour',
+      'Copie conforme du diplôme ou attestation de niveau d\'études',
+      'Lettre de motivation ou fiche de projet d\'entreprise (pour les créateurs)'
+    ],
+    steps: [
+      'Créer votre compte candidat sur le portal APEJ',
+      'Compléter votre profil compétences et téléverser votre CV',
+      'Sélectionner les offres de stage ou déposer votre dossier d\'appel à projets',
+      'Participer aux ateliers hebdomadaires de préparation et d\'orientation'
+    ]
+  },
+  'etat-civil': {
+    title: 'Actes d\'État Civil & Certificats',
+    category: 'État Civil',
+    cost: 'Gratuit',
+    processingTime: '24 à 48h',
+    validity: 'Permanent',
+    description: 'Délivrance et transcription d\'actes de naissance, célébration de mariage consulaire, certificat de célibat, coutume et nationalité.',
+    requirements: [
+      'Acte original délivré par l\'autorité locale ou copie certifiée',
+      'Pièces d\'identité officielles des usagers concernés',
+      'Livret de famille (pour les mariages ou naissances d\'enfants)'
+    ],
+    steps: [
+      'Déposer les pièces justificatives au guichet de l\'état civil',
+      'Vérification et transcription sur les registres d\'état civil de la République du Mali',
+      'Délivrance du document officiel signé et scellé'
+    ]
+  },
+  'legalisation': {
+    title: 'Légalisation & Authentification de Documents',
+    category: 'Administratif',
+    cost: '2 500 FCFA / document',
+    processingTime: 'Sur place',
+    validity: 'Permanent',
+    description: 'Certification conforme de documents administratifs, procurations et actes notariés destinés aux administrations maliennes ou étrangères.',
+    requirements: [
+      'Original du document à légaliser',
+      'Copie claire et lisible du document',
+      'Pièce d\'identité officielle du demandeur'
+    ],
+    steps: [
+      'Présenter l\'original et la copie au guichet des légalisations',
+      'Vérification de l\'authenticité de la signature du signataire',
+      'Apposition du sceau officiel et délivrance immédiate'
+    ]
+  },
+  'creation-entreprise': {
+    title: 'Guichet Unique de Création d\'Entreprise',
+    category: 'Entrepreneuriat',
+    cost: 'Variable selon statut',
+    processingTime: '72 heures',
+    validity: 'Permanent',
+    description: 'Accompagnement centralisé pour l\'immatriculation au RCCM, l\'obtention du NIF et les formalités d\'installation des entreprises au Mali.',
+    requirements: [
+      'Projet de statuts de la société',
+      'Copie de la pièce d\'identité des associés et du gérant',
+      'Justificatif de domicile ou bail commercial du siège social'
+    ],
+    steps: [
+      'Renseigner le formulaire unique de déclaration d\'entreprise',
+      'Déposer les statuts et pièces justificatives',
+      'Retirer le dossier complet d\'immatriculation (RCCM + NIF)'
+    ]
+  }
+};
+
+const { slug } = Astro.params;
+const service = serviceDetails[slug || 'carte-consulaire'] || serviceDetails['carte-consulaire'];
+
+const sidemenuItems = [
+  { label: 'Carte consulaire', href: '/services/carte-consulaire' },
+  { label: 'Passeport biométrique', href: '/services/passeport' },
+  { label: 'Insertion APEJ', href: '/services/emploi-apej' },
+  { label: 'État civil & Actes', href: '/services/etat-civil' },
+  { label: 'Légalisation de documents', href: '/services/legalisation' },
+  { label: 'Création d\'entreprise', href: '/services/creation-entreprise' }
+];
+---
+
+<BaseLayout title={`${service.title} — ${siteConfig.title}`} description={service.description}>
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-[var(--ml-color-river-50)]/30 min-h-screen">
+    <div class="ml-container max-w-6xl mx-auto px-4">
+      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
+        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+        <span>/</span>
+        <a href="/services" class="hover:underline text-[var(--ml-color-neutral-600)]">Démarches & Services</a>
+        <span>/</span>
+        <span class="text-[var(--ml-color-neutral-800)] font-semibold truncate max-w-xs">{service.title}</span>
+      </nav>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+        <!-- Sous-navigation DSML (SideMenu) -->
+        <aside class="lg:col-span-1">
+          <SideMenu
+            title="Toutes les démarches"
+            items={sidemenuItems}
+            currentPath={`/services/${slug}`}
+          />
+        </aside>
+
+        <!-- Contenu principal du service -->
+        <article class="lg:col-span-3 bg-white border border-[var(--ml-color-neutral-200)] rounded-3xl p-6 md:p-10 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--ml-color-neutral-200)]">
+          <div>
+            <span class="bg-[var(--ml-color-mandingue-50)] text-[var(--ml-color-mandingue-900)] font-bold text-xs px-3 py-1 rounded-full border border-[var(--ml-color-mandingue-200)] mb-3 inline-block">
+              {service.category}
+            </span>
+            <h1 class="text-2xl md:text-4xl font-black text-[var(--ml-color-neutral-900)] font-title m-0">
+              {service.title}
+            </h1>
+          </div>
+
+          <div class="flex gap-4 text-xs bg-[var(--ml-color-river-50)] p-4 rounded-2xl border border-[var(--ml-color-river-100)]">
+            <div>
+              <span class="text-[var(--ml-color-neutral-500)] block">Tarif officiel</span>
+              <strong class="text-[var(--ml-color-neutral-900)] font-extrabold text-sm">{service.cost}</strong>
+            </div>
+            <div class="border-l border-[var(--ml-color-river-200)] pl-4">
+              <span class="text-[var(--ml-color-neutral-500)] block">Délai moyen</span>
+              <strong class="text-[var(--ml-color-neutral-900)] font-extrabold text-sm">{service.processingTime}</strong>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-base text-[var(--ml-color-neutral-700)] leading-relaxed mb-8 font-medium">
+          {service.description}
+        </p>
+
+        <!-- Pièces à fournir -->
+        <div class="mb-10 bg-[var(--ml-color-neutral-50)] p-6 rounded-2xl border border-[var(--ml-color-neutral-200)]">
+          <h2 class="text-lg font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-4 flex items-center gap-2">
+            <span>📋</span>
+            <span>Pièces à fournir & conditions requises</span>
+          </h2>
+          <ul class="space-y-2.5 text-sm text-[var(--ml-color-neutral-700)] list-disc pl-5 m-0">
+            {service.requirements.map((req: string) => (
+              <li class="leading-relaxed">{req}</li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Étapes de la procédure -->
+        <div class="mb-10">
+          <h2 class="text-lg font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-5 flex items-center gap-2">
+            <span>🚀</span>
+            <span>Procédure & Étapes à suivre</span>
+          </h2>
+          <div class="space-y-4">
+            {service.steps.map((step: string, index: number) => (
+              <div class="flex items-start gap-4 p-4 rounded-xl border border-[var(--ml-color-neutral-200)] bg-white">
+                <span class="w-7 h-7 rounded-full bg-[var(--ml-color-mandingue-orange)] text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                  {index + 1}
+                </span>
+                <p class="text-sm text-[var(--ml-color-neutral-700)] leading-relaxed m-0 pt-0.5">
+                  {step}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- CTA Action -->
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-[var(--ml-color-river-800)] to-[var(--ml-color-indigo-800)] text-white text-center">
+          <h3 class="text-lg font-bold font-title text-white mb-2">Prêt à effectuer votre démarche ?</h3>
+          <p class="text-xs text-white/90 mb-4 max-w-md mx-auto">Prenez rendez-vous ou remplissez votre pré-demande certifiée en ligne.</p>
+          <a href="/contact" class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--ml-color-mandingue-orange)] hover:bg-[var(--ml-color-mandingue-700)] text-white font-bold rounded-xl transition-all text-sm no-underline shadow-md">
+            <span>Commencer ma démarche en ligne</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-[var(--ml-color-neutral-200)]">
+          <a href="/services" class="text-xs font-bold text-[var(--ml-color-river-700)] hover:underline inline-flex items-center gap-1.5 no-underline">
+            <span>&larr;</span>
+            <span>Retour au catalogue des démarches</span>
+          </a>
+        </div>
+      </article>
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
+

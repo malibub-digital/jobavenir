@@ -1,0 +1,38 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import siteConfig from '../../site.config.json';
+import legalData from '../data/pages/legal.json';
+---
+
+<BaseLayout title={`Déclaration d'Accessibilité — ${siteConfig.title}`} description="Accessibilité numérique et conformité RGAA / standards DSML.">
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-stone-50 min-h-screen">
+    <div class="ml-container max-w-3xl mx-auto px-4 bg-white p-8 border border-stone-200 rounded-lg shadow-sm">
+      <h1 class="text-3xl font-extrabold text-stone-900 font-title mb-6 border-b border-stone-200 pb-3" data-cms-bind="src/data/pages/legal.json::accessibilite.title">{legalData.accessibilite.title}</h1>
+      
+      <div class="prose prose-stone max-w-none space-y-6 text-sm text-stone-700 leading-relaxed">
+        <p data-cms-bind="src/data/pages/legal.json::accessibilite.statementText">{legalData.accessibilite.statementText}</p>
+
+        <section>
+          <h2 class="text-lg font-bold text-stone-900 font-title">État de conformité</h2>
+          <p>Le site <strong>{siteConfig.title}</strong> est <strong data-cms-bind="src/data/pages/legal.json::accessibilite.status">{legalData.accessibilite.status}</strong> aux critères d'accessibilité numérique en raison des éléments en cours d'optimisation.</p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-stone-900 font-title">Retour d'information et contact</h2>
+          <p data-cms-bind="src/data/pages/legal.json::accessibilite.contactText">{legalData.accessibilite.contactText}</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

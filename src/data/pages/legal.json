@@ -1,0 +1,15 @@
+{
+  "mentionsLegales": {
+    "title": "Mentions Légales",
+    "editorTitle": "Éditeur du site",
+    "editorText": "Ce site institutionnel est édité par le Ministère de la Communication, de l'Économie Numérique et de la Modernisation de l'Administration de la République du Mali.",
+    "hostingTitle": "Hébergement",
+    "hostingText": "Le site est hébergé sur les infrastructures sécurisées de la Réseau National de l'État (AGETIC), Bamako, République du Mali."
+  },
+  "accessibilite": {
+    "title": "Accessibilité Numérique",
+    "status": "Partiellement Conforme",
+    "statementText": "Le gouvernement du Mali s'engage à rendre ses sites internet accessibles conformément au Design System Mali (DSML) et aux normes RGAA v4.1.",
+    "contactText": "Si vous rencontrez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou une fonctionnalité, vous pouvez contacter le responsable de la publication."
+  }
+}

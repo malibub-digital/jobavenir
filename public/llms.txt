@@ -1,0 +1,101 @@
+# Sites Faciles Mali — Guide pour LLM & Agents IA
+
+> Moteur de sites web institutionnels et démarches publiques pour les administrations du Mali.
+> Basé sur Astro, le Design System Mali (DSML) et un moteur CMS inline zéro-dossier-admin.
+
+---
+
+## 1. Composants Cœurs Disponibles (`@malihub/sites-core`)
+
+Importation standard dans une page Astro :
+```astro
+---
+import { BaseLayout, Header, Footer, Hero, ServiceCard, EmergencyBanner } from '@malihub/sites-core';
+import siteConfig from '../site.config.json';
+---
+```
+
+### Liste des Composants Exportés
+- `BaseLayout` : Layout principal incluant la charte DSML, les balises SEO et le script d'édition CMS.
+- `Header` : En-tête institutionnel avec logo, titre du site et navigation responsive.
+- `Footer` : Pied de page standardisé avec coordonnées, liens institutionnels et crédits.
+- `Hero` : En-tête de page d'accueil avec titre, sous-titre, badge et pastilles d'accès rapide.
+- `ServiceCard` : Carte de présentation d'une démarche ou d'un service (titre, résumé, tarif, délai).
+- `EmergencyBanner` : Bandeau d'alerte prioritaire configurable via `siteConfig.emergencyNotice`.
+- `AdminToolbar` : Barre d'outils supérieure pour l'activation du mode édition et la publication.
+- `CollectionAddButton` & `CollectionItemControls` : Outillage pour les collections dynamiques.
+
+---
+
+## 2. Architecture de Binding CMS (`data-cms-bind`)
+
+| Préfixe Binding | Fichier Cible | Usage |
+| :--- | :--- | :--- |
+| `siteConfig.* | `site.config.json` | Configuration globale (institution, navigation, footer, alerte) |
+| `src/data/pages/<page>.json::champ` | JSON arbitraire | Contenus textuels de la page (Hero, titres, textes) |
+| `src/content/**/*.md::champ` | Fichier Markdown | Articles d'actualité, fiches démarches détaillées |
+
+### Exemple de liaison sur un composant :
+```html
+<h1 data-cms-bind="src/data/pages/home.json::hero.title">Titre éditables</h1>
+<p data-cms-bind="siteConfig.contact.email">contact@institution.ml</p>
+```
+
+---
+
+---
+
+## 3. Directives & Règles IA (Source : AI_RULES.md)
+
+# Directives d'intégration IA pour Sites Faciles Mali (`sites`)
+
+Ce document fournit des règles et instructions agnostiques d'assistance IA (Cursor, Windsurf, Copilot, Claude Code, Antigravity, ChatGPT...) pour la création et la modification de sites institutionnels avec **Sites Faciles Mali**.
+
+---
+
+## 🏛️ Règles Générales pour l'Assistant IA
+
+1. **Architecture Monorepo & Paquets :**
+   - **`@malihub/sites-core`** (`packages/core/`) : Contient les composants Astro certifiés DSML, le layout de base `BaseLayout`, ainsi que le moteur CMS visuel (handlers, stores, modales).
+   - **`sites-template`** (`template/`) : Projet exemple/starter pour créer un site institutionnel.
+
+2. **Règles de Stockage & Bindings CMS (`data-cms-bind`) :**
+   - **`siteConfig.*`** : Réservé exclusivement à la configuration globale (`site.config.json` : institution, nom du site, contact, liens footer, alerte d'urgence). NE JAMAIS stocker du contenu spécifique de page dans `siteConfig`.
+   - **`src/data/pages/<page>.json::champ`** : Pour les contenus verbeux de page (Hero, titres de sections, pastilles d'accès rapide).
+   - **`src/content/**/*.md::champ`** : Pour les articles d'actualités et fiches démarches au format Markdown + gray-matter.
+   - **Syntaxe obligatoire** : Toujours utiliser le format qualifié `fichier.json::champ` ou `siteConfig.champ`. Jamais de namespace flottant.
+
+3. **Utilisation des Composants Cœurs DSML :**
+   - Importer les composants depuis `@malihub/sites-core` : `BaseLayout`, `Header`, `Footer`, `Hero`, `ServiceCard`, `EmergencyBanner`, `AdminToolbar`.
+   - Respecter les classes de tokens CSS DSML (`var(--ml-color-*)`, `ml-container`, `ml-card`, `font-title`).
+
+4. **Collections et Listes Éditables :**
+   - Pour chaque collection dynamique (ex: FAQ, cartes d'accès rapide, actualités) :
+     - Envelopper chaque item avec `data-cms-collection` et `data-cms-item-index`.
+     - Intégrer `<CollectionItemControls />` pour déplacer ou supprimer un élément.
+     - Ajouter `<CollectionAddButton />` en bas de liste pour insérer de nouveaux éléments.
+
+5. **Accessibilité & SEO :**
+   - Conserver la hiérarchie sémantique HTML (`<h1>` unique par page, `<main id="main-content">`, `<nav>`).
+   - Assurer le contraste des couleurs et les contours de focus pour le mode édition inline.
+
+---
+
+## 📋 Exemples de configuration selon votre IDE
+
+### 1. Cursor (`.cursorrules`)
+Créez un fichier `.cursorrules` à la racine de votre projet client et collez :
+```markdown
+# Rules for Sites Faciles Mali
+- Use @malihub/sites-core components (BaseLayout, Header, Footer, Hero, ServiceCard, EmergencyBanner).
+- Respect CMS bindings: siteConfig.* for global layout, src/data/pages/*.json::field for page content, src/content/**/*.md::field for markdown.
+- Never place page-specific text inside site.config.json.
+- Always include ARIA roles and visible focus indicators.
+```
+
+### 2. Windsurf (`.windsurfrules`) / Copilot (`.github/copilot-instructions.md`)
+Utilisez les consignes ci-dessus pour guider le générateur de code.
+
+### 3. Claude Code / Antigravity (`AGENTS.md`)
+Référez-vous aux règles d'architecture CMS et de stockage décrites dans `AI_RULES.md`.
+

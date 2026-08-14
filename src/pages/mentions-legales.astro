@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from '@malihub/sites-core/components/Footer.astro';
+import siteConfig from '../../site.config.json';
+import legalData from '../data/pages/legal.json';
+---
+
+<BaseLayout title={`Mentions Légales — ${siteConfig.title}`} description="Mentions légales, conditions d'utilisation et protection des données.">
+  <MinimalHeader slot="header" />
+
+  <main id="main-content" class="py-12 bg-stone-50 min-h-screen">
+    <div class="ml-container max-w-3xl mx-auto px-4 bg-white p-8 border border-stone-200 rounded-lg shadow-sm">
+      <h1 class="text-3xl font-extrabold text-stone-900 font-title mb-6 border-b border-stone-200 pb-3" data-cms-bind="src/data/pages/legal.json::mentionsLegales.title">{legalData.mentionsLegales.title}</h1>
+      
+      <div class="prose prose-stone max-w-none space-y-6 text-sm text-stone-700 leading-relaxed">
+        <section>
+          <h2 class="text-lg font-bold text-stone-900 font-title" data-cms-bind="src/data/pages/legal.json::mentionsLegales.editorTitle">{legalData.mentionsLegales.editorTitle}</h2>
+          <p data-cms-bind="src/data/pages/legal.json::mentionsLegales.editorText">{legalData.mentionsLegales.editorText}</p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-stone-900 font-title" data-cms-bind="src/data/pages/legal.json::mentionsLegales.hostingTitle">{legalData.mentionsLegales.hostingTitle}</h2>
+          <p data-cms-bind="src/data/pages/legal.json::mentionsLegales.hostingText">{legalData.mentionsLegales.hostingText}</p>
+        </section>
+
+        <section>
+          <h2 class="text-lg font-bold text-stone-900 font-title">Propriété Intellectuelle</h2>
+          <p>L'ensemble des contenus (textes, visuels, charte graphique DSML, visuels) est la propriété exclusive de l'État malien ou fait l'objet d'une autorisation d'utilisation.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
