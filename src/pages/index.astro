@@ -16,32 +16,28 @@ const recentJobs = allJobs.sort(
 );
 
 const countEmplois = allJobs.filter(
-  (j) =>
-    j.data.opportunityType === "JOB" ||
-    ["CDI", "CDD", "Intérim"].includes(j.data.contractType),
+  (j) => j.data.opportunityType === "JOB",
 ).length;
 
 const countStages = allJobs.filter(
-  (j) =>
-    j.data.opportunityType === "STAGE" ||
-    ["Stage", "Apprentissage"].includes(j.data.contractType),
+  (j) => j.data.opportunityType === "STAGE",
 ).length;
 
 const countFormations = allJobs.filter(
-  (j) =>
-    j.data.opportunityType === "TRAINING" ||
-    j.data.contractType === "Formation" ||
-    (j.data.category && j.data.category.toLowerCase().includes("formation")),
+  (j) => j.data.opportunityType === "TRAINING",
 ).length;
 
 const countProjets = allJobs.filter(
-  (j) =>
-    j.data.opportunityType === "PROJECT_CALL" ||
-    j.data.contractType === "Appel à projets" ||
-    (j.data.category &&
-      (j.data.category.toLowerCase().includes("projet") ||
-        j.data.category.toLowerCase().includes("financement"))),
+  (j) => j.data.opportunityType === "PROJECT_CALL",
 ).length;
+
+const countAnnonces = allJobs.filter(
+  (j) => j.data.opportunityType === "ANNOUNCEMENT",
+).length;
+
+const latestAnnouncements = allJobs
+  .filter((j) => j.data.opportunityType === "ANNOUNCEMENT")
+  .slice(0, 3);
 
 const footerLogos = [
   { src: "/images/logo-apej.svg", alt: "APEJ Mali" },
@@ -123,28 +119,28 @@ const footerLogos = [
     </div>
   </section>
 
-  <!-- 4 PILIERS D'OPPORTUNITÉS (COMPTEURS DYNAMIQUES & CARTES CLICQUABLES) -->
+  <!-- 5 PILIERS D'OPPORTUNITÉS (COMPTEURS DYNAMIQUES & CARTES CLICQUABLES) -->
   <section class="py-10 bg-stone-50 border-b border-stone-200/80">
-    <div class="ml-container max-w-6xl mx-auto px-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <!-- CARTE 1 : EMPLOIS & CARRIÈRES -->
+    <div class="ml-container max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- BLOC 1 : EMPLOIS & CARRIÈRES (BLEU NUIT & CYAN VIBRANT) -->
         <a
           href="/offres?type=emploi"
-          class="p-5 rounded-2xl bg-gradient-to-br from-amber-600 via-orange-600 to-amber-700 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline block"
+          class="p-4 rounded-2xl bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline flex flex-col justify-between border border-blue-800/40"
         >
           <div
-            class="absolute inset-0 opacity-20 pointer-events-none bg-repeat"
-            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23FFFFFF' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
+            class="absolute inset-0 opacity-15 pointer-events-none bg-repeat"
+            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2338BDF8' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%2338BDF8' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
           >
           </div>
 
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
               <div
-                class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-white/30 transition-colors"
+                class="w-10 h-10 rounded-xl bg-blue-500/20 backdrop-blur-md border border-blue-400/30 text-sky-200 flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-blue-500/30 transition-colors"
               >
                 <svg
-                  class="w-6 h-6"
+                  class="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -157,46 +153,44 @@ const footerLogos = [
                 >
               </div>
               <span
-                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-white/25 text-amber-100"
+                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-blue-500/20 px-2 py-0.5 rounded-full backdrop-blur-sm border border-blue-400/25 text-sky-200"
               >
-                <span
-                  >{countEmplois} {countEmplois > 1 ? "postes" : "poste"}</span
-                >
+                <span>{countEmplois} {countEmplois > 1 ? "opportunités" : "opportunité"}</span>
               </span>
             </div>
             <div>
               <h3
-                class="text-lg font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
+                class="text-base font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
               >
                 Emplois
               </h3>
               <p
-                class="text-xs text-amber-100 leading-snug font-medium line-clamp-2"
+                class="text-[11px] text-sky-100/80 leading-snug font-medium line-clamp-2"
               >
-                Offres d'emploi stables en CDI, CDD et missions au Mali.
+                Postes en CDI, CDD et missions professionnelles.
               </p>
             </div>
           </div>
         </a>
 
-        <!-- CARTE 2 : STAGES & TREMPLIN PRO -->
+        <!-- BLOC 2 : STAGES & IMMERSION (TERRE AMBRÉE & ORANGE CHAUD) -->
         <a
           href="/offres?type=stage"
-          class="p-5 rounded-2xl bg-gradient-to-br from-amber-700 via-amber-800 to-stone-900 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline block"
+          class="p-4 rounded-2xl bg-gradient-to-br from-amber-600 via-orange-700 to-amber-900 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline flex flex-col justify-between border border-amber-500/40"
         >
           <div
             class="absolute inset-0 opacity-20 pointer-events-none bg-repeat"
-            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23F59E0B' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23F59E0B' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
+            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FDE047' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23FDE047' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
           >
           </div>
 
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
               <div
-                class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-white/30 transition-colors"
+                class="w-10 h-10 rounded-xl bg-amber-400/20 backdrop-blur-md border border-amber-300/30 text-amber-200 flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-amber-400/30 transition-colors"
               >
                 <svg
-                  class="w-6 h-6"
+                  class="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -213,45 +207,44 @@ const footerLogos = [
                 >
               </div>
               <span
-                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-white/25 text-amber-200"
+                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-amber-400/20 px-2 py-0.5 rounded-full backdrop-blur-sm border border-amber-300/25 text-amber-100"
               >
-                <span>{countStages} {countStages > 1 ? "stages" : "stage"}</span
-                >
+                <span>{countStages} {countStages > 1 ? "opportunités" : "opportunité"}</span>
               </span>
             </div>
             <div>
               <h3
-                class="text-lg font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
+                class="text-base font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
               >
                 Stages
               </h3>
               <p
-                class="text-xs text-amber-200 leading-snug font-medium line-clamp-2"
+                class="text-[11px] text-amber-100/90 leading-snug font-medium line-clamp-2"
               >
-                Stages PFE, qualification et immersions en entreprise.
+                Stages PFE, qualification et immersions APEJ.
               </p>
             </div>
           </div>
         </a>
 
-        <!-- CARTE 3 : FORMATIONS & MÉTIERS -->
+        <!-- BLOC 3 : FORMATIONS & MÉTIERS (VIOLET IMPÉRIAL & INDIGO) -->
         <a
           href="/offres?type=formation"
-          class="p-5 rounded-2xl bg-gradient-to-br from-orange-600 via-amber-600 to-amber-700 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline block"
+          class="p-4 rounded-2xl bg-gradient-to-br from-purple-800 via-indigo-900 to-slate-950 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline flex flex-col justify-between border border-purple-600/30"
         >
           <div
-            class="absolute inset-0 opacity-20 pointer-events-none bg-repeat"
-            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FDE047' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23FDE047' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
+            class="absolute inset-0 opacity-15 pointer-events-none bg-repeat"
+            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23C084FC' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23C084FC' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
           >
           </div>
 
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
               <div
-                class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-white/30 transition-colors"
+                class="w-10 h-10 rounded-xl bg-purple-500/20 backdrop-blur-md border border-purple-400/30 text-purple-200 flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-purple-500/30 transition-colors"
               >
                 <svg
-                  class="w-6 h-6"
+                  class="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -264,48 +257,44 @@ const footerLogos = [
                 >
               </div>
               <span
-                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-white/25 text-amber-100"
+                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-purple-500/20 px-2 py-0.5 rounded-full backdrop-blur-sm border border-purple-400/25 text-purple-200"
               >
-                <span
-                  >{countFormations}
-                  {countFormations > 1 ? "sessions" : "session"}</span
-                >
+                <span>{countFormations} {countFormations > 1 ? "opportunités" : "opportunité"}</span>
               </span>
             </div>
             <div>
               <h3
-                class="text-lg font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
+                class="text-base font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
               >
                 Formations
               </h3>
               <p
-                class="text-xs text-amber-100 leading-snug font-medium line-clamp-2"
+                class="text-[11px] text-purple-100/90 leading-snug font-medium line-clamp-2"
               >
-                Ateliers certifiants, compétences techniques et filières
-                porteuses.
+                Ateliers certifiants et compétences techniques.
               </p>
             </div>
           </div>
         </a>
 
-        <!-- CARTE 4 : PROJETS & SUBVENTIONS -->
+        <!-- BLOC 4 : PROJETS & SUBVENTIONS (ÉMERAUDE & VERT SAHEL) -->
         <a
           href="/offres?type=projet"
-          class="p-5 rounded-2xl bg-gradient-to-br from-stone-800 via-amber-900 to-orange-950 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline block"
+          class="p-4 rounded-2xl bg-gradient-to-br from-emerald-700 via-teal-800 to-stone-900 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline flex flex-col justify-between border border-emerald-500/40"
         >
           <div
             class="absolute inset-0 opacity-20 pointer-events-none bg-repeat"
-            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FB923C' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23FB923C' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
+            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2334D399' stroke-width='1.2' stroke-opacity='0.6'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%2334D399' fill-opacity='0.5'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
           >
           </div>
 
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-3">
               <div
-                class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-white/30 transition-colors"
+                class="w-10 h-10 rounded-xl bg-emerald-400/20 backdrop-blur-md border border-emerald-300/30 text-emerald-200 flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-emerald-400/30 transition-colors"
               >
                 <svg
-                  class="w-6 h-6"
+                  class="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -317,23 +306,60 @@ const footerLogos = [
                 >
               </div>
               <span
-                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-white/25 text-orange-200"
+                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-emerald-400/20 px-2 py-0.5 rounded-full backdrop-blur-sm border border-emerald-300/25 text-emerald-100"
               >
-                <span
-                  >{countProjets} {countProjets > 1 ? "appels" : "appel"}</span
-                >
+                <span>{countProjets} {countProjets > 1 ? "opportunités" : "opportunité"}</span>
               </span>
             </div>
             <div>
               <h3
-                class="text-lg font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
+                class="text-base font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
               >
-                Projets et Subventions
+                Projets & Subventions
               </h3>
               <p
-                class="text-xs text-orange-200 leading-snug font-medium line-clamp-2"
+                class="text-[11px] text-emerald-100/90 leading-snug font-medium line-clamp-2"
               >
-                Fonds, concours et opportunités pour entrepreneurs et startups.
+                Guichets ouverts, dotations et concours.
+              </p>
+            </div>
+          </div>
+        </a>
+
+        <!-- BLOC 5 : ANNONCES & VEILLE (ARDOISE INSTITUTIONNELLE & CORAIL) -->
+        <a
+          href="/offres?type=annonce"
+          class="p-4 rounded-2xl bg-gradient-to-br from-slate-700 via-stone-800 to-stone-950 text-white shadow-md relative overflow-hidden group hover:scale-[1.03] hover:shadow-xl transition-all duration-300 no-underline flex flex-col justify-between border border-slate-600/40"
+        >
+          <div
+            class="absolute inset-0 opacity-20 pointer-events-none bg-repeat"
+            style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23E2E8F0' stroke-width='1.2' stroke-opacity='0.5'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23E2E8F0' fill-opacity='0.4'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 50px 50px;"
+          >
+          </div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-3">
+              <div
+                class="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-slate-100 flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:bg-white/25 transition-colors text-base"
+              >
+                📢
+              </div>
+              <span
+                class="inline-flex items-center gap-1 text-[11px] font-extrabold bg-white/15 px-2 py-0.5 rounded-full backdrop-blur-sm border border-white/20 text-slate-200"
+              >
+                <span>{countAnnonces} {countAnnonces > 1 ? "opportunités" : "opportunité"}</span>
+              </span>
+            </div>
+            <div>
+              <h3
+                class="text-base font-black text-white font-title leading-tight mb-1 group-hover:translate-x-0.5 transition-transform"
+              >
+                Annonces
+              </h3>
+              <p
+                class="text-[11px] text-slate-200/90 leading-snug font-medium line-clamp-2"
+              >
+                Communiqués ministériels et réformes.
               </p>
             </div>
           </div>
@@ -354,14 +380,14 @@ const footerLogos = [
           <h2
             class="text-2xl md:text-3xl font-black text-stone-900 font-title m-0"
           >
-            Toutes les offres d'emploi
+            Dernières opportunités publiées
           </h2>
         </div>
         <a
           href="/offres"
           class="text-xs font-extrabold text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1 no-underline"
         >
-          <span>Voir toutes les offres</span>
+          <span>Voir toutes les opportunités</span>
           <span>&rarr;</span>
         </a>
       </div>
@@ -382,8 +408,18 @@ const footerLogos = [
               <article class="bg-stone-50 p-6 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md hover:border-orange-500 transition-all duration-200 group flex flex-col justify-between">
                 <div>
                   <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                      {job.data.contractType}
+                    <span class={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                      job.data.opportunityType === 'ANNOUNCEMENT'
+                        ? 'bg-slate-100 text-slate-800 border-slate-300'
+                        : job.data.opportunityType === 'PROJECT_CALL'
+                        ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                        : job.data.opportunityType === 'STAGE'
+                        ? 'bg-amber-100 text-amber-900 border-amber-200'
+                        : job.data.opportunityType === 'TRAINING'
+                        ? 'bg-orange-100 text-orange-950 border-orange-200'
+                        : 'bg-amber-100 text-amber-900 border-amber-200'
+                    }`}>
+                      {job.data.opportunityType === 'ANNOUNCEMENT' ? 'Annonce' : job.data.opportunityType === 'PROJECT_CALL' ? 'Appel à projets' : job.data.contractType}
                     </span>
                     <span class="text-[11px] font-semibold text-stone-500 flex items-center gap-1">
                       <svg

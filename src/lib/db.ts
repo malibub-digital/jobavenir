@@ -382,3 +382,61 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
     return null;
   }
 }
+
+/**
+ * Archive automatiquement les offres dont la date limite est échue (deadline < CURRENT_DATE)
+ * Retourne le nombre d'offres archivées.
+ */
+export async function archiveExpiredJobs(): Promise<number> {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Les deadlines peuvent être au format 'YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss' ou 'DD/MM/YYYY'
+    // Pour assurer une compatibilité optimale sous SQLite et PostgreSQL :
+    // 1. On sélectionne les offres actives avec une deadline renseignée
+    const res = await queryDb(`
+      SELECT id, deadline FROM jobs 
+      WHERE (is_active = 1 OR is_active = true) 
+        AND deadline IS NOT NULL 
+        AND deadline != ''
+    `);
+
+    const expiredIds: number[] = [];
+
+    for (const row of res.rows) {
+      const deadlineStr = String(row.deadline).trim();
+      let deadlineDate: Date | null = null;
+
+      // Format ISO standard : 2026-09-01
+      if (/^\d{4}-\d{2}-\d{2}/.test(deadlineStr)) {
+        deadlineDate = new Date(deadlineStr.slice(0, 10));
+      } 
+      // Format FR courant : 31/12/2026 ou 31-12-2026
+      else if (/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/.test(deadlineStr)) {
+        const parts = deadlineStr.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/);
+        if (parts) {
+          deadlineDate = new Date(`${parts[3]}-${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}`);
+        }
+      }
+
+      if (deadlineDate && !isNaN(deadlineDate.getTime())) {
+        const isoDeadline = deadlineDate.toISOString().split('T')[0];
+        if (isoDeadline < today) {
+          expiredIds.push(row.id);
+        }
+      }
+    }
+
+    if (expiredIds.length > 0) {
+      for (const id of expiredIds) {
+        await queryDb(`UPDATE jobs SET is_active = 0, updated_at = NOW() WHERE id = $1`, [id]);
+      }
+      console.log(`[DB] 🧹 Cycle de vie : ${expiredIds.length} offre(s) expirée(s) archivée(s) (is_active = 0).`);
+    }
+
+    return expiredIds.length;
+  } catch (err) {
+    console.error('[DB] Erreur lors de l\'archivage des offres expirées:', err);
+    return 0;
+  }
+}

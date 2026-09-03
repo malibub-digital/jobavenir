@@ -8,7 +8,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { extractJobWithAI, ExtractedJob } from '../src/lib/ai-extractor';
-import { pool, initDatabaseSchema, isSqlite } from '../src/lib/db';
+import { pool, initDatabaseSchema, isSqlite, archiveExpiredJobs } from '../src/lib/db';
 
 dotenv.config();
 
@@ -162,6 +162,193 @@ async function getNextBatchSources(batchSize: number): Promise<SourceRow[]> {
 }
 
 /**
+ * Parse un flux RSS ou Atom XML en publications standardisées
+ */
+function parseRssFeed(xmlText: string, limit = 5): Array<{ title: string; content: string; excerpt: string; link: string; date: string }> {
+  const posts: Array<{ title: string; content: string; excerpt: string; link: string; date: string }> = [];
+  
+  // Support des balises <item> (RSS) et <entry> (Atom)
+  const itemMatches = xmlText.match(/<(?:item|entry)[\s\S]*?<\/(?:item|entry)>/gi) || [];
+
+  for (const itemXml of itemMatches.slice(0, limit)) {
+    // Extraction du titre
+    const rawTitle = (itemXml.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i) || [])[1] || '';
+    const title = rawTitle.replace(/<[^>]+>/g, '').trim();
+
+    // Extraction du lien
+    let link = (itemXml.match(/<link[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/i) || [])[1] || '';
+    if (!link) {
+      // Cas Atom : <link href="..." />
+      const hrefMatch = itemXml.match(/<link[^>]+href=["']([^"']+)["']/i);
+      if (hrefMatch) link = hrefMatch[1];
+    }
+    link = link.trim();
+
+    // Extraction de la description / contenu complet
+    const rawContent = (itemXml.match(/<(?:content:encoded|content|description)[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/(?:content:encoded|content|description)>/i) || [])[1] || '';
+    const content = rawContent.trim();
+    const cleanExcerpt = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
+
+    // Extraction de la date
+    const rawDate = (itemXml.match(/<(?:pubDate|published|updated)>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/(?:pubDate|published|updated)>/i) || [])[1] || '';
+    let parsedDate = new Date().toISOString().split('T')[0];
+    if (rawDate) {
+      const d = new Date(rawDate);
+      if (!isNaN(d.getTime())) {
+        parsedDate = d.toISOString().split('T')[0];
+      }
+    }
+
+    if (title && link) {
+      posts.push({
+        title,
+        content: content || title,
+        excerpt: cleanExcerpt,
+        link,
+        date: parsedDate
+      });
+    }
+  }
+
+  return posts;
+}
+
+/**
+ * Récupère les offres depuis un flux RSS ou Atom avec HTTP Caching
+ */
+async function scrapeRssSource(
+  feedUrl: string,
+  limit = 5,
+  currentEtag?: string | null,
+  currentLastModified?: string | null
+): Promise<ScrapeResult> {
+  try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+    if (currentEtag) headers['If-None-Match'] = currentEtag;
+    if (currentLastModified) headers['If-Modified-Since'] = currentLastModified;
+
+    const res = await fetch(feedUrl, { headers, signal: AbortSignal.timeout(10000) });
+    if (res.status === 304) {
+      return { modified: false, posts: [] };
+    }
+    if (!res.ok) {
+      return { modified: false, posts: [] };
+    }
+
+    const xml = await res.text();
+    const posts = parseRssFeed(xml, limit);
+
+    return {
+      modified: true,
+      etag: res.headers.get('etag'),
+      lastModified: res.headers.get('last-modified'),
+      posts
+    };
+  } catch (err) {
+    return { modified: false, posts: [] };
+  }
+}
+
+/**
+ * Scraper HTML universel heuristique pour sites web sans API ni RSS direct
+ */
+async function scrapeGenericHtmlSource(
+  sourceUrl: string,
+  limit = 5,
+  currentEtag?: string | null,
+  currentLastModified?: string | null
+): Promise<ScrapeResult> {
+  try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+    if (currentEtag) headers['If-None-Match'] = currentEtag;
+    if (currentLastModified) headers['If-Modified-Since'] = currentLastModified;
+
+    const res = await fetch(sourceUrl, { headers, signal: AbortSignal.timeout(12000) });
+    if (res.status === 304) {
+      return { modified: false, posts: [] };
+    }
+    if (!res.ok) {
+      return { modified: false, posts: [] };
+    }
+
+    const html = await res.text();
+    const posts: Array<{ title: string; content: string; excerpt: string; link: string; date: string }> = [];
+    const base = new URL(sourceUrl);
+
+    // 1. Chercher les blocs d'articles / cartes d'offres
+    const articleRegex = /<(?:article|div)[^>]*class=["'][^"']*(?:job|offre|post|item|annonce|article)[^"']*["'][^>]*>([\s\S]*?)<\/(?:article|div)>/gi;
+    let match;
+    const seenLinks = new Set<string>();
+
+    while ((match = articleRegex.exec(html)) !== null && posts.length < limit) {
+      const block = match[1];
+      const linkMatch = block.match(/<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i);
+      if (!linkMatch) continue;
+
+      let href = linkMatch[1].trim();
+      if (!href || href.startsWith('#') || href.startsWith('javascript:')) continue;
+      if (href.startsWith('/')) {
+        href = `${base.origin}${href}`;
+      }
+
+      let title = linkMatch[2].replace(/<[^>]+>/g, '').trim();
+      if (!title || title.length < 5) {
+        const titleMatch = block.match(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i);
+        if (titleMatch) title = titleMatch[1].replace(/<[^>]+>/g, '').trim();
+      }
+
+      if (title && title.length >= 8 && !seenLinks.has(href)) {
+        seenLinks.add(href);
+        const cleanContent = block.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        posts.push({
+          title,
+          content: cleanContent,
+          excerpt: cleanContent.slice(0, 200),
+          link: href,
+          date: new Date().toISOString().split('T')[0]
+        });
+      }
+    }
+
+    // 2. Fallback si aucun bloc spécifique n'a été extrait : scanner les liens <a> avec mots-clés d'emploi
+    if (posts.length === 0) {
+      const aRegex = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+      while ((match = aRegex.exec(html)) !== null && posts.length < limit) {
+        let href = match[1].trim();
+        let anchorText = match[2].replace(/<[^>]+>/g, '').trim();
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || anchorText.length < 10) continue;
+
+        const isOpportunityRelated = /(?:recrutement|emploi|offre|stage|formation|avis|concours|poste)/i.test(anchorText + ' ' + href);
+        if (isOpportunityRelated && !seenLinks.has(href)) {
+          if (href.startsWith('/')) href = `${base.origin}${href}`;
+          seenLinks.add(href);
+          posts.push({
+            title: anchorText,
+            content: anchorText,
+            excerpt: anchorText,
+            link: href,
+            date: new Date().toISOString().split('T')[0]
+          });
+        }
+      }
+    }
+
+    return {
+      modified: true,
+      etag: res.headers.get('etag'),
+      lastModified: res.headers.get('last-modified'),
+      posts
+    };
+  } catch (err) {
+    return { modified: false, posts: [] };
+  }
+}
+
+/**
  * Récupère les offres récentes depuis une source WordPress REST API
  * Supporte le HTTP Caching conditionnel (If-None-Match / If-Modified-Since)
  */
@@ -184,7 +371,7 @@ async function scrapeWordPressSource(
       headers['If-Modified-Since'] = currentLastModified;
     }
 
-    const res = await fetch(endpoint, { headers });
+    const res = await fetch(endpoint, { headers, signal: AbortSignal.timeout(10000) });
 
     // 304 Not Modified -> Aucun changement sur la source distante
     if (res.status === 304) {
@@ -195,7 +382,7 @@ async function scrapeWordPressSource(
       // Fallback sans filtre de catégories si l'API renvoie 400 (ex: catégories inexistantes sur ce site WP)
       if (res.status === 400) {
         const fallbackEndpoint = `${sourceUrl.replace(/\/$/, '')}/wp-json/wp/v2/posts?per_page=${limit}`;
-        const fallbackRes = await fetch(fallbackEndpoint, { headers });
+        const fallbackRes = await fetch(fallbackEndpoint, { headers, signal: AbortSignal.timeout(10000) });
         if (!fallbackRes.ok) return { modified: false, posts: [] };
         const posts = await fallbackRes.json();
         return {
@@ -231,9 +418,40 @@ async function scrapeWordPressSource(
       })) : []
     };
   } catch (e) {
-    console.error(`[Scraper] Erreur réseau lors du scraping ${sourceUrl}:`, e);
     return { modified: false, posts: [] };
   }
+}
+
+/**
+ * Routeur de scraping multi-stratégie pour une source :
+ * 1. Test WordPress REST API
+ * 2. Si échec / 404, détection de flux RSS standard (/feed, /rss.xml)
+ * 3. Si échec, extraction HTML générique heuristique
+ */
+async function scrapeUnifiedSource(
+  sourceUrl: string,
+  limit = 5,
+  currentEtag?: string | null,
+  currentLastModified?: string | null
+): Promise<ScrapeResult> {
+  const cleanUrl = sourceUrl.replace(/\/$/, '');
+
+  // Stratégie 1 : WordPress REST API
+  const wpRes = await scrapeWordPressSource(cleanUrl, limit, currentEtag, currentLastModified);
+  if (!wpRes.modified || (wpRes.posts && wpRes.posts.length > 0)) {
+    return wpRes;
+  }
+
+  // Stratégie 2 : Détection RSS / Atom
+  for (const feedPath of ['/feed', '/rss.xml', '/feed/', '/rss']) {
+    const feedRes = await scrapeRssSource(`${cleanUrl}${feedPath}`, limit, currentEtag, currentLastModified);
+    if (!feedRes.modified || (feedRes.posts && feedRes.posts.length > 0)) {
+      return feedRes;
+    }
+  }
+
+  // Stratégie 3 : Scraper HTML Générique
+  return await scrapeGenericHtmlSource(cleanUrl, limit, currentEtag, currentLastModified);
 }
 
 /**
@@ -262,6 +480,14 @@ export async function runScraper(closePool = false) {
     console.log('[Notice] Mode SQLite actif pour le développement local (.dev/jobavenir.sqlite).');
   } else {
     console.log('[Notice] Connexion PostgreSQL active.');
+  }
+
+  // Nettoyage et archivage automatique du cycle de vie des offres expirées
+  if (hasDb) {
+    const expiredCount = await archiveExpiredJobs();
+    if (expiredCount > 0) {
+      console.log(`[Scraper] 🧹 Cycle de vie : ${expiredCount} offre(s) expirée(s) désactivée(s).`);
+    }
   }
 
   const allSources = await fetchMasterSources();
@@ -293,8 +519,8 @@ export async function runScraper(closePool = false) {
     console.log(`\n--------------------------------------------------`);
     console.log(`[Source ${source.id}] ${source.name} (${source.url})`);
 
-    // Scraping avec support HTTP Caching (ETag / Last-Modified)
-    const scrapeRes = await scrapeWordPressSource(
+    // Scraping multi-stratégie (WP REST API -> Flux RSS/Atom -> Extracteur HTML heuristique)
+    const scrapeRes = await scrapeUnifiedSource(
       source.url,
       5,
       source.etag,
@@ -380,9 +606,9 @@ export async function runScraper(closePool = false) {
             [
               slug,
               extracted.title,
-              extracted.company,
-              extracted.location,
-              extracted.contractType,
+              extracted.company || 'Organisme Partenaire',
+              extracted.location || 'Bamako, Mali',
+              extracted.contractType || 'Autre',
               extracted.opportunityType || (extracted.contractType === 'Stage' || extracted.contractType === 'Apprentissage' ? 'STAGE' : 'JOB'),
               extracted.category,
               extracted.domain || null,

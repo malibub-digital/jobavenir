@@ -1,12 +1,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { AI_PROMPT_CONFIG } from '../config/ai-prompts';
+
 export interface ExtractedJob {
   title: string;
   company: string;
   location: string;
   contractType: 'CDI' | 'CDD' | 'Stage' | 'Intérim' | 'Apprentissage' | 'Autre';
-  opportunityType?: 'JOB' | 'STAGE' | 'TRAINING' | 'PROJECT_CALL';
+  opportunityType?: 'JOB' | 'STAGE' | 'TRAINING' | 'PROJECT_CALL' | 'ANNOUNCEMENT';
   category: string;
   domain?: string;
   salary?: string | null;
@@ -27,27 +29,10 @@ export async function extractJobWithAI(rawText: string, fallbackTitle?: string):
     throw new Error('OPENROUTER_API_KEY manquante dans l\'environnement.');
   }
 
-  // Modèle configurable (défaut : deepseek/deepseek-chat)
-  const model = process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat';
-
-  const systemPrompt = `Tu es un expert d'extraction d'offres et d'opportunités professionnelles au Mali (Emploi, Stage, Formation, Appel à projets/financements).
-Tu dois analyser le texte fourni et retourner STRICTEMENT un objet JSON (sans balises markdown supplémentaires si possible) avec cette structure :
-{
-  "title": "Titre du poste ou de l'opportunité (ex: Comptable, Développeur Web, Formation Énergie Solaire, Appel à Projets Agri-Tech)",
-  "company": "Nom de l'entreprise, de l'institution ou de l'organisme",
-  "location": "Ville ou région au Mali (ex: Bamako, Ségou, Mopti)",
-  "contractType": "CDI" | "CDD" | "Stage" | "Intérim" | "Apprentissage" | "Autre",
-  "opportunityType": "JOB" (pour CDI/CDD/Intérim/Emploi) | "STAGE" (pour stages/immersion) | "TRAINING" (pour ateliers/formations métiers) | "PROJECT_CALL" (pour subventions/concours/appels à projets),
-  "category": "Secteur d'activité (ex: Informatique, Santé, Finance, Artisanat, Entrepreneuriat)",
-  "domain": "Domaine optionnel ou null",
-  "salary": "Salaire ou dotation financière mentionnée, ou null",
-  "deadline": "Date limite de candidature mentionnée ou null",
-  "publishedDate": "Date de publication YYYY-MM-DD ou null",
-  "excerpt": "Court résumé accrocheur en 1 à 2 phrases max",
-  "howToApply": "Instructions précises pour postuler (email, lien, adresse physique) ou null",
-  "requirements": ["Critère 1", "Critère 2", "Critère 3"],
-  "metadata": {}
-}`;
+  // Modèle configurable (défaut : valeur dans ai-prompts.ts ou process.env)
+  const model = process.env.OPENROUTER_MODEL || AI_PROMPT_CONFIG.defaultModel;
+  const temperature = parseFloat(process.env.OPENROUTER_TEMPERATURE || String(AI_PROMPT_CONFIG.temperature));
+  const systemPrompt = process.env.OPENROUTER_CUSTOM_PROMPT || AI_PROMPT_CONFIG.systemPrompt;
 
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -64,7 +49,7 @@ Tu dois analyser le texte fourni et retourner STRICTEMENT un objet JSON (sans ba
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Texte de l'offre à analyser :\n\n${rawText.slice(0, 10000)}` }
         ],
-        temperature: 0.1
+        temperature
       })
     });
 
@@ -82,11 +67,23 @@ Tu dois analyser le texte fourni et retourner STRICTEMENT un objet JSON (sans ba
       content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
     }
 
-    const parsed: ExtractedJob = JSON.parse(content);
+    const parsed: any = JSON.parse(content);
+    if (parsed.ignore === true || (!parsed.title && !fallbackTitle)) {
+      return null;
+    }
     if (!parsed.title && fallbackTitle) {
       parsed.title = fallbackTitle;
     }
-    return parsed;
+    if (!parsed.location) {
+      parsed.location = 'Bamako, Mali';
+    }
+    if (!parsed.company) {
+      parsed.company = 'Organisme Partenaire';
+    }
+    if (!parsed.contractType) {
+      parsed.contractType = 'Autre';
+    }
+    return parsed as ExtractedJob;
   } catch (err) {
     console.error('[AI] Erreur de parsing LLM:', err);
     return null;

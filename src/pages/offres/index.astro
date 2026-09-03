@@ -17,7 +17,8 @@ const filterCategories = [
   { id: 'emploi', label: '💼 Emplois (CDI, CDD)' },
   { id: 'stage', label: '🎓 Stages & Immersion' },
   { id: 'formation', label: '📚 Formations Métiers' },
-  { id: 'projet', label: '🚀 Projets & Subventions' }
+  { id: 'projet', label: '🚀 Projets & Subventions' },
+  { id: 'annonce', label: '📢 Annonces & Veille' }
 ];
 
 const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
@@ -34,44 +35,91 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-mandingue-700)] bg-[var(--ml-color-mandingue-50)] px-3.5 py-1 rounded-full mb-3 inline-block border border-[var(--ml-color-mandingue-100)]">
           Opportunités vérifiées au Mali
         </span>
-        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title mb-3">Toutes les offres & opportunités</h1>
+        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title mb-3">Toutes les opportunités</h1>
         <p class="text-stone-600 text-sm leading-relaxed">
-          Trouvez rapidement un emploi, un stage, une formation qualifiante ou un financement au Mali.
+          Trouvez rapidement un emploi, un stage, une formation qualifiante ou une annonce officielle au Mali.
         </p>
       </div>
 
-      <!-- BARRE DE FILTRES ET RECHERCHE -->
-      <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm mb-10">
-        <div class="flex flex-col lg:flex-row gap-4 justify-between items-center">
-          <div class="w-full lg:w-1/3">
-            <label for="search-input" class="sr-only">Rechercher une opportunité</label>
-            <div class="relative">
+      <!-- BARRE DE FILTRES ET RECHERCHE AVANCÉE -->
+      <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm mb-6">
+        <div class="flex flex-col gap-4">
+          <!-- Ligne 1 : Barre de recherche + Sélecteurs rapides -->
+          <div class="flex flex-col md:flex-row gap-3 items-center">
+            <div class="w-full md:flex-1 relative">
+              <label for="search-input" class="sr-only">Rechercher une opportunité</label>
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
               <input
                 type="text"
                 id="search-input"
-                placeholder="Rechercher par poste, entreprise, ville..."
-                class="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)] focus:border-transparent"
+                placeholder="Rechercher par poste, entreprise, compétences, ville..."
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)] focus:border-transparent"
               />
+            </div>
+
+            <!-- Filtre Type de Contrat -->
+            <div class="w-full md:w-48">
+              <label for="contract-select" class="sr-only">Type de contrat</label>
+              <select
+                id="contract-select"
+                class="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
+              >
+                <option value="tous">Tous les contrats</option>
+                <option value="cdi">CDI</option>
+                <option value="cdd">CDD</option>
+                <option value="stage">Stage</option>
+                <option value="apprentissage">Apprentissage</option>
+                <option value="autre">Autre / Projet</option>
+              </select>
+            </div>
+
+            <!-- Filtre Localisation / Région -->
+            <div class="w-full md:w-48">
+              <label for="location-select" class="sr-only">Localisation</label>
+              <select
+                id="location-select"
+                class="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
+              >
+                <option value="tous">Toutes les régions</option>
+                <option value="bamako">Bamako</option>
+                <option value="segou">Ségou</option>
+                <option value="sikasso">Sikasso</option>
+                <option value="mopti">Mopti</option>
+                <option value="kayes">Kayes</option>
+                <option value="koulikoro">Koulikoro</option>
+                <option value="autre">Autres / National</option>
+              </select>
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-2 w-full lg:w-auto items-center" id="filter-buttons">
-            {filterCategories.map((cat) => {
-              const isActive = (queryType === cat.id) || (queryType === 'tous' && cat.id === 'tous');
-              return (
-                <button
-                  type="button"
-                  data-filter={cat.id}
-                  class={`filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
-                    isActive
-                      ? 'bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm'
-                      : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
+          <!-- Ligne 2 : Onglets de typologies et Compteur -->
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2 border-t border-stone-100">
+            <div class="flex flex-wrap gap-2 w-full sm:w-auto items-center" id="filter-buttons">
+              {filterCategories.map((cat) => {
+                const isActive = (queryType === cat.id) || (queryType === 'tous' && cat.id === 'tous');
+                return (
+                  <button
+                    type="button"
+                    data-filter={cat.id}
+                    class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                      isActive
+                        ? 'bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm'
+                        : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div class="text-xs font-bold text-stone-500 shrink-0 self-end sm:self-center" id="results-count">
+              {sortedJobs.length} opportunité{sortedJobs.length > 1 ? 's' : ''} disponible{sortedJobs.length > 1 ? 's' : ''}
+            </div>
           </div>
         </div>
       </div>
@@ -82,7 +130,7 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
           Aucune opportunité ne correspond à vos critères.
         </p>
         <p class="text-xs text-stone-400">
-          Essayez de modifier votre recherche ou sélectionnez une autre catégorie.
+          Essayez de modifier votre recherche ou réinitialisez les filtres.
         </p>
       </div>
 
@@ -108,16 +156,22 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
               inferredType = 'stage';
             } else if (oppType === 'TRAINING' || cType === 'Formation' || cat.includes('formation')) {
               inferredType = 'formation';
+            } else if (oppType === 'ANNOUNCEMENT') {
+              inferredType = 'annonce';
             } else if (oppType === 'PROJECT_CALL' || cType === 'Appel à projets' || cat.includes('projet') || cat.includes('financement')) {
               inferredType = 'projet';
             }
+
+            const reqsText = Array.isArray(job.data.requirements) ? job.data.requirements.join(' ') : '';
+            const searchableText = `${job.data.title} ${job.data.company} ${job.data.location} ${job.data.category} ${job.data.domain || ''} ${job.data.excerpt} ${reqsText}`.toLowerCase();
 
             return (
               <article 
                 class="job-card bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group"
                 data-type={inferredType}
                 data-contract={job.data.contractType.toLowerCase()}
-                data-text={`${job.data.title} ${job.data.company} ${job.data.location} ${job.data.category} ${job.data.excerpt}`.toLowerCase()}
+                data-location={job.data.location.toLowerCase()}
+                data-text={searchableText}
               >
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div class="space-y-2 flex-1">
@@ -128,10 +182,12 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                           : inferredType === 'formation'
                           ? 'bg-orange-100 text-orange-950 border-orange-200'
                           : inferredType === 'projet'
-                          ? 'bg-stone-100 text-stone-900 border-stone-300'
+                          ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                          : inferredType === 'annonce'
+                          ? 'bg-slate-100 text-slate-800 border-slate-300'
                           : 'bg-amber-50 text-amber-900 border-amber-200'
                       }`}>
-                        {job.data.contractType}
+                        {inferredType === 'projet' ? 'Appel à projets' : inferredType === 'annonce' ? 'Annonce' : job.data.contractType}
                       </span>
                       <span class="text-[11px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
                         {job.data.category}
@@ -183,29 +239,90 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('search-input');
+      const contractSelect = document.getElementById('contract-select');
+      const locationSelect = document.getElementById('location-select');
       const filterBtns = document.querySelectorAll('.filter-btn');
       const jobCards = document.querySelectorAll('.job-card');
       const noResults = document.getElementById('no-results');
+      const resultsCount = document.getElementById('results-count');
 
-      let currentFilter = new URLSearchParams(window.location.search).get('type') || 'tous';
-      let currentQuery = '';
+      const urlParams = new URLSearchParams(window.location.search);
+      let currentFilter = urlParams.get('type') || 'tous';
+      let currentQuery = urlParams.get('q') || '';
+      let currentContract = urlParams.get('contrat') || 'tous';
+      let currentLocation = urlParams.get('region') || 'tous';
+
+      if (searchInput && currentQuery) searchInput.value = currentQuery;
+      if (contractSelect && currentContract) contractSelect.value = currentContract;
+      if (locationSelect && currentLocation) locationSelect.value = currentLocation;
+
+      function updateUrl() {
+        const url = new URL(window.location);
+        if (currentFilter && currentFilter !== 'tous') {
+          url.searchParams.set('type', currentFilter);
+        } else {
+          url.searchParams.delete('type');
+        }
+
+        if (currentQuery.trim()) {
+          url.searchParams.set('q', currentQuery.trim());
+        } else {
+          url.searchParams.delete('q');
+        }
+
+        if (currentContract && currentContract !== 'tous') {
+          url.searchParams.set('contrat', currentContract);
+        } else {
+          url.searchParams.delete('contrat');
+        }
+
+        if (currentLocation && currentLocation !== 'tous') {
+          url.searchParams.set('region', currentLocation);
+        } else {
+          url.searchParams.delete('region');
+        }
+
+        window.history.replaceState({}, '', url);
+      }
 
       function applyFilters() {
         let visibleCount = 0;
         const normalizedFilter = currentFilter.toLowerCase();
         const normalizedQuery = currentQuery.trim().toLowerCase();
+        const normalizedContract = currentContract.toLowerCase();
+        const normalizedLocation = currentLocation.toLowerCase();
 
         jobCards.forEach(card => {
           const cardType = (card.getAttribute('data-type') || '').toLowerCase();
+          const cardContract = (card.getAttribute('data-contract') || '').toLowerCase();
+          const cardLocation = (card.getAttribute('data-location') || '').toLowerCase();
           const cardText = (card.getAttribute('data-text') || '').toLowerCase();
 
+          // 1. Type
           const matchType = (normalizedFilter === 'tous') || 
             (cardType === normalizedFilter) || 
             (normalizedFilter === 'emploi' && cardType === 'emploi');
 
+          // 2. Contrat
+          let matchContract = true;
+          if (normalizedContract !== 'tous') {
+            matchContract = cardContract.includes(normalizedContract);
+          }
+
+          // 3. Région / Localisation
+          let matchLocation = true;
+          if (normalizedLocation !== 'tous') {
+            if (normalizedLocation === 'autre') {
+              matchLocation = !cardLocation.includes('bamako') && !cardLocation.includes('segou') && !cardLocation.includes('sikasso') && !cardLocation.includes('mopti');
+            } else {
+              matchLocation = cardLocation.includes(normalizedLocation);
+            }
+          }
+
+          // 4. Recherche texte
           const matchQuery = !normalizedQuery || cardText.includes(normalizedQuery);
 
-          if (matchType && matchQuery) {
+          if (matchType && matchContract && matchLocation && matchQuery) {
             card.classList.remove('hidden');
             visibleCount++;
           } else {
@@ -220,6 +337,12 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
             noResults.classList.add('hidden');
           }
         }
+
+        if (resultsCount) {
+          resultsCount.textContent = `${visibleCount} opportunité${visibleCount > 1 ? 's' : ''} trouvée${visibleCount > 1 ? 's' : ''}`;
+        }
+
+        updateUrl();
       }
 
       filterBtns.forEach(btn => {
@@ -227,20 +350,11 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
           const filter = btn.getAttribute('data-filter') || 'tous';
           currentFilter = filter;
 
-          // Mise à jour de l'URL sans rechargement
-          const url = new URL(window.location);
-          if (filter === 'tous') {
-            url.searchParams.delete('type');
-          } else {
-            url.searchParams.set('type', filter);
-          }
-          window.history.replaceState({}, '', url);
-
           // Stylisation des boutons actifs
           filterBtns.forEach(b => {
-            b.className = 'filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all border bg-white text-stone-700 border-stone-200 hover:bg-stone-50';
+            b.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-white text-stone-700 border-stone-200 hover:bg-stone-50';
           });
-          btn.className = 'filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all border bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm';
+          btn.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm';
 
           applyFilters();
         });
@@ -249,6 +363,20 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {
           currentQuery = e.target.value;
+          applyFilters();
+        });
+      }
+
+      if (contractSelect) {
+        contractSelect.addEventListener('change', (e) => {
+          currentContract = e.target.value;
+          applyFilters();
+        });
+      }
+
+      if (locationSelect) {
+        locationSelect.addEventListener('change', (e) => {
+          currentLocation = e.target.value;
           applyFilters();
         });
       }
@@ -265,3 +393,4 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
     footerLinks={siteConfig.footerLinks}
   />
 </BaseLayout>
+
