@@ -5,8 +5,10 @@ import Footer from '@malihub/sites-core/components/Footer.astro';
 import { getCollection } from 'astro:content';
 import siteConfig from '../../site.config.json';
 import homeData from '../data/pages/home.json';
+import { getUnifiedJobs } from '../lib/db';
 
-const allJobs = await getCollection('jobs');
+const markdownJobs = await getCollection('jobs');
+const allJobs = await getUnifiedJobs(markdownJobs);
 const recentJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
 
 const countEmplois = allJobs.filter(j => j.data.contractType === 'CDI' || j.data.contractType === 'CDD' || j.data.contractType === 'Intérim').length;

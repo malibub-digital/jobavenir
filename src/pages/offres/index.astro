@@ -4,8 +4,10 @@ import MinimalHeader from "../../components/MinimalHeader.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
 import { getCollection } from 'astro:content';
 import siteConfig from '../../../site.config.json';
+import { getUnifiedJobs } from '../../lib/db';
 
-const allJobs = await getCollection('jobs');
+const markdownJobs = await getCollection('jobs');
+const allJobs = await getUnifiedJobs(markdownJobs);
 
 // Récupération des filtres depuis l'URL (pour SSR ou affichage dynamique côté client)
 const contractTypes = ['Tous', 'CDI', 'CDD', 'Stage', 'Intérim'];
