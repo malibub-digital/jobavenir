@@ -1,114 +1,161 @@
 ---
 export const prerender = false;
 
-import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
+import BaseLayout from "@malihub/sites-core/layouts/BaseLayout.astro";
 import MinimalHeader from "../../components/MinimalHeader.astro";
-import Footer from '@malihub/sites-core/components/Footer.astro';
-import siteConfig from '../../../site.config.json';
-import { getJobBySlug } from '../../lib/db';
+import Footer from "@malihub/sites-core/components/Footer.astro";
+import siteConfig from "../../../site.config.json";
+import { getJobBySlug } from "../../lib/db";
 
 const { slug } = Astro.params;
 const job = slug ? await getJobBySlug(slug) : null;
 
 if (!job) {
-  return Astro.redirect('/opportunites');
+  return Astro.redirect("/opportunites");
 }
 
-
-const isAnnouncement = job.data.opportunityType === 'ANNOUNCEMENT';
-const isProject = job.data.opportunityType === 'PROJECT_CALL' || (!isAnnouncement && (job.data.contractType === 'Appel à projets' || job.data.category.toLowerCase().includes('projet') || job.data.category.toLowerCase().includes('financement')));
-const isTraining = job.data.opportunityType === 'TRAINING' || job.data.contractType === 'Formation';
-const isStage = job.data.opportunityType === 'STAGE' || job.data.contractType === 'Stage' || job.data.contractType === 'Apprentissage';
+const isAnnouncement = job.data.opportunityType === "ANNOUNCEMENT";
+const isProject =
+  job.data.opportunityType === "PROJECT_CALL" ||
+  (!isAnnouncement &&
+    (job.data.contractType === "Appel à projets" ||
+      job.data.category.toLowerCase().includes("projet") ||
+      job.data.category.toLowerCase().includes("financement")));
+const isTraining =
+  job.data.opportunityType === "TRAINING" ||
+  job.data.contractType === "Formation";
+const isStage =
+  job.data.opportunityType === "STAGE" ||
+  job.data.contractType === "Stage" ||
+  job.data.contractType === "Apprentissage";
 
 // Calcul dynamique du gradient/thème de la bannière selon la catégorie
 let categoryGradient = isAnnouncement
-  ? 'from-slate-800 via-stone-800 to-amber-950'
-  : isProject 
-  ? 'from-emerald-800 via-amber-900 to-stone-900' 
-  : 'from-amber-600 via-orange-600 to-amber-700';
+  ? "from-slate-800 via-stone-800 to-amber-950"
+  : isProject
+    ? "from-emerald-800 via-amber-900 to-stone-900"
+    : "from-amber-600 via-orange-600 to-amber-700";
 
 if (!isProject && !isAnnouncement) {
-  if (job.data.category.toLowerCase().includes('informatique') || job.data.category.toLowerCase().includes('tech')) {
-    categoryGradient = 'from-orange-600 via-amber-700 to-stone-900';
-  } else if (job.data.category.toLowerCase().includes('gestion') || job.data.category.toLowerCase().includes('finance')) {
-    categoryGradient = 'from-amber-700 via-orange-700 to-amber-800';
-  } else if (job.data.category.toLowerCase().includes('agri') || job.data.category.toLowerCase().includes('agro')) {
-    categoryGradient = 'from-emerald-700 via-amber-700 to-orange-800';
+  if (
+    job.data.category.toLowerCase().includes("informatique") ||
+    job.data.category.toLowerCase().includes("tech")
+  ) {
+    categoryGradient = "from-orange-600 via-amber-700 to-stone-900";
+  } else if (
+    job.data.category.toLowerCase().includes("gestion") ||
+    job.data.category.toLowerCase().includes("finance")
+  ) {
+    categoryGradient = "from-amber-700 via-orange-700 to-amber-800";
+  } else if (
+    job.data.category.toLowerCase().includes("agri") ||
+    job.data.category.toLowerCase().includes("agro")
+  ) {
+    categoryGradient = "from-emerald-700 via-amber-700 to-orange-800";
   }
 }
 
 // Libellés adaptés et non trompeurs
-const ctaLabel = isProject 
-  ? 'Consulter' 
-  : isAnnouncement 
-  ? 'Consulter le communiqué officiel' 
-  : isTraining 
-  ? 'S\'inscrire à la session' 
-  : 'Consulter et postuler sur le site officiel';
+const ctaLabel = isProject
+  ? "Consulter"
+  : isAnnouncement
+    ? "Consulter le communiqué officiel"
+    : isTraining
+      ? "S'inscrire à la session"
+      : "Voir l'annonce originale";
 
-const shareLabel = 'Partager';
-const howToApplyTitle = isProject 
-  ? 'Modalités de soumission & cahier des charges' 
-  : isAnnouncement 
-  ? 'Informations complémentaires et source officielle' 
-  : isTraining 
-  ? 'Modalités d\'inscription' 
-  : 'Comment postuler ?';
+const shareLabel = "Partager";
+const howToApplyTitle = isProject
+  ? "Modalités de soumission & cahier des charges"
+  : isAnnouncement
+    ? "Informations complémentaires et source officielle"
+    : isTraining
+      ? "Modalités d'inscription"
+      : "Comment postuler ?";
 
-const companyRoleLabel = isAnnouncement 
-  ? 'Institution émettrice' 
-  : isProject 
-  ? 'Bailleur / Organisme' 
-  : isTraining 
-  ? 'Organisme formateur' 
-  : 'Recruteur';
+const companyRoleLabel = isAnnouncement
+  ? "Institution émettrice"
+  : isProject
+    ? "Bailleur / Organisme"
+    : isTraining
+      ? "Organisme formateur"
+      : "Recruteur";
 
-const badgeCategoryLabel = isAnnouncement 
-  ? 'Information & Veille' 
-  : isProject 
-  ? 'Appel à projets' 
-  : isTraining 
-  ? 'Formation certifiante' 
-  : isStage 
-  ? (job.data.contractType === 'Autre' ? 'Stage' : job.data.contractType) 
-  : job.data.contractType;
+const badgeCategoryLabel = isAnnouncement
+  ? "Information & Veille"
+  : isProject
+    ? "Appel à projets"
+    : isTraining
+      ? "Formation certifiante"
+      : isStage
+        ? job.data.contractType === "Autre"
+          ? "Stage"
+          : job.data.contractType
+        : job.data.contractType;
 ---
 
-<BaseLayout title={`${job.data.title} — JobAvenir Mali`} description={job.data.excerpt}>
+<BaseLayout
+  title={`${job.data.title} — JobAvenir Mali`}
+  description={job.data.excerpt}
+>
   <MinimalHeader slot="header" showBackHome={true} />
 
   <main class="py-8 md:py-12 bg-stone-100/70 min-h-screen">
     <div class="ml-container max-w-2xl mx-auto px-4">
-      
       <!-- BOUTON RETOUR ET ACCÈS CATALOGUE -->
-      <div class="flex items-center justify-between mb-4 text-xs font-bold text-stone-600">
-        <a href="/opportunites" class="inline-flex items-center gap-1.5 hover:text-orange-600 transition-colors no-underline">
+      <div
+        class="flex items-center justify-between mb-4 text-xs font-bold text-stone-600"
+      >
+        <a
+          href="/opportunites"
+          class="inline-flex items-center gap-1.5 hover:text-orange-600 transition-colors no-underline"
+        >
           <span>&larr;</span>
           <span>Toutes les opportunités</span>
         </a>
-        <span class="text-stone-400 font-medium">Référence : #{job.slug.slice(0, 8)}</span>
+        <span class="text-stone-400 font-medium"
+          >Référence : #{job.slug.slice(0, 8)}</span
+        >
       </div>
 
       <!-- CARTE SOCIAL / HUB HUB-AVENIR -->
-      <div class="bg-white rounded-3xl border border-stone-200/90 shadow-md overflow-hidden transition-all">
-        
+      <div
+        class="bg-white rounded-3xl border border-stone-200/90 shadow-md overflow-hidden transition-all"
+      >
         <!-- BANNIÈRE VISUELLE THÉMATIQUE ÉPURÉE -->
-        <div class={`relative min-h-[140px] md:min-h-[170px] bg-gradient-to-r ${categoryGradient} text-white p-6 md:p-8 flex flex-col justify-between overflow-hidden`}>
+        <div
+          class={`relative min-h-[140px] md:min-h-[170px] bg-gradient-to-r ${categoryGradient} text-white p-6 md:p-8 flex flex-col justify-between overflow-hidden`}
+        >
           <!-- Motifs géométriques décoratifs élégants -->
-          <div class="banner-pattern absolute inset-0 pointer-events-none select-none"></div>
-          
-          {job.data.heroImage && (
-            <img src={job.data.heroImage} alt={job.data.title} class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30" />
-          )}
+          <div
+            class="banner-pattern absolute inset-0 pointer-events-none select-none"
+          >
+          </div>
 
-          <div class="relative z-10 flex items-center justify-between gap-2 mb-4">
-            <span class="bg-black/30 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-amber-200 border border-white/10">
-              {job.data.originalSource || 'Source officielle'}
+          {
+            job.data.heroImage && (
+              <img
+                src={job.data.heroImage}
+                alt={job.data.title}
+                class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30"
+              />
+            )
+          }
+
+          <div
+            class="relative z-10 flex items-center justify-between gap-2 mb-4"
+          >
+            <span
+              class="bg-black/30 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-amber-200 border border-white/10"
+            >
+              {job.data.originalSource || "Source officielle"}
             </span>
           </div>
 
           <div class="relative z-10">
-            <h1 class="text-xl md:text-2xl font-black font-title leading-tight drop-shadow-sm text-white m-0">
+            <h1
+              class="text-xl md:text-2xl font-black font-title leading-tight drop-shadow-sm text-white m-0"
+            >
               {job.data.title}
             </h1>
           </div>
@@ -116,73 +163,119 @@ const badgeCategoryLabel = isAnnouncement
 
         <!-- BLOC CONTENU SYNTHÉTIQUE -->
         <div class="p-6 md:p-8 space-y-6">
-          
           <!-- RÉSUMÉ EXCERPT -->
-          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-200/80 text-stone-800 text-xs leading-relaxed font-medium">
-            <strong class="font-bold text-amber-900 block mb-1 uppercase tracking-wider text-[10px]">Aperçu de l'opportunité</strong>
+          <div
+            class="p-4 rounded-2xl bg-amber-500/10 border border-amber-200/80 text-stone-800 text-xs leading-relaxed font-medium"
+          >
+            <strong
+              class="font-bold text-amber-900 block mb-1 uppercase tracking-wider text-[10px]"
+              >Aperçu de l'opportunité</strong
+            >
             {job.data.excerpt}
           </div>
 
           <!-- MÉTADONNÉES ET CONDITIONS -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-stone-50 border border-stone-100 text-xs">
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-stone-50 border border-stone-100 text-xs"
+          >
             <div>
-              <span class="text-stone-400 block text-[11px] mb-0.5">{companyRoleLabel}</span>
-              <strong class="text-stone-900 font-semibold">{job.data.company}</strong>
+              <span class="text-stone-400 block text-[11px] mb-0.5"
+                >{companyRoleLabel}</span
+              >
+              <strong class="text-stone-900 font-semibold"
+                >{job.data.company}</strong
+              >
             </div>
             <div>
               <span class="text-stone-400 block text-[11px] mb-0.5">Lieu</span>
-              <strong class="text-stone-900 font-semibold">📍 {job.data.location}</strong>
+              <strong class="text-stone-900 font-semibold"
+                >📍 {job.data.location}</strong
+              >
             </div>
-            {job.data.salary && (
-              <div>
-                <span class="text-stone-400 block text-[11px] mb-0.5">Salaire</span>
-                <strong class="text-stone-900 font-semibold">{job.data.salary}</strong>
-              </div>
-            )}
-            {job.data.deadline && (
-              <div>
-                <span class="text-stone-400 block text-[11px] mb-0.5">Date limite</span>
-                <strong class="text-orange-600 font-bold">📅 {job.data.deadline}</strong>
-              </div>
-            )}
+            {
+              job.data.salary && (
+                <div>
+                  <span class="text-stone-400 block text-[11px] mb-0.5">
+                    Salaire
+                  </span>
+                  <strong class="text-stone-900 font-semibold">
+                    {job.data.salary}
+                  </strong>
+                </div>
+              )
+            }
+            {
+              job.data.deadline && (
+                <div>
+                  <span class="text-stone-400 block text-[11px] mb-0.5">
+                    Date limite
+                  </span>
+                  <strong class="text-orange-600 font-bold">
+                    📅 {job.data.deadline}
+                  </strong>
+                </div>
+              )
+            }
             <div>
-              <span class="text-stone-400 block text-[11px] mb-0.5">Publié le</span>
+              <span class="text-stone-400 block text-[11px] mb-0.5"
+                >Publié le</span
+              >
               <strong class="text-stone-700">{job.data.publishedDate}</strong>
             </div>
           </div>
 
-          {isAnnouncement && (
-            <div class="p-3.5 rounded-xl bg-slate-100/90 border border-slate-200 text-slate-700 text-xs flex items-start gap-2.5">
-              <span class="text-base leading-none">ℹ️</span>
-              <p class="m-0 leading-relaxed">
-                <strong>Publication de veille officielle :</strong> Cette publication a une vocation informative d'intérêt général (réforme, annonce gouvernementale ou opportunité de développement).
-              </p>
-            </div>
-          )}
+          {
+            isAnnouncement && (
+              <div class="p-3.5 rounded-xl bg-slate-100/90 border border-slate-200 text-slate-700 text-xs flex items-start gap-2.5">
+                <span class="text-base leading-none">ℹ️</span>
+                <p class="m-0 leading-relaxed">
+                  <strong>Publication de veille officielle :</strong> Cette
+                  publication a une vocation informative d'intérêt général
+                  (réforme, annonce gouvernementale ou opportunité de
+                  développement).
+                </p>
+              </div>
+            )
+          }
 
           <!-- PROFIL RECHERCHÉ OU POINTS CLÉS -->
-          {job.data.requirements && job.data.requirements.length > 0 && (
-            <div>
-              <h2 class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-3 flex items-center gap-2">
-                <span class="w-1.5 h-3 bg-orange-500 rounded-full"></span>
-                <span>{isAnnouncement ? 'Points clés & repères' : isProject ? 'Critères d\'éligibilité & conditions' : 'Conditions et profil recherché'}</span>
-              </h2>
-              <ul class="space-y-2 pl-0 list-none text-xs text-stone-700 m-0">
-                {job.data.requirements.map((req) => (
-                  <li class="flex items-start gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-200/60">
-                    <span class="text-orange-500 font-bold shrink-0">✓</span>
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {
+            job.data.requirements && job.data.requirements.length > 0 && (
+              <div>
+                <h2 class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-3 flex items-center gap-2">
+                  <span class="w-1.5 h-3 bg-orange-500 rounded-full" />
+                  <span>
+                    {isAnnouncement
+                      ? "Points clés & repères"
+                      : isProject
+                        ? "Critères d'éligibilité & conditions"
+                        : "Conditions et profil recherché"}
+                  </span>
+                </h2>
+                <ul class="space-y-2 pl-0 list-none text-xs text-stone-700 m-0">
+                  {job.data.requirements.map((req) => (
+                    <li class="flex items-start gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-200/60">
+                      <span class="text-orange-500 font-bold shrink-0">✓</span>
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
 
           <!-- COMMENT CANDIDATER ET REDIRECTION SOURCE -->
           <div class="pt-4 border-t border-stone-200/80">
-            <h2 class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-2">{howToApplyTitle}</h2>
+            <h2
+              class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-2"
+            >
+              {howToApplyTitle}
+            </h2>
             <p class="text-xs text-stone-600 leading-relaxed mb-6">
-              {job.data.howToApply || `Cliquez ci-dessous pour ouvrir directement les détails officiels sur le portail de ${job.data.company}.`}
+              {
+                job.data.howToApply ||
+                  `Cliquez ci-dessous pour ouvrir directement les détails officiels sur le portail de ${job.data.company}.`
+              }
             </p>
 
             <!-- ACTION BOUTONS -->
@@ -194,33 +287,37 @@ const badgeCategoryLabel = isAnnouncement
                 class="flex-1 py-4 px-6 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-sm font-black rounded-xl transition-all shadow-md hover:shadow-lg no-underline text-center inline-flex items-center justify-center gap-2 group"
               >
                 <span>{ctaLabel}</span>
-                <span class="group-hover:translate-x-1 transition-transform">↗</span>
+                <span class="group-hover:translate-x-1 transition-transform"
+                  >↗</span
+                >
               </a>
 
               <!-- PARTAGER SUR WHATSAPP -->
               <button
                 type="button"
-                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${isProject ? 'Opportunité' : 'Offre'}: ' + document.title + ' ' + window.location.href), '_blank');`}
+                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${isProject ? "Opportunité" : "Offre"}: ' + document.title + ' ' + window.location.href), '_blank');`}
                 class="py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <span>{shareLabel}</span>
               </button>
             </div>
           </div>
-
         </div>
 
         <!-- PIED DE CARTE (ACCÉDÉR AUX AUTRES OFFRES) -->
-        <div class="bg-amber-50/60 px-6 py-4 border-t border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-700">
+        <div
+          class="bg-amber-50/60 px-6 py-4 border-t border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-700"
+        >
           <span class="font-medium">Vous cherchez d'autres opportunités ?</span>
-          <a href="/opportunites" class="text-orange-600 font-extrabold hover:underline no-underline inline-flex items-center gap-1">
+          <a
+            href="/opportunites"
+            class="text-orange-600 font-extrabold hover:underline no-underline inline-flex items-center gap-1"
+          >
             <span>Explorer toutes les opportunités</span>
             <span>&rarr;</span>
           </a>
         </div>
-
       </div>
-
     </div>
   </main>
 
