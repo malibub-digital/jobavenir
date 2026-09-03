@@ -44,21 +44,21 @@ Si le texte correspond à une réelle opportunité, retourne STRICTEMENT cet obj
   "title": "Titre clair et orienté vers l'opportunité",
   "company": "Nom de l'entreprise, institution, ministère ou organisme partenaire",
   "location": "Ville ou région au Mali (ex: Bamako, Ségou, Mopti) ou 'Mali (National)'",
-  "contractType": "CDI" | "CDD" | "Stage" | "Intérim" | "Apprentissage" | "Autre",
+  "contractType": "CDI" | "CDD" | "Stage" | "Intérim" | "Apprentissage" | "Autre" (pour JOB ou STAGE, sinon mettre "Autre"),
   "opportunityType": 
       "JOB" (emploi salarié/consultance)
     | "STAGE" (stage professionnel/immersion)
     | "TRAINING" (formation/atelier de renforcement de compétences)
     | "PROJECT_CALL" (appel à candidatures, concours, subvention ouverte avec dépôt de dossier)
     | "ANNOUNCEMENT" (annonce d'un programme d'appui, forum/conférence participative, guichet ou veille d'opportunité d'intérêt public),
-  "category": "Secteur (ex: Informatique, Entrepreneuriat, Gouvernance, Santé, Agriculture, Énergie)",
+  "category": "Choisis STRICTEMENT parmi : 'Informatique', 'Finance & Gestion', 'Agriculture & Foncier', 'Santé & Social', 'BTP & Industrie', 'Humanitaire & Coopération', 'Formation professionnelle', 'Communication & Digital', 'Artisanat & Métiers', 'Administration publique', 'Défense & Sécurité', 'Services & Polyvalent'",
   "domain": "Sous-domaine spécifique ou null",
   "salary": "Rémunération, dotation financière ou montant du soutien si mentionné, sinon null",
   "deadline": "Date limite de participation, d'inscription ou d'échéance si applicable, sinon null",
   "publishedDate": "Date de publication YYYY-MM-DD ou null",
   "excerpt": "Court résumé (1-2 phrases) expliquant concrètement en quoi cette publication représente une opportunité et qui peut en bénéficier",
   "howToApply": "Modalités de participation ou consultation (lien officiel, inscription, contact) ou null",
-  "requirements": ["Point clé / Critère 1", "Point clé / Critère 2"],
+  "requirements": ["Compétence ou critère clé 1", "Compétence ou critère clé 2", "Compétence ou critère clé 3"],
   "metadata": {}
 }`
 };

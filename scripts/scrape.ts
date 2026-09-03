@@ -494,20 +494,33 @@ export async function runScraper(closePool = false) {
   const activeSources = allSources.filter(s => s.statusTechnical === 'ACTIF_200');
   console.log(`[Scraper] ${activeSources.length} sources prêtes (Statut ACTIF_200).`);
 
+  const cliSourceId = process.argv[2]?.startsWith('SRC_') ? process.argv[2] : null;
   const batchSize = parseInt(process.env.SCRAPE_BATCH_SIZE || '10', 10);
   let targetBatch: SourceRow[] = [];
 
-  if (hasDb) {
-    // 1. Synchronisation de l'inventaire en base
-    await syncSourcesToDb(activeSources);
-    // 2. Échelonnement : sélection du lot prioritaire (sources jamais scrapées ou les plus anciennes)
-    targetBatch = await getNextBatchSources(batchSize);
-    console.log(`[Scraper] Lot sélectionné : ${targetBatch.length} sources prioritaires (taille lot = ${batchSize}).`);
-  } else {
-    // Mode local / démo sans DB : prendre la première source WP (SRC_017 MaliTravail ou similaire)
-    const demoSource = activeSources.find(s => s.id === 'SRC_017') || activeSources[0];
-    targetBatch = [demoSource];
-    console.log(`[Scraper] Mode démo : traitement ciblé sur ${demoSource.name} (${demoSource.id}).`);
+  if (cliSourceId) {
+    const found = activeSources.find(s => s.id === cliSourceId) || allSources.find(s => s.id === cliSourceId);
+    if (found) {
+      targetBatch = [found];
+      console.log(`[Scraper] 🎯 Source ciblée par CLI : ${found.name} (${found.id}) - ${found.url}`);
+    } else {
+      console.warn(`[Scraper] Source ${cliSourceId} introuvable dans l'inventaire.`);
+    }
+  }
+
+  if (targetBatch.length === 0) {
+    if (hasDb) {
+      // 1. Synchronisation de l'inventaire en base
+      await syncSourcesToDb(activeSources);
+      // 2. Échelonnement : sélection du lot prioritaire (sources jamais scrapées ou les plus anciennes)
+      targetBatch = await getNextBatchSources(batchSize);
+      console.log(`[Scraper] Lot sélectionné : ${targetBatch.length} sources prioritaires (taille lot = ${batchSize}).`);
+    } else {
+      // Mode local / démo sans DB : prendre la première source WP (SRC_017 MaliTravail ou similaire)
+      const demoSource = activeSources.find(s => s.id === 'SRC_017') || activeSources[0];
+      targetBatch = [demoSource];
+      console.log(`[Scraper] Mode démo : traitement ciblé sur ${demoSource.name} (${demoSource.id}).`);
+    }
   }
 
   let totalProcessed = 0;
@@ -576,7 +589,7 @@ export async function runScraper(closePool = false) {
       const extracted = await extractJobWithAI(rawContent, post.title);
 
       if (!extracted) {
-        console.warn('      ⚠️ Échec d\'extraction IA pour cette annonce.');
+        console.log('      ⏩ Annonce ignorée (non retenue par le filtre de pertinence).');
         continue;
       }
 

@@ -11,14 +11,30 @@ const allJobs = await getUnifiedJobs();
 
 // Récupération du filtre initial depuis l'URL (SSR)
 const queryType = Astro.url.searchParams.get('type')?.toLowerCase() || 'tous';
+const querySector = Astro.url.searchParams.get('secteur') || 'tous';
 
 const filterCategories = [
   { id: 'tous', label: 'Toutes les opportunités' },
-  { id: 'emploi', label: '💼 Emplois (CDI, CDD)' },
+  { id: 'emploi', label: '💼 Emplois' },
   { id: 'stage', label: '🎓 Stages & Immersion' },
   { id: 'formation', label: '📚 Formations Métiers' },
   { id: 'projet', label: '🚀 Projets & Subventions' },
   { id: 'annonce', label: '📢 Annonces & Veille' }
+];
+
+// Liste des secteurs consolidés
+const availableSectors = [
+  'Informatique & Tech',
+  'Finance & Gestion',
+  'Agriculture & Foncier',
+  'Santé & Social',
+  'BTP & Industrie',
+  'Humanitaire & Coopération',
+  'Formation professionnelle',
+  'Communication & Digital',
+  'Administration publique',
+  'Défense & Sécurité',
+  'Artisanat & Métiers'
 ];
 
 const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
@@ -42,63 +58,86 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
       </div>
 
       <!-- BARRE DE FILTRES ET RECHERCHE AVANCÉE -->
-      <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm mb-6">
+      <div class="bg-white p-5 md:p-6 rounded-2xl border border-stone-200 shadow-sm mb-6">
         <div class="flex flex-col gap-4">
-          <!-- Ligne 1 : Barre de recherche + Sélecteurs rapides -->
-          <div class="flex flex-col md:flex-row gap-3 items-center">
-            <div class="w-full md:flex-1 relative">
-              <label for="search-input" class="sr-only">Rechercher une opportunité</label>
-              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
-              <input
-                type="text"
-                id="search-input"
-                placeholder="Rechercher par poste, entreprise, compétences, ville..."
-                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)] focus:border-transparent"
-              />
+          <!-- Ligne 1 : Barre de recherche textuelle -->
+          <div class="relative w-full">
+            <label for="search-input" class="sr-only">Rechercher une opportunité</label>
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Rechercher par poste, compétence (ex: Python, Gestion, Ségou), organisme..."
+              class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)] focus:border-transparent transition-all"
+            />
+            <button
+              id="clear-search-btn"
+              type="button"
+              class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-stone-400 hover:text-stone-600 text-sm"
+              title="Effacer la recherche"
+            >
+              ✕
+            </button>
+          </div>
+
+          <!-- Ligne 2 : Sélecteurs de filtres ciblés -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <!-- Sélecteur de Secteur / Filière -->
+            <div>
+              <label for="sector-select" class="block text-[11px] font-bold text-stone-500 mb-1 uppercase tracking-wider">Filière / Domaine</label>
+              <select
+                id="sector-select"
+                class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
+              >
+                <option value="tous">Toutes les filières</option>
+                {availableSectors.map((sec) => (
+                  <option value={sec.toLowerCase()}>{sec}</option>
+                ))}
+              </select>
             </div>
 
-            <!-- Filtre Type de Contrat -->
-            <div class="w-full md:w-48">
-              <label for="contract-select" class="sr-only">Type de contrat</label>
+            <!-- Filtre Type de Contrat (Dynamique et Contextuel) -->
+            <div id="contract-filter-wrapper">
+              <label id="contract-label" for="contract-select" class="block text-[11px] font-bold text-stone-500 mb-1 uppercase tracking-wider">Type de contrat</label>
               <select
                 id="contract-select"
-                class="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
+                class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
               >
                 <option value="tous">Tous les contrats</option>
                 <option value="cdi">CDI</option>
                 <option value="cdd">CDD</option>
                 <option value="stage">Stage</option>
                 <option value="apprentissage">Apprentissage</option>
-                <option value="autre">Autre / Projet</option>
               </select>
             </div>
 
             <!-- Filtre Localisation / Région -->
-            <div class="w-full md:w-48">
-              <label for="location-select" class="sr-only">Localisation</label>
+            <div>
+              <label for="location-select" class="block text-[11px] font-bold text-stone-500 mb-1 uppercase tracking-wider">Région / Localité</label>
               <select
                 id="location-select"
-                class="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
+                class="w-full px-3 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)]"
               >
                 <option value="tous">Toutes les régions</option>
                 <option value="bamako">Bamako</option>
                 <option value="segou">Ségou</option>
                 <option value="sikasso">Sikasso</option>
+                <option value="koulikoro">Koulikoro</option>
                 <option value="mopti">Mopti</option>
                 <option value="kayes">Kayes</option>
-                <option value="koulikoro">Koulikoro</option>
-                <option value="autre">Autres / National</option>
+                <option value="distanciel">En ligne / Distanciel</option>
+                <option value="autre">Autres régions / National</option>
               </select>
             </div>
           </div>
 
-          <!-- Ligne 2 : Onglets de typologies et Compteur -->
-          <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2 border-t border-stone-100">
-            <div class="flex flex-wrap gap-2 w-full sm:w-auto items-center" id="filter-buttons">
+          <!-- Ligne 3 : Onglets de typologies et Compteur -->
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-stone-100">
+            <div class="flex flex-wrap gap-1.5 w-full sm:w-auto items-center" id="filter-buttons">
               {filterCategories.map((cat) => {
                 const isActive = (queryType === cat.id) || (queryType === 'tous' && cat.id === 'tous');
                 return (
@@ -117,21 +156,40 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
               })}
             </div>
 
-            <div class="text-xs font-bold text-stone-500 shrink-0 self-end sm:self-center" id="results-count">
-              {sortedJobs.length} opportunité{sortedJobs.length > 1 ? 's' : ''} disponible{sortedJobs.length > 1 ? 's' : ''}
+            <div class="flex items-center gap-2 self-end sm:self-center">
+              <button
+                id="reset-filters-btn"
+                type="button"
+                class="text-[11px] font-semibold text-stone-400 hover:text-stone-700 underline hidden"
+              >
+                Réinitialiser
+              </button>
+              <div class="text-xs font-bold text-stone-600 shrink-0 bg-stone-100 px-3 py-1 rounded-full border border-stone-200/60" id="results-count">
+                {sortedJobs.length} opportunité{sortedJobs.length > 1 ? 's' : ''}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- LISTE DES OFFRES -->
-      <div id="no-results" class="hidden py-16 px-4 text-center max-w-md mx-auto">
-        <p class="text-base font-semibold text-stone-700 mb-1">
+      <div id="no-results" class="hidden py-16 px-4 text-center max-w-md mx-auto bg-white rounded-2xl border border-stone-200 shadow-sm my-6">
+        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center mx-auto mb-3 text-xl font-bold">
+          🔍
+        </div>
+        <p class="text-base font-bold text-stone-800 mb-1">
           Aucune opportunité ne correspond à vos critères.
         </p>
-        <p class="text-xs text-stone-400">
-          Essayez de modifier votre recherche ou réinitialisez les filtres.
+        <p class="text-xs text-stone-500 mb-4">
+          Essayez de changer de catégorie ou de réinitialiser vos critères de recherche.
         </p>
+        <button
+          id="no-results-reset"
+          type="button"
+          class="px-4 py-2 bg-stone-900 text-white text-xs font-bold rounded-xl hover:bg-[var(--ml-color-mandingue-orange)] transition-colors cursor-pointer"
+        >
+          Afficher toutes les opportunités
+        </button>
       </div>
 
       {sortedJobs.length === 0 ? (
@@ -146,35 +204,50 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
       ) : (
         <div class="grid grid-cols-1 gap-4" id="jobs-list">
           {sortedJobs.map((job) => {
-            // Déterminer la typologie principale pour le filtrage côté client
+            // Détermination de la typologie
             let inferredType = 'emploi';
             const oppType = job.data.opportunityType;
-            const cType = job.data.contractType;
+            const cType = (job.data.contractType || '').toLowerCase();
             const cat = (job.data.category || '').toLowerCase();
 
-            if (oppType === 'STAGE' || cType === 'Stage' || cType === 'Apprentissage') {
+            if (oppType === 'STAGE' || cType.includes('stage') || cType.includes('apprentissage')) {
               inferredType = 'stage';
-            } else if (oppType === 'TRAINING' || cType === 'Formation' || cat.includes('formation')) {
+            } else if (oppType === 'TRAINING' || cType.includes('formation') || cat.includes('formation')) {
               inferredType = 'formation';
-            } else if (oppType === 'ANNOUNCEMENT') {
+            } else if (oppType === 'ANNOUNCEMENT' || cType.includes('annonce') || cType.includes('information')) {
               inferredType = 'annonce';
-            } else if (oppType === 'PROJECT_CALL' || cType === 'Appel à projets' || cat.includes('projet') || cat.includes('financement')) {
+            } else if (oppType === 'PROJECT_CALL' || cType.includes('projet') || cType.includes('subvention') || cat.includes('projet')) {
               inferredType = 'projet';
             }
 
-            const reqsText = Array.isArray(job.data.requirements) ? job.data.requirements.join(' ') : '';
+            // Libellé de badge de type
+            let badgeText = job.data.contractType;
+            if (inferredType === 'projet') badgeText = 'Appel à projets';
+            else if (inferredType === 'formation') badgeText = 'Formation certifiante';
+            else if (inferredType === 'annonce') badgeText = 'Veille & Info';
+            else if (inferredType === 'stage' && (cType === 'autre' || !cType)) badgeText = 'Stage';
+
+            const requirements: string[] = Array.isArray(job.data.requirements) ? job.data.requirements : [];
+            const reqsText = requirements.join(' ');
             const searchableText = `${job.data.title} ${job.data.company} ${job.data.location} ${job.data.category} ${job.data.domain || ''} ${job.data.excerpt} ${reqsText}`.toLowerCase();
+
+            // Normalisation de la localisation pour le filtre
+            const isOnline = job.data.location.toLowerCase().includes('meet') || job.data.location.toLowerCase().includes('zoom') || job.data.location.toLowerCase().includes('ligne');
 
             return (
               <article 
-                class="job-card bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group"
+                class="job-card bg-white p-5 md:p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group"
                 data-type={inferredType}
                 data-contract={job.data.contractType.toLowerCase()}
                 data-location={job.data.location.toLowerCase()}
+                data-online={isOnline ? 'true' : 'false'}
+                data-sector={job.data.category.toLowerCase()}
                 data-text={searchableText}
               >
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div class="space-y-2 flex-1">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                  <div class="space-y-2.5 flex-1">
+                    
+                    <!-- Badges d'état et catégorie -->
                     <div class="flex flex-wrap items-center gap-2">
                       <span class={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
                         inferredType === 'stage' 
@@ -185,13 +258,21 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                           ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
                           : inferredType === 'annonce'
                           ? 'bg-slate-100 text-slate-800 border-slate-300'
-                          : 'bg-amber-50 text-amber-900 border-amber-200'
+                          : 'bg-blue-50 text-blue-900 border-blue-200'
                       }`}>
-                        {inferredType === 'projet' ? 'Appel à projets' : inferredType === 'annonce' ? 'Annonce' : job.data.contractType}
+                        {badgeText}
                       </span>
-                      <span class="text-[11px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
+
+                      <span class="text-[11px] font-semibold text-stone-600 bg-stone-100 px-2.5 py-0.5 rounded-md border border-stone-200/70">
                         {job.data.category}
                       </span>
+
+                      {job.data.salary && (
+                        <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/80">
+                          {job.data.salary}
+                        </span>
+                      )}
+
                       {job.data.featured && (
                         <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[var(--ml-color-mandingue-orange)] text-white">
                           Prioritaire
@@ -199,24 +280,45 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                       )}
                     </div>
 
-                    <h2 class="text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors">
+                    <!-- Titre de l'opportunité -->
+                    <h2 class="text-lg md:text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors leading-snug">
                       <a href={`/offres/${job.slug}`} class="no-underline text-inherit">
                         {job.data.title}
                       </a>
                     </h2>
 
+                    <!-- Résumé -->
                     <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed">
                       {job.data.excerpt}
                     </p>
 
-                    <div class="flex flex-wrap gap-4 text-xs text-stone-500 pt-1">
+                    <!-- Tags de compétences clés (cliquables) -->
+                    {requirements.length > 0 && (
+                      <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mr-1">Compétences :</span>
+                        {requirements.slice(0, 3).map((req) => (
+                          <button
+                            type="button"
+                            data-skill-tag={req}
+                            class="skill-tag text-[11px] font-medium bg-stone-50 hover:bg-orange-50 text-stone-600 hover:text-orange-700 px-2 py-0.5 rounded-md border border-stone-200 hover:border-orange-300 transition-colors cursor-pointer"
+                            title={`Filtrer par "${req}"`}
+                          >
+                            + {req}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <!-- Métadonnées pratiques (Organisme, Lieu, Date limite) -->
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500 pt-1">
                       <span>🏢 <strong>{job.data.company}</strong></span>
                       <span>📍 {job.data.location}</span>
-                      {job.data.deadline && <span>📅 Date limite: {job.data.deadline}</span>}
+                      {job.data.deadline && <span class="text-orange-600 font-bold">📅 Date limite : {job.data.deadline}</span>}
                     </div>
                   </div>
 
-                  <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-stone-100">
+                  <!-- Bouton d'action / date de publication -->
+                  <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-stone-100">
                     <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
                     <a
                       href={`/offres/${job.slug}`}
@@ -239,90 +341,128 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('search-input');
+      const clearSearchBtn = document.getElementById('clear-search-btn');
       const contractSelect = document.getElementById('contract-select');
+      const contractLabel = document.getElementById('contract-label');
+      const contractWrapper = document.getElementById('contract-filter-wrapper');
+      const sectorSelect = document.getElementById('sector-select');
       const locationSelect = document.getElementById('location-select');
       const filterBtns = document.querySelectorAll('.filter-btn');
+      const skillTags = document.querySelectorAll('.skill-tag');
       const jobCards = document.querySelectorAll('.job-card');
       const noResults = document.getElementById('no-results');
+      const noResultsReset = document.getElementById('no-results-reset');
+      const resetFiltersBtn = document.getElementById('reset-filters-btn');
       const resultsCount = document.getElementById('results-count');
 
       const urlParams = new URLSearchParams(window.location.search);
       let currentFilter = urlParams.get('type') || 'tous';
       let currentQuery = urlParams.get('q') || '';
       let currentContract = urlParams.get('contrat') || 'tous';
+      let currentSector = urlParams.get('secteur') || 'tous';
       let currentLocation = urlParams.get('region') || 'tous';
 
-      if (searchInput && currentQuery) searchInput.value = currentQuery;
+      if (searchInput && currentQuery) {
+        searchInput.value = currentQuery;
+        if (clearSearchBtn) clearSearchBtn.classList.remove('hidden');
+      }
       if (contractSelect && currentContract) contractSelect.value = currentContract;
+      if (sectorSelect && currentSector) sectorSelect.value = currentSector;
       if (locationSelect && currentLocation) locationSelect.value = currentLocation;
+
+      // Met à jour dynamiquement le label et la visibilité du filtre "Contrat" selon le type d'opportunité
+      function updateContractFilterVisibility() {
+        if (!contractWrapper || !contractSelect) return;
+
+        if (currentFilter === 'projet' || currentFilter === 'formation' || currentFilter === 'annonce') {
+          // Pour projets, formations et annonces : désactiver le sélecteur de contrat
+          contractWrapper.classList.add('opacity-40', 'pointer-events-none');
+          if (contractLabel) contractLabel.textContent = 'Contrat (Non applicable)';
+          contractSelect.value = 'tous';
+          currentContract = 'tous';
+        } else {
+          // Pour emploi, stage ou tous
+          contractWrapper.classList.remove('opacity-40', 'pointer-events-none');
+          if (contractLabel) contractLabel.textContent = 'Type de contrat';
+        }
+      }
 
       function updateUrl() {
         const url = new URL(window.location);
-        if (currentFilter && currentFilter !== 'tous') {
-          url.searchParams.set('type', currentFilter);
-        } else {
-          url.searchParams.delete('type');
-        }
+        if (currentFilter && currentFilter !== 'tous') url.searchParams.set('type', currentFilter);
+        else url.searchParams.delete('type');
 
-        if (currentQuery.trim()) {
-          url.searchParams.set('q', currentQuery.trim());
-        } else {
-          url.searchParams.delete('q');
-        }
+        if (currentQuery.trim()) url.searchParams.set('q', currentQuery.trim());
+        else url.searchParams.delete('q');
 
-        if (currentContract && currentContract !== 'tous') {
-          url.searchParams.set('contrat', currentContract);
-        } else {
-          url.searchParams.delete('contrat');
-        }
+        if (currentContract && currentContract !== 'tous') url.searchParams.set('contrat', currentContract);
+        else url.searchParams.delete('contrat');
 
-        if (currentLocation && currentLocation !== 'tous') {
-          url.searchParams.set('region', currentLocation);
-        } else {
-          url.searchParams.delete('region');
-        }
+        if (currentSector && currentSector !== 'tous') url.searchParams.set('secteur', currentSector);
+        else url.searchParams.delete('secteur');
+
+        if (currentLocation && currentLocation !== 'tous') url.searchParams.set('region', currentLocation);
+        else url.searchParams.delete('region');
 
         window.history.replaceState({}, '', url);
+
+        // Bouton reset visible si au moins un filtre actif
+        const hasActiveFilter = (currentFilter !== 'tous') || Boolean(currentQuery.trim()) || (currentContract !== 'tous') || (currentSector !== 'tous') || (currentLocation !== 'tous');
+        if (resetFiltersBtn) {
+          if (hasActiveFilter) resetFiltersBtn.classList.remove('hidden');
+          else resetFiltersBtn.classList.add('hidden');
+        }
       }
 
       function applyFilters() {
+        updateContractFilterVisibility();
         let visibleCount = 0;
         const normalizedFilter = currentFilter.toLowerCase();
         const normalizedQuery = currentQuery.trim().toLowerCase();
         const normalizedContract = currentContract.toLowerCase();
+        const normalizedSector = currentSector.toLowerCase();
         const normalizedLocation = currentLocation.toLowerCase();
 
         jobCards.forEach(card => {
           const cardType = (card.getAttribute('data-type') || '').toLowerCase();
           const cardContract = (card.getAttribute('data-contract') || '').toLowerCase();
           const cardLocation = (card.getAttribute('data-location') || '').toLowerCase();
+          const isOnline = card.getAttribute('data-online') === 'true';
+          const cardSector = (card.getAttribute('data-sector') || '').toLowerCase();
           const cardText = (card.getAttribute('data-text') || '').toLowerCase();
 
-          // 1. Type
-          const matchType = (normalizedFilter === 'tous') || 
-            (cardType === normalizedFilter) || 
-            (normalizedFilter === 'emploi' && cardType === 'emploi');
+          // 1. Filtrage par typologie
+          const matchType = (normalizedFilter === 'tous') || (cardType === normalizedFilter);
 
-          // 2. Contrat
+          // 2. Filtrage par contrat (uniquement pour emploi, stage, ou tous)
           let matchContract = true;
-          if (normalizedContract !== 'tous') {
+          if (normalizedContract !== 'tous' && normalizedFilter !== 'projet' && normalizedFilter !== 'formation' && normalizedFilter !== 'annonce') {
             matchContract = cardContract.includes(normalizedContract);
           }
 
-          // 3. Région / Localisation
+          // 3. Filtrage par secteur / filière
+          let matchSector = true;
+          if (normalizedSector !== 'tous') {
+            const keyTerm = normalizedSector.split('&')[0].trim().split(' ')[0];
+            matchSector = cardSector.includes(keyTerm) || cardText.includes(keyTerm);
+          }
+
+          // 4. Filtrage par localisation
           let matchLocation = true;
           if (normalizedLocation !== 'tous') {
-            if (normalizedLocation === 'autre') {
-              matchLocation = !cardLocation.includes('bamako') && !cardLocation.includes('segou') && !cardLocation.includes('sikasso') && !cardLocation.includes('mopti');
+            if (normalizedLocation === 'distanciel') {
+              matchLocation = isOnline;
+            } else if (normalizedLocation === 'autre') {
+              matchLocation = !cardLocation.includes('bamako') && !cardLocation.includes('segou') && !cardLocation.includes('sikasso') && !cardLocation.includes('koulikoro');
             } else {
               matchLocation = cardLocation.includes(normalizedLocation);
             }
           }
 
-          // 4. Recherche texte
+          // 5. Recherche plein texte
           const matchQuery = !normalizedQuery || cardText.includes(normalizedQuery);
 
-          if (matchType && matchContract && matchLocation && matchQuery) {
+          if (matchType && matchContract && matchSector && matchLocation && matchQuery) {
             card.classList.remove('hidden');
             visibleCount++;
           } else {
@@ -339,18 +479,18 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
         }
 
         if (resultsCount) {
-          resultsCount.textContent = `${visibleCount} opportunité${visibleCount > 1 ? 's' : ''} trouvée${visibleCount > 1 ? 's' : ''}`;
+          resultsCount.textContent = `${visibleCount} opportunité${visibleCount > 1 ? 's' : ''}`;
         }
 
         updateUrl();
       }
 
+      // Écouteurs sur les onglets de typologie
       filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           const filter = btn.getAttribute('data-filter') || 'tous';
           currentFilter = filter;
 
-          // Stylisation des boutons actifs
           filterBtns.forEach(b => {
             b.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-white text-stone-700 border-stone-200 hover:bg-stone-50';
           });
@@ -360,9 +500,37 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
         });
       });
 
+      // Écouteur sur les tags de compétences
+      skillTags.forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const skill = tag.getAttribute('data-skill-tag') || '';
+          if (skill && searchInput) {
+            searchInput.value = skill;
+            currentQuery = skill;
+            if (clearSearchBtn) clearSearchBtn.classList.remove('hidden');
+            applyFilters();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      });
+
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {
           currentQuery = e.target.value;
+          if (clearSearchBtn) {
+            if (currentQuery.length > 0) clearSearchBtn.classList.remove('hidden');
+            else clearSearchBtn.classList.add('hidden');
+          }
+          applyFilters();
+        });
+      }
+
+      if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          currentQuery = '';
+          clearSearchBtn.classList.add('hidden');
           applyFilters();
         });
       }
@@ -374,12 +542,47 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
         });
       }
 
+      if (sectorSelect) {
+        sectorSelect.addEventListener('change', (e) => {
+          currentSector = e.target.value;
+          applyFilters();
+        });
+      }
+
       if (locationSelect) {
         locationSelect.addEventListener('change', (e) => {
           currentLocation = e.target.value;
           applyFilters();
         });
       }
+
+      function resetAll() {
+        currentFilter = 'tous';
+        currentQuery = '';
+        currentContract = 'tous';
+        currentSector = 'tous';
+        currentLocation = 'tous';
+
+        if (searchInput) searchInput.value = '';
+        if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+        if (contractSelect) contractSelect.value = 'tous';
+        if (sectorSelect) sectorSelect.value = 'tous';
+        if (locationSelect) locationSelect.value = 'tous';
+
+        filterBtns.forEach(b => {
+          const f = b.getAttribute('data-filter');
+          if (f === 'tous') {
+            b.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm';
+          } else {
+            b.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-white text-stone-700 border-stone-200 hover:bg-stone-50';
+          }
+        });
+
+        applyFilters();
+      }
+
+      if (resetFiltersBtn) resetFiltersBtn.addEventListener('click', resetAll);
+      if (noResultsReset) noResultsReset.addEventListener('click', resetAll);
 
       // Application initiale
       applyFilters();

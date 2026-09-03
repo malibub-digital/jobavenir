@@ -63,7 +63,15 @@ const companyRoleLabel = isAnnouncement
   ? 'Organisme formateur' 
   : 'Recruteur';
 
-const badgeCategoryLabel = isAnnouncement ? 'Information & Veille' : isProject ? 'Appel à projets' : job.data.contractType;
+const badgeCategoryLabel = isAnnouncement 
+  ? 'Information & Veille' 
+  : isProject 
+  ? 'Appel à projets' 
+  : isTraining 
+  ? 'Formation certifiante' 
+  : isStage 
+  ? (job.data.contractType === 'Autre' ? 'Stage' : job.data.contractType) 
+  : job.data.contractType;
 ---
 
 <BaseLayout title={`${job.data.title} — JobAvenir Mali`} description={job.data.excerpt}>

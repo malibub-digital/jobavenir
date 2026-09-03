@@ -1,7 +1,7 @@
 {
   "hero": {
-    "title": "Trouvez un emploi, un stage ou une formation",
-    "subtitle": "Retrouvez en un seul endroit l'ensemble des offres d'emploi, de stage et de formation au Mali.",
+    "title": "Emploi, stage, formation, projet : trouvez votre voie",
+    "subtitle": "La plateforme qui centralise les opportunités au Mali.",
     "primaryAction": {
       "label": "Voir les offres disponibles",
       "href": "/offres"

@@ -62,13 +62,19 @@ export async function extractJobWithAI(rawText: string, fallbackTitle?: string):
     const data = await response.json();
     let content: string = data.choices?.[0]?.message?.content?.trim() || '';
 
-    // Nettoyage markdown éventuel (ex: ```json ... ```)
-    if (content.startsWith('```')) {
-      content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+    // Extraction robuste du premier objet JSON dans la réponse
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.warn('[AI] Aucun objet JSON valide détecté dans la réponse LLM');
+      return null;
     }
 
-    const parsed: any = JSON.parse(content);
-    if (parsed.ignore === true || (!parsed.title && !fallbackTitle)) {
+    const parsed: any = JSON.parse(jsonMatch[0]);
+    if (parsed.ignore === true) {
+      console.log('      🛡️ Contenu écarté par l\'IA : pas de réelle opportunité actionnable pour l\'usager.');
+      return null;
+    }
+    if (!parsed.title && !fallbackTitle) {
       return null;
     }
     if (!parsed.title && fallbackTitle) {
