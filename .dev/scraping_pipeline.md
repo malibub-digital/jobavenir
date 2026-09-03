@@ -118,18 +118,20 @@ DATABASE_URL="postgresql://jobavenir_user:eTfpd1bf3njnQI4AFT4i@jobavenir-db-x41c
 
 ---
 
-## 5. Fonctionnement du Scraper (PoC)
+## 5. Planification du Scraping (Scheduler Natif Dokploy)
 
-Le script de scraping TypeScript est placé dans `scripts/scrape.ts` et s'exécute par :
-```bash
-npm run scrape
-```
+Pour garantir des performances optimales et une isolation complète du site web, le scraping est exécuté via le **Scheduler natif de Dokploy** plutôt qu'un cron interne au serveur web :
 
-### Pipeline d'exécution :
-1. Télécharge les sources `ACTIF_200` depuis le Google Sheet unifié.
-2. Pour chaque source ciblée (ex: MaliTravail, flux RSS ou HTML d'organismes) :
-   - Extrait les annonces récentes.
-   - Calcule un hash d'unicité `content_hash` pour ne pas ré-analyser les offres déjà stockées.
-   - Soumet le texte brut au modèle IA configuré (`deepseek/deepseek-chat` ou `gemini-2.5-flash`).
-   - Insère ou met à jour la ligne dans la base de données PostgreSQL.
-3. Un cron récurrent Dokploy déclenche `npm run scrape` selon la fréquence choisie (ex: 2x par jour).
+### Configuration dans l'interface Dokploy :
+1. Rendez-vous sur votre application `jobavenir-web` dans Dokploy (`deploy.malihub.digital`).
+2. Ouvrez l'onglet **Schedules** (ou **Cron Jobs**).
+3. Cliquez sur **Add Job** :
+   - **Command** : `npm run scrape`
+   - **Cron Expression** : `0 */6 * * *` (exécute un passage toutes les 6 heures) ou `0 2 * * *` (toutes les nuits à 2h UTC)
+4. Enregistrez.
+
+### Avantages :
+- Zéro impact sur la mémoire vive ou le CPU du serveur web Astro pendant les scrapes.
+- Chaque run est tracé dans les logs et l'historique Dokploy avec statut clair (succès/échec).
+- La commande `npm run scrape` initialise la base, lit le Google Sheet, dédoublonne via SHA256 et insère les offres directement dans PostgreSQL.
+

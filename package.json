@@ -8,8 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "scrape": "tsx scripts/scrape.ts",
-    "cron": "tsx scripts/cron.ts"
+    "scrape": "tsx scripts/scrape.ts"
   },
   "dependencies": {
     "@astrojs/node": "^6.1.0",
