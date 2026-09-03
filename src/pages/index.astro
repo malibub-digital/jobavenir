@@ -136,18 +136,13 @@ const footerLogos = [
       </div>
 
       {recentJobs.length === 0 ? (
-        <div class="bg-stone-50 p-10 rounded-3xl border border-dashed border-stone-300 text-center max-w-xl mx-auto shadow-sm my-6">
-          <div class="w-14 h-14 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mx-auto mb-3 font-black text-2xl shadow-inner">
-            ⏳
-          </div>
-          <h3 class="text-lg font-black text-stone-900 font-title mb-1.5">Synchronisation des opportunités en cours</h3>
-          <p class="text-xs text-stone-600 leading-relaxed mb-4">
-            Le robot d'ingestion actualise les offres en temps réel depuis les 200+ sources et institutions partenaires au Mali.
+        <div class="py-12 px-4 text-center max-w-md mx-auto">
+          <p class="text-sm font-semibold text-stone-700 mb-1">
+            Il n'y a pas d'offre pour l'instant.
           </p>
-          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-stone-600 text-[11px] font-bold border border-stone-200 shadow-xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Système de veille actif</span>
-          </div>
+          <p class="text-xs text-stone-400">
+            Revenez bientôt consulter les nouvelles opportunités disponibles.
+          </p>
         </div>
       ) : (
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -124,9 +124,9 @@ function slugify(text: string): string {
 }
 
 /**
- * Point d'entrée principal du scraper
+ * Point d'entrée du scraper (appelable par cron ou en CLI standalone)
  */
-async function main() {
+export async function runScraper(closePool = false) {
   console.log('=== DÉMARRAGE DU SCRAPER JOBAVENIR ===');
   console.log(`Modèle configuré : ${process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat'}`);
 
@@ -134,19 +134,20 @@ async function main() {
   if (hasDb) {
     await initDatabaseSchema();
   } else {
-    console.log('[Notice] Mode PoC sans PostgreSQL connecté (affichage console du résultat).');
+    console.log('[Notice] Mode sans PostgreSQL connecté (affichage console du résultat).');
   }
 
   const allSources = await fetchMasterSources();
   const activeSources = allSources.filter(s => s.statusTechnical === 'ACTIF_200');
   console.log(`[Scraper] ${activeSources.length} sources prêtes (Statut ACTIF_200).`);
 
-  // Sélection pour le PoC : MaliTravail (SRC_017)
+  // Sélection pour l'ingestion : MaliTravail (SRC_017)
   const targetSource = activeSources.find(s => s.id === 'SRC_017') || activeSources[0];
-  console.log(`\n[PoC] Exécution sur la source : ${targetSource.name} (${targetSource.url})`);
+  console.log(`\n[Scraper] Exécution sur la source : ${targetSource.name} (${targetSource.url})`);
 
-  const rawPosts = await scrapeWordPressSource(targetSource.url, 2);
-  console.log(`[PoC] ${rawPosts.length} publications récupérées. Démarrage de l'analyse IA...\n`);
+  // Récupération des 5 dernières annonces
+  const rawPosts = await scrapeWordPressSource(targetSource.url, 5);
+  console.log(`[Scraper] ${rawPosts.length} publications récupérées. Démarrage de l'analyse IA...\n`);
 
   for (const post of rawPosts) {
     const rawContent = `${post.title}\n\n${post.content}`;
@@ -167,7 +168,6 @@ async function main() {
     console.log(`      Type contrat : ${extracted.contractType}`);
     console.log(`      Date limite  : ${extracted.deadline || 'Non spécifiée'}`);
     console.log(`      Résumé       : ${extracted.excerpt}`);
-    console.log(`      Critères     : ${extracted.requirements?.join(' | ') || 'Non spécifiés'}`);
 
     if (hasDb) {
       const slug = `${slugify(extracted.title)}-${hash.slice(0, 6)}`;
@@ -211,14 +211,18 @@ async function main() {
     }
   }
 
-  if (hasDb) {
+  if (hasDb && closePool) {
     await pool.end();
   }
 
   console.log('\n=== FIN DU CYCLE DE SCRAPING ===');
 }
 
-main().catch(err => {
-  console.error('[Scraper Fatal]', err);
-  process.exit(1);
-});
+// Exécution directe si appelé en CLI
+if (process.argv[1]?.includes('scrape.ts')) {
+  runScraper(true).catch(err => {
+    console.error('[Scraper Fatal]', err);
+    process.exit(1);
+  });
+}
+

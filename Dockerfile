@@ -30,5 +30,6 @@ ENV PORT=3000
 # Expose port
 EXPOSE 3000
 
-# Start Astro Node server
-CMD ["node", "dist/server/entry.mjs"]
+# Start Astro Node server with background cron
+CMD ["/bin/sh", "start.sh"]
+

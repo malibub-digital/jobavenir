@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "scrape": "tsx scripts/scrape.ts"
+    "scrape": "tsx scripts/scrape.ts",
+    "cron": "tsx scripts/cron.ts"
   },
   "dependencies": {
     "@astrojs/node": "^6.1.0",
@@ -18,10 +19,12 @@
     "@malihub/sites-core": "file:../sites/packages/core",
     "astro": "^3.6.5",
     "dotenv": "^17.4.2",
+    "node-cron": "^4.6.0",
     "pg": "^8.23.0"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^5.1.0",
+    "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.23.1",
     "tailwindcss": "^3.4.0",
     "tsx": "^4.23.13"
