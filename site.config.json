@@ -27,8 +27,8 @@
         "href": "/"
       },
       {
-        "label": "Toutes les offres",
-        "href": "/offres"
+        "label": "Toutes les opportunités",
+        "href": "/opportunites"
       },
       {
         "label": "À propos",
@@ -45,24 +45,24 @@
       "colTitle": "Opportunités",
       "links": [
         {
-          "label": "Toutes les offres",
-          "href": "/offres"
+          "label": "Toutes les opportunités",
+          "href": "/opportunites"
         },
         {
           "label": "Emplois CDI / CDD",
-          "href": "/offres?type=emploi"
+          "href": "/opportunites?type=emploi"
         },
         {
           "label": "Stages & Immersion",
-          "href": "/offres?type=stage"
+          "href": "/opportunites?type=stage"
         },
         {
           "label": "Formations Métiers",
-          "href": "/offres?type=formation"
+          "href": "/opportunites?type=formation"
         },
         {
           "label": "Projets & Subventions",
-          "href": "/offres?type=projet"
+          "href": "/opportunites?type=projet"
         }
       ]
     },

@@ -11,7 +11,7 @@ const { slug } = Astro.params;
 const job = slug ? await getJobBySlug(slug) : null;
 
 if (!job) {
-  return Astro.redirect('/offres');
+  return Astro.redirect('/opportunites');
 }
 
 
@@ -82,7 +82,7 @@ const badgeCategoryLabel = isAnnouncement
       
       <!-- BOUTON RETOUR ET ACCÈS CATALOGUE -->
       <div class="flex items-center justify-between mb-4 text-xs font-bold text-stone-600">
-        <a href="/offres" class="inline-flex items-center gap-1.5 hover:text-orange-600 transition-colors no-underline">
+        <a href="/opportunites" class="inline-flex items-center gap-1.5 hover:text-orange-600 transition-colors no-underline">
           <span>&larr;</span>
           <span>Toutes les opportunités</span>
         </a>
@@ -221,7 +221,7 @@ const badgeCategoryLabel = isAnnouncement
         <!-- PIED DE CARTE (ACCÉDÉR AUX AUTRES OFFRES) -->
         <div class="bg-amber-50/60 px-6 py-4 border-t border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-700">
           <span class="font-medium">Vous cherchez d'autres opportunités ?</span>
-          <a href="/offres" class="text-orange-600 font-extrabold hover:underline no-underline inline-flex items-center gap-1">
+          <a href="/opportunites" class="text-orange-600 font-extrabold hover:underline no-underline inline-flex items-center gap-1">
             <span>Explorer toutes les opportunités</span>
             <span>&rarr;</span>
           </a>

@@ -3,8 +3,8 @@
     "title": "Emploi, stage, formation, projet : trouvez votre voie",
     "subtitle": "La plateforme qui centralise les opportunités au Mali.",
     "primaryAction": {
-      "label": "Voir les offres disponibles",
-      "href": "/offres"
+      "label": "Voir les opportunités disponibles",
+      "href": "/opportunites"
     },
     "secondaryAction": {
       "label": "En savoir plus",

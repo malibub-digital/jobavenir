@@ -46,14 +46,11 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
   <main class="py-12 bg-stone-50 min-h-screen">
     <div class="ml-container max-w-6xl mx-auto px-4">
       
-      <!-- EN-TÊTE DE PAGE -->
+      <!-- EN-TÊTE DE PAGE HARMONISÉ -->
       <div class="mb-10 text-center max-w-3xl mx-auto">
-        <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-mandingue-700)] bg-[var(--ml-color-mandingue-50)] px-3.5 py-1 rounded-full mb-3 inline-block border border-[var(--ml-color-mandingue-100)]">
-          Opportunités vérifiées au Mali
-        </span>
-        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title mb-3">Toutes les opportunités</h1>
-        <p class="text-stone-600 text-sm leading-relaxed">
-          Trouvez rapidement un emploi, un stage, une formation qualifiante ou une annonce officielle au Mali.
+        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title mb-2">Toutes les opportunités</h1>
+        <p class="text-base md:text-lg text-stone-600 font-medium">
+          Emploi, formation, projet : <span class="text-orange-600 font-bold">trouvez votre voie</span>
         </p>
       </div>
 
@@ -135,16 +132,17 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
             </div>
           </div>
 
-          <!-- Ligne 3 : Onglets de typologies et Compteur -->
-          <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-stone-100">
-            <div class="flex flex-wrap gap-1.5 w-full sm:w-auto items-center" id="filter-buttons">
+          <!-- Ligne 3 : Onglets de typologies et Actions / Compteur -->
+          <div class="pt-3 border-t border-stone-100 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <!-- Onglets de typologie -->
+            <div class="flex flex-wrap gap-1.5 items-center flex-1" id="filter-buttons">
               {filterCategories.map((cat) => {
                 const isActive = (queryType === cat.id) || (queryType === 'tous' && cat.id === 'tous');
                 return (
                   <button
                     type="button"
                     data-filter={cat.id}
-                    class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
                       isActive
                         ? 'bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm'
                         : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
@@ -156,15 +154,16 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
               })}
             </div>
 
-            <div class="flex items-center gap-2 self-end sm:self-center">
+            <!-- Compteur & Réinitialisation fixes à droite (ne font plus sauter les boutons) -->
+            <div class="flex items-center justify-between lg:justify-end gap-2.5 shrink-0 self-stretch lg:self-center pt-2 lg:pt-0 border-t lg:border-t-0 border-stone-100">
               <button
                 id="reset-filters-btn"
                 type="button"
-                class="text-[11px] font-semibold text-stone-400 hover:text-stone-700 underline hidden"
+                class="text-xs font-bold text-orange-600 hover:text-orange-800 hover:underline px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors hidden cursor-pointer"
               >
-                Réinitialiser
+                ✕ Réinitialiser
               </button>
-              <div class="text-xs font-bold text-stone-600 shrink-0 bg-stone-100 px-3 py-1 rounded-full border border-stone-200/60" id="results-count">
+              <div class="text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-full border border-stone-200/60 shrink-0" id="results-count">
                 {sortedJobs.length} opportunité{sortedJobs.length > 1 ? 's' : ''}
               </div>
             </div>
@@ -282,7 +281,7 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
 
                     <!-- Titre de l'opportunité -->
                     <h2 class="text-lg md:text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors leading-snug">
-                      <a href={`/offres/${job.slug}`} class="no-underline text-inherit">
+                      <a href={`/opportunites/${job.slug}`} class="no-underline text-inherit">
                         {job.data.title}
                       </a>
                     </h2>
@@ -321,7 +320,7 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                   <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-stone-100">
                     <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
                     <a
-                      href={`/offres/${job.slug}`}
+                      href={`/opportunites/${job.slug}`}
                       class="px-4 py-2 bg-stone-900 group-hover:bg-[var(--ml-color-mandingue-orange)] text-white text-xs font-bold rounded-xl transition-colors no-underline inline-flex items-center gap-1 shadow-sm"
                     >
                       <span>Voir le détail</span>
