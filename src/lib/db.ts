@@ -23,8 +23,15 @@ CREATE TABLE IF NOT EXISTS sources (
     scraper_type VARCHAR(50),
     frequency VARCHAR(50) DEFAULT 'QUOTIDIEN',
     last_scraped_at TIMESTAMP WITH TIME ZONE,
+    etag TEXT,
+    last_modified_header TEXT,
+    failure_count INT DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS etag TEXT;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS last_modified_header TEXT;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS failure_count INT DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS jobs (
     id SERIAL PRIMARY KEY,
