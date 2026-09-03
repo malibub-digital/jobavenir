@@ -174,7 +174,16 @@ export async function runScraper(closePool = false) {
     const rawContent = `${post.title}\n\n${post.content}`;
     const hash = crypto.createHash('sha256').update(post.link + rawContent).digest('hex');
 
-    console.log(`-> Analyse de l'annonce : "${post.title}"...`);
+    // 1. Vérification pré-LLM : si l'annonce existe déjà en base, on saute l'appel IA
+    if (hasDb) {
+      const existing = await pool.query('SELECT id FROM jobs WHERE content_hash = $1 LIMIT 1', [hash]);
+      if (existing.rows.length > 0) {
+        console.log(`-> Déjà en base (${hash.slice(0, 8)}) : "${post.title.slice(0, 45)}..." [Ignorée, 0 token]`);
+        continue;
+      }
+    }
+
+    console.log(`-> Nouvelle annonce détectée : "${post.title}"...`);
     const extracted = await extractJobWithAI(rawContent, post.title);
 
     if (!extracted) {
