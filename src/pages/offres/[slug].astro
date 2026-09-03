@@ -1,19 +1,19 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
 import MinimalHeader from "../../components/MinimalHeader.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
-import { getCollection } from 'astro:content';
 import siteConfig from '../../../site.config.json';
+import { getJobBySlug } from '../../lib/db';
 
-export async function getStaticPaths() {
-  const jobs = await getCollection('jobs');
-  return jobs.map((job) => ({
-    params: { slug: job.slug },
-    props: { job },
-  }));
+const { slug } = Astro.params;
+const job = slug ? await getJobBySlug(slug) : null;
+
+if (!job) {
+  return Astro.redirect('/offres');
 }
 
-const { job } = Astro.props;
 
 // Calcul dynamique du gradient/thème de la bannière selon la catégorie
 let categoryGradient = 'from-amber-600 via-orange-600 to-amber-700';

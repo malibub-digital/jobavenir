@@ -129,3 +129,84 @@ export async function getAllDbJobs(): Promise<DbJob[]> {
     return [];
   }
 }
+
+/**
+ * Retourne les offres dynamiques depuis PostgreSQL
+ */
+export async function getUnifiedJobs(): Promise<any[]> {
+  const dbJobs = await getAllDbJobs();
+  return dbJobs.map(j => ({
+    slug: j.slug,
+    body: j.description || '',
+    data: {
+      title: j.title,
+      company: j.company,
+      location: j.location,
+      contractType: j.contractType,
+      category: j.category,
+      domain: j.domain,
+      salary: j.salary,
+      deadline: j.deadline,
+      publishedDate: j.publishedDate,
+      featured: j.featured,
+      excerpt: j.excerpt,
+      originalUrl: j.originalUrl,
+      originalSource: j.originalSource,
+      howToApply: j.howToApply,
+      requirements: Array.isArray(j.requirements) ? j.requirements : []
+    }
+  }));
+}
+
+/**
+ * Récupère une offre spécifique par son slug depuis PostgreSQL
+ */
+export async function getJobBySlug(slug: string): Promise<any | null> {
+  if (!process.env.DATABASE_URL) return null;
+  try {
+    const res = await pool.query(`
+      SELECT 
+        slug, title, company, location,
+        contract_type as "contractType",
+        category, domain, salary, deadline,
+        to_char(published_date, 'YYYY-MM-DD') as "publishedDate",
+        featured, excerpt, description,
+        original_url as "originalUrl",
+        original_source as "originalSource",
+        how_to_apply as "howToApply",
+        requirements
+      FROM jobs
+      WHERE slug = $1 AND is_active = true
+      LIMIT 1
+    `, [slug]);
+
+    if (res.rows.length === 0) return null;
+    const j = res.rows[0];
+    return {
+      slug: j.slug,
+      body: j.description || '',
+      data: {
+        title: j.title,
+        company: j.company,
+        location: j.location,
+        contractType: j.contractType,
+        category: j.category,
+        domain: j.domain,
+        salary: j.salary,
+        deadline: j.deadline,
+        publishedDate: j.publishedDate,
+        featured: j.featured,
+        excerpt: j.excerpt,
+        originalUrl: j.originalUrl,
+        originalSource: j.originalSource,
+        howToApply: j.howToApply,
+        requirements: Array.isArray(j.requirements) ? j.requirements : []
+      }
+    };
+  } catch (err) {
+    console.warn('[DB] Erreur getJobBySlug:', err);
+    return null;
+  }
+}
+
+

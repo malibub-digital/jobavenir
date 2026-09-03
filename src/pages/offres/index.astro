@@ -1,13 +1,13 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '@malihub/sites-core/layouts/BaseLayout.astro';
 import MinimalHeader from "../../components/MinimalHeader.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
-import { getCollection } from 'astro:content';
 import siteConfig from '../../../site.config.json';
 import { getUnifiedJobs } from '../../lib/db';
 
-const markdownJobs = await getCollection('jobs');
-const allJobs = await getUnifiedJobs(markdownJobs);
+const allJobs = await getUnifiedJobs();
 
 // Récupération des filtres depuis l'URL (pour SSR ou affichage dynamique côté client)
 const contractTypes = ['Tous', 'CDI', 'CDD', 'Stage', 'Intérim'];
@@ -64,56 +64,72 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
       </div>
 
       <!-- LISTE DES OFFRES -->
-      <div class="grid grid-cols-1 gap-4">
-        {sortedJobs.map((job) => (
-          <article class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div class="space-y-2 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                    {job.data.contractType}
-                  </span>
-                  <span class="text-[11px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
-                    {job.data.category}
-                  </span>
-                  {job.data.featured && (
-                    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[var(--ml-color-mandingue-orange)] text-white">
-                      Prioritaire
+      {sortedJobs.length === 0 ? (
+        <div class="bg-white p-12 rounded-3xl border border-dashed border-stone-300 text-center max-w-xl mx-auto shadow-sm">
+          <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto mb-4 font-black text-2xl shadow-inner">
+            ⏳
+          </div>
+          <h2 class="text-xl font-black text-stone-900 font-title mb-2">Synchronisation des opportunités en cours</h2>
+          <p class="text-sm text-stone-600 leading-relaxed mb-6">
+            Les annonces sont actuellement en cours de récupération et d'analyse automatique depuis nos 200+ sources officielles maliennes.
+          </p>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100 text-stone-600 text-xs font-bold border border-stone-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Mise à jour en continu</span>
+          </div>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 gap-4">
+          {sortedJobs.map((job) => (
+            <article class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-2 flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                      {job.data.contractType}
                     </span>
-                  )}
+                    <span class="text-[11px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
+                      {job.data.category}
+                    </span>
+                    {job.data.featured && (
+                      <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[var(--ml-color-mandingue-orange)] text-white">
+                        Prioritaire
+                      </span>
+                    )}
+                  </div>
+
+                  <h2 class="text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors">
+                    <a href={`/offres/${job.slug}`} class="no-underline text-inherit">
+                      {job.data.title}
+                    </a>
+                  </h2>
+
+                  <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                    {job.data.excerpt}
+                  </p>
+
+                  <div class="flex flex-wrap gap-4 text-xs text-stone-500 pt-1">
+                    <span>🏢 <strong>{job.data.company}</strong></span>
+                    <span>📍 {job.data.location}</span>
+                    {job.data.deadline && <span>📅 Date limite: {job.data.deadline}</span>}
+                  </div>
                 </div>
 
-                <h2 class="text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors">
-                  <a href={`/offres/${job.slug}`} class="no-underline text-inherit">
-                    {job.data.title}
+                <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-stone-100">
+                  <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
+                  <a
+                    href={`/offres/${job.slug}`}
+                    class="px-4 py-2 bg-stone-900 group-hover:bg-[var(--ml-color-mandingue-orange)] text-white text-xs font-bold rounded-xl transition-colors no-underline inline-flex items-center gap-1 shadow-sm"
+                  >
+                    <span>Voir l'offre</span>
+                    <span>&rarr;</span>
                   </a>
-                </h2>
-
-                <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                  {job.data.excerpt}
-                </p>
-
-                <div class="flex flex-wrap gap-4 text-xs text-stone-500 pt-1">
-                  <span>🏢 <strong>{job.data.company}</strong></span>
-                  <span>📍 {job.data.location}</span>
-                  {job.data.deadline && <span>📅 Date limite: {job.data.deadline}</span>}
                 </div>
               </div>
-
-              <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-stone-100">
-                <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
-                <a
-                  href={`/offres/${job.slug}`}
-                  class="px-4 py-2 bg-stone-900 group-hover:bg-[var(--ml-color-mandingue-orange)] text-white text-xs font-bold rounded-xl transition-colors no-underline inline-flex items-center gap-1 shadow-sm"
-                >
-                  <span>Voir l'offre</span>
-                  <span>&rarr;</span>
-                </a>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      )}
 
     </div>
   </main>
