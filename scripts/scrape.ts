@@ -145,6 +145,27 @@ export async function runScraper(closePool = false) {
   const targetSource = activeSources.find(s => s.id === 'SRC_017') || activeSources[0];
   console.log(`\n[Scraper] Exécution sur la source : ${targetSource.name} (${targetSource.url})`);
 
+  if (hasDb) {
+    // Garantir que la source existe dans la table sources (contrainte de clé étrangère)
+    await pool.query(
+      `INSERT INTO sources (id, name, category, sub_category, url, status_technical, scraper_type, last_scraped_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+       ON CONFLICT (id) DO UPDATE SET
+         name = EXCLUDED.name,
+         url = EXCLUDED.url,
+         last_scraped_at = NOW()`,
+      [
+        targetSource.id,
+        targetSource.name,
+        targetSource.category,
+        targetSource.subCategory,
+        targetSource.url,
+        targetSource.statusTechnical,
+        targetSource.scraperType
+      ]
+    );
+  }
+
   // Récupération des 5 dernières annonces
   const rawPosts = await scrapeWordPressSource(targetSource.url, 5);
   console.log(`[Scraper] ${rawPosts.length} publications récupérées. Démarrage de l'analyse IA...\n`);
