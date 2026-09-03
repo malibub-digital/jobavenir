@@ -1,7 +1,14 @@
+import dns from 'node:dns';
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch (_) {}
+
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { extractJobWithAI, ExtractedJob } from '../src/lib/ai-extractor';
-import { pool, initDatabaseSchema } from '../src/lib/db';
+import { pool, initDatabaseSchema, isSqlite } from '../src/lib/db';
 
 dotenv.config();
 
@@ -37,15 +44,32 @@ interface ScrapeResult {
  * Télécharge et parse le CSV de l'inventaire Google Sheets
  */
 async function fetchMasterSources(): Promise<SourceRow[]> {
+  const cachePath = path.resolve(process.cwd(), '.dev/sources_cache.csv');
+  let text = '';
+
   console.log('[Scraper] Téléchargement du fichier Google Sheets Master Sources...');
-  const res = await fetch(GOOGLE_SHEET_CSV_URL, {
-    headers: { 'User-Agent': 'Mozilla/5.0' }
-  });
-  if (!res.ok) {
-    throw new Error(`Échec de récupération Google Sheets (${res.status})`);
+  try {
+    const res = await fetch(GOOGLE_SHEET_CSV_URL, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      signal: AbortSignal.timeout(15000)
+    });
+    if (res.ok) {
+      text = await res.text();
+      // Sauvegarder dans le cache local
+      fs.writeFileSync(cachePath, text, 'utf-8');
+    } else {
+      throw new Error(`Code HTTP ${res.status}`);
+    }
+  } catch (netErr: any) {
+    console.warn(`[Scraper] Réseau indisponible ou lent pour Google Sheets (${netErr?.message || netErr}).`);
+    if (fs.existsSync(cachePath)) {
+      console.log('[Scraper] Utilisation de la copie locale en cache (.dev/sources_cache.csv).');
+      text = fs.readFileSync(cachePath, 'utf-8');
+    } else {
+      throw new Error(`Impossible de charger les sources (réseau et cache indisponibles) : ${netErr?.message}`);
+    }
   }
 
-  const text = await res.text();
   const lines = text.split(/\r?\n/);
   const headerIdx = lines.findIndex(l => l.includes('ID Source'));
 
@@ -232,11 +256,12 @@ export async function runScraper(closePool = false) {
   console.log('=== DÉMARRAGE DU SCRAPER JOBAVENIR ===');
   console.log(`Modèle IA configuré : ${process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat'}`);
 
-  const hasDb = Boolean(process.env.DATABASE_URL);
-  if (hasDb) {
-    await initDatabaseSchema();
+  const hasDb = true;
+  await initDatabaseSchema();
+  if (isSqlite) {
+    console.log('[Notice] Mode SQLite actif pour le développement local (.dev/jobavenir.sqlite).');
   } else {
-    console.log('[Notice] Mode sans PostgreSQL connecté (affichage console du résultat).');
+    console.log('[Notice] Connexion PostgreSQL active.');
   }
 
   const allSources = await fetchMasterSources();
@@ -342,13 +367,14 @@ export async function runScraper(closePool = false) {
         try {
           await pool.query(
             `INSERT INTO jobs (
-              slug, title, company, location, contract_type, category, domain,
+              slug, title, company, location, contract_type, opportunity_type, category, domain,
               salary, deadline, published_date, excerpt, description,
               original_url, original_source, source_id, how_to_apply,
-              requirements, content_hash
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+              requirements, metadata, content_hash
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
             ON CONFLICT (content_hash) DO UPDATE SET
               title = EXCLUDED.title,
+              opportunity_type = EXCLUDED.opportunity_type,
               deadline = EXCLUDED.deadline,
               updated_at = NOW()`,
             [
@@ -357,6 +383,7 @@ export async function runScraper(closePool = false) {
               extracted.company,
               extracted.location,
               extracted.contractType,
+              extracted.opportunityType || (extracted.contractType === 'Stage' || extracted.contractType === 'Apprentissage' ? 'STAGE' : 'JOB'),
               extracted.category,
               extracted.domain || null,
               extracted.salary || null,
@@ -369,10 +396,11 @@ export async function runScraper(closePool = false) {
               source.id,
               extracted.howToApply || null,
               JSON.stringify(extracted.requirements || []),
+              JSON.stringify(extracted.metadata || {}),
               hash
             ]
           );
-          console.log('         💾 Sauvegardée dans PostgreSQL.');
+          console.log(`         💾 Sauvegardée en base (${isSqlite ? 'SQLite' : 'PostgreSQL'}).`);
         } catch (dbErr) {
           console.error('         ❌ Erreur insertion DB:', dbErr);
         }

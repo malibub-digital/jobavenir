@@ -7,6 +7,7 @@ const jobsCollection = defineCollection({
     company: z.string().default("APEJ / Partenaire"),
     location: z.string().default("Bamako, Mali"),
     contractType: z.enum(['CDI', 'CDD', 'Stage', 'Intérim', 'Apprentissage', 'Autre']),
+    opportunityType: z.enum(['JOB', 'STAGE', 'TRAINING', 'PROJECT_CALL']).default('JOB').optional(),
     category: z.string().default("Général"),
     domain: z.string().optional(),
     salary: z.string().optional(),
@@ -19,6 +20,7 @@ const jobsCollection = defineCollection({
     heroImage: z.string().optional(),
     howToApply: z.string().optional(),
     requirements: z.array(z.string()).optional(),
+    metadata: z.record(z.any()).optional(),
   }),
 });
 

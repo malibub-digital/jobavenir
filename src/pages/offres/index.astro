@@ -9,12 +9,21 @@ import { getUnifiedJobs } from '../../lib/db';
 
 const allJobs = await getUnifiedJobs();
 
-// Récupération des filtres depuis l'URL (pour SSR ou affichage dynamique côté client)
-const contractTypes = ['Tous', 'CDI', 'CDD', 'Stage', 'Intérim'];
+// Récupération du filtre initial depuis l'URL (SSR)
+const queryType = Astro.url.searchParams.get('type')?.toLowerCase() || 'tous';
+
+const filterCategories = [
+  { id: 'tous', label: 'Toutes les opportunités' },
+  { id: 'emploi', label: '💼 Emplois (CDI, CDD)' },
+  { id: 'stage', label: '🎓 Stages & Immersion' },
+  { id: 'formation', label: '📚 Formations Métiers' },
+  { id: 'projet', label: '🚀 Projets & Subventions' }
+];
+
 const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
 ---
 
-<BaseLayout title={`Offres d'Emploi — ${siteConfig.title}`} description="Inventaire complet des offres d'emploi, stages et opportunités de carrière pour les jeunes au Mali.">
+<BaseLayout title={`Offres & Opportunités — ${siteConfig.title}`} description="Inventaire complet des offres d'emploi, stages, formations métiers et appels à projets au Mali.">
   <MinimalHeader slot="header" showBackHome={true} />
 
   <main class="py-12 bg-stone-50 min-h-screen">
@@ -23,47 +32,60 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
       <!-- EN-TÊTE DE PAGE -->
       <div class="mb-10 text-center max-w-3xl mx-auto">
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--ml-color-mandingue-700)] bg-[var(--ml-color-mandingue-50)] px-3.5 py-1 rounded-full mb-3 inline-block border border-[var(--ml-color-mandingue-100)]">
-          Offres vérifiées
+          Opportunités vérifiées au Mali
         </span>
-        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title mb-3">Toutes les offres d'emploi et stages</h1>
+        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title mb-3">Toutes les offres & opportunités</h1>
         <p class="text-stone-600 text-sm leading-relaxed">
-          Trouvez facilement l'opportunité qui vous convient au Mali.
+          Trouvez rapidement un emploi, un stage, une formation qualifiante ou un financement au Mali.
         </p>
       </div>
 
       <!-- BARRE DE FILTRES ET RECHERCHE -->
       <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm mb-10">
-        <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
-          <div class="w-full md:w-1/2">
-            <label for="search-input" class="sr-only">Rechercher une offre</label>
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-center">
+          <div class="w-full lg:w-1/3">
+            <label for="search-input" class="sr-only">Rechercher une opportunité</label>
             <div class="relative">
               <input
                 type="text"
                 id="search-input"
-                placeholder="Rechercher par titre, ville, ou mot-clé..."
+                placeholder="Rechercher par poste, entreprise, ville..."
                 class="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ml-color-mandingue-orange)] focus:border-transparent"
               />
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-2 w-full md:w-auto">
-            {contractTypes.map((type, idx) => (
-              <button
-                type="button"
-                class={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                  idx === 0
-                    ? 'bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm'
-                    : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
-                }`}
-              >
-                {type}
-              </button>
-            ))}
+          <div class="flex flex-wrap gap-2 w-full lg:w-auto items-center" id="filter-buttons">
+            {filterCategories.map((cat) => {
+              const isActive = (queryType === cat.id) || (queryType === 'tous' && cat.id === 'tous');
+              return (
+                <button
+                  type="button"
+                  data-filter={cat.id}
+                  class={`filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all border ${
+                    isActive
+                      ? 'bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm'
+                      : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
       <!-- LISTE DES OFFRES -->
+      <div id="no-results" class="hidden py-16 px-4 text-center max-w-md mx-auto">
+        <p class="text-base font-semibold text-stone-700 mb-1">
+          Aucune opportunité ne correspond à vos critères.
+        </p>
+        <p class="text-xs text-stone-400">
+          Essayez de modifier votre recherche ou sélectionnez une autre catégorie.
+        </p>
+      </div>
+
       {sortedJobs.length === 0 ? (
         <div class="py-16 px-4 text-center max-w-md mx-auto">
           <p class="text-base font-semibold text-stone-700 mb-1">
@@ -74,60 +96,167 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
           </p>
         </div>
       ) : (
-        <div class="grid grid-cols-1 gap-4">
-          {sortedJobs.map((job) => (
-            <article class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group">
-              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="space-y-2 flex-1">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
-                      {job.data.contractType}
-                    </span>
-                    <span class="text-[11px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
-                      {job.data.category}
-                    </span>
-                    {job.data.featured && (
-                      <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[var(--ml-color-mandingue-orange)] text-white">
-                        Prioritaire
+        <div class="grid grid-cols-1 gap-4" id="jobs-list">
+          {sortedJobs.map((job) => {
+            // Déterminer la typologie principale pour le filtrage côté client
+            let inferredType = 'emploi';
+            const oppType = job.data.opportunityType;
+            const cType = job.data.contractType;
+            const cat = (job.data.category || '').toLowerCase();
+
+            if (oppType === 'STAGE' || cType === 'Stage' || cType === 'Apprentissage') {
+              inferredType = 'stage';
+            } else if (oppType === 'TRAINING' || cType === 'Formation' || cat.includes('formation')) {
+              inferredType = 'formation';
+            } else if (oppType === 'PROJECT_CALL' || cType === 'Appel à projets' || cat.includes('projet') || cat.includes('financement')) {
+              inferredType = 'projet';
+            }
+
+            return (
+              <article 
+                class="job-card bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group"
+                data-type={inferredType}
+                data-contract={job.data.contractType.toLowerCase()}
+                data-text={`${job.data.title} ${job.data.company} ${job.data.location} ${job.data.category} ${job.data.excerpt}`.toLowerCase()}
+              >
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div class="space-y-2 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
+                        inferredType === 'stage' 
+                          ? 'bg-amber-100 text-amber-900 border-amber-200' 
+                          : inferredType === 'formation'
+                          ? 'bg-orange-100 text-orange-950 border-orange-200'
+                          : inferredType === 'projet'
+                          ? 'bg-stone-100 text-stone-900 border-stone-300'
+                          : 'bg-amber-50 text-amber-900 border-amber-200'
+                      }`}>
+                        {job.data.contractType}
                       </span>
-                    )}
+                      <span class="text-[11px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-md">
+                        {job.data.category}
+                      </span>
+                      {job.data.featured && (
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-[var(--ml-color-mandingue-orange)] text-white">
+                          Prioritaire
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 class="text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors">
+                      <a href={`/offres/${job.slug}`} class="no-underline text-inherit">
+                        {job.data.title}
+                      </a>
+                    </h2>
+
+                    <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                      {job.data.excerpt}
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 text-xs text-stone-500 pt-1">
+                      <span>🏢 <strong>{job.data.company}</strong></span>
+                      <span>📍 {job.data.location}</span>
+                      {job.data.deadline && <span>📅 Date limite: {job.data.deadline}</span>}
+                    </div>
                   </div>
 
-                  <h2 class="text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors">
-                    <a href={`/offres/${job.slug}`} class="no-underline text-inherit">
-                      {job.data.title}
+                  <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-stone-100">
+                    <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
+                    <a
+                      href={`/offres/${job.slug}`}
+                      class="px-4 py-2 bg-stone-900 group-hover:bg-[var(--ml-color-mandingue-orange)] text-white text-xs font-bold rounded-xl transition-colors no-underline inline-flex items-center gap-1 shadow-sm"
+                    >
+                      <span>Voir le détail</span>
+                      <span>&rarr;</span>
                     </a>
-                  </h2>
-
-                  <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                    {job.data.excerpt}
-                  </p>
-
-                  <div class="flex flex-wrap gap-4 text-xs text-stone-500 pt-1">
-                    <span>🏢 <strong>{job.data.company}</strong></span>
-                    <span>📍 {job.data.location}</span>
-                    {job.data.deadline && <span>📅 Date limite: {job.data.deadline}</span>}
                   </div>
                 </div>
-
-                <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-stone-100">
-                  <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
-                  <a
-                    href={`/offres/${job.slug}`}
-                    class="px-4 py-2 bg-stone-900 group-hover:bg-[var(--ml-color-mandingue-orange)] text-white text-xs font-bold rounded-xl transition-colors no-underline inline-flex items-center gap-1 shadow-sm"
-                  >
-                    <span>Voir l'offre</span>
-                    <span>&rarr;</span>
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       )}
 
     </div>
   </main>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('search-input');
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const jobCards = document.querySelectorAll('.job-card');
+      const noResults = document.getElementById('no-results');
+
+      let currentFilter = new URLSearchParams(window.location.search).get('type') || 'tous';
+      let currentQuery = '';
+
+      function applyFilters() {
+        let visibleCount = 0;
+        const normalizedFilter = currentFilter.toLowerCase();
+        const normalizedQuery = currentQuery.trim().toLowerCase();
+
+        jobCards.forEach(card => {
+          const cardType = (card.getAttribute('data-type') || '').toLowerCase();
+          const cardText = (card.getAttribute('data-text') || '').toLowerCase();
+
+          const matchType = (normalizedFilter === 'tous') || 
+            (cardType === normalizedFilter) || 
+            (normalizedFilter === 'emploi' && cardType === 'emploi');
+
+          const matchQuery = !normalizedQuery || cardText.includes(normalizedQuery);
+
+          if (matchType && matchQuery) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        if (noResults) {
+          if (visibleCount === 0 && jobCards.length > 0) {
+            noResults.classList.remove('hidden');
+          } else {
+            noResults.classList.add('hidden');
+          }
+        }
+      }
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const filter = btn.getAttribute('data-filter') || 'tous';
+          currentFilter = filter;
+
+          // Mise à jour de l'URL sans rechargement
+          const url = new URL(window.location);
+          if (filter === 'tous') {
+            url.searchParams.delete('type');
+          } else {
+            url.searchParams.set('type', filter);
+          }
+          window.history.replaceState({}, '', url);
+
+          // Stylisation des boutons actifs
+          filterBtns.forEach(b => {
+            b.className = 'filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all border bg-white text-stone-700 border-stone-200 hover:bg-stone-50';
+          });
+          btn.className = 'filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all border bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm';
+
+          applyFilters();
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = e.target.value;
+          applyFilters();
+        });
+      }
+
+      // Application initiale
+      applyFilters();
+    });
+  </script>
 
   <Footer
     slot="footer"

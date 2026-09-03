@@ -42,19 +42,27 @@
   },
   "footerLinks": [
     {
-      "colTitle": "Offres",
+      "colTitle": "Opportunités",
       "links": [
         {
           "label": "Toutes les offres",
           "href": "/offres"
         },
         {
-          "label": "Stages",
-          "href": "/offres?type=Stage"
+          "label": "Emplois CDI / CDD",
+          "href": "/offres?type=emploi"
         },
         {
-          "label": "Emplois CDI",
-          "href": "/offres?type=CDI"
+          "label": "Stages & Immersion",
+          "href": "/offres?type=stage"
+        },
+        {
+          "label": "Formations Métiers",
+          "href": "/offres?type=formation"
+        },
+        {
+          "label": "Projets & Subventions",
+          "href": "/offres?type=projet"
         }
       ]
     },
