@@ -212,12 +212,12 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
 
             if (oppType === 'STAGE' || cType.includes('stage') || cType.includes('apprentissage')) {
               inferredType = 'stage';
-            } else if (oppType === 'TRAINING' || cType.includes('formation') || cat.includes('formation')) {
-              inferredType = 'formation';
-            } else if (oppType === 'ANNOUNCEMENT' || cType.includes('annonce') || cType.includes('information')) {
+            } else if (oppType === 'ANNOUNCEMENT' || cType.includes('annonce') || cType.includes('information') || cType.includes('officielle')) {
               inferredType = 'annonce';
             } else if (oppType === 'PROJECT_CALL' || cType.includes('projet') || cType.includes('subvention') || cat.includes('projet')) {
               inferredType = 'projet';
+            } else if (oppType === 'TRAINING' || cType.includes('formation') || cat.includes('formation')) {
+              inferredType = 'formation';
             }
 
             // Libellé de badge de type

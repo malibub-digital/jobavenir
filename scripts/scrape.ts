@@ -44,29 +44,52 @@ interface ScrapeResult {
  * Télécharge et parse le CSV de l'inventaire Google Sheets
  */
 async function fetchMasterSources(): Promise<SourceRow[]> {
-  const cachePath = path.resolve(process.cwd(), '.dev/sources_cache.csv');
+  const primaryCachePath = path.resolve(process.cwd(), 'src/data/sources_cache.csv');
+  const legacyCachePath = path.resolve(process.cwd(), '.dev/sources_cache.csv');
   let text = '';
 
   console.log('[Scraper] Téléchargement du fichier Google Sheets Master Sources...');
-  try {
-    const res = await fetch(GOOGLE_SHEET_CSV_URL, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      signal: AbortSignal.timeout(15000)
-    });
-    if (res.ok) {
-      text = await res.text();
-      // Sauvegarder dans le cache local
-      fs.writeFileSync(cachePath, text, 'utf-8');
-    } else {
-      throw new Error(`Code HTTP ${res.status}`);
+
+  // Tentative de téléchargement avec retry (jusqu'à 3 essais avec timeout progressif)
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(GOOGLE_SHEET_CSV_URL, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/csv,text/plain;q=0.9,*/*;q=0.8'
+        },
+        signal: AbortSignal.timeout(20000)
+      });
+      if (res.ok) {
+        text = await res.text();
+        // Mettre à jour le cache
+        try {
+          const cacheDir = path.dirname(primaryCachePath);
+          if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+          fs.writeFileSync(primaryCachePath, text, 'utf-8');
+        } catch (_) {}
+        break;
+      } else {
+        throw new Error(`Code HTTP ${res.status}`);
+      }
+    } catch (netErr: any) {
+      console.warn(`[Scraper] Tentative ${attempt}/3 : Réseau indisponible ou lent pour Google Sheets (${netErr?.message || netErr}).`);
+      if (attempt < 3) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
     }
-  } catch (netErr: any) {
-    console.warn(`[Scraper] Réseau indisponible ou lent pour Google Sheets (${netErr?.message || netErr}).`);
-    if (fs.existsSync(cachePath)) {
+  }
+
+  // Si le téléchargement direct a échoué, on bascule sur le cache disponible
+  if (!text) {
+    if (fs.existsSync(primaryCachePath)) {
+      console.log('[Scraper] Utilisation du fichier de cache de secours (src/data/sources_cache.csv).');
+      text = fs.readFileSync(primaryCachePath, 'utf-8');
+    } else if (fs.existsSync(legacyCachePath)) {
       console.log('[Scraper] Utilisation de la copie locale en cache (.dev/sources_cache.csv).');
-      text = fs.readFileSync(cachePath, 'utf-8');
+      text = fs.readFileSync(legacyCachePath, 'utf-8');
     } else {
-      throw new Error(`Impossible de charger les sources (réseau et cache indisponibles) : ${netErr?.message}`);
+      throw new Error('Impossible de charger les sources : réseau inaccessible et aucun fichier de cache disponible.');
     }
   }
 

@@ -280,7 +280,7 @@ export async function getAllDbJobs(): Promise<DbJob[]> {
         requirements,
         COALESCE(metadata, '{}'::jsonb) as "metadata"
       FROM jobs
-      WHERE is_active = 1 OR is_active = true
+      WHERE is_active = true
       ORDER BY published_date DESC, id DESC
     `);
     
@@ -345,7 +345,7 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
         requirements,
         COALESCE(metadata, '{}'::jsonb) as "metadata"
       FROM jobs
-      WHERE slug = $1 AND (is_active = 1 OR is_active = true)
+      WHERE slug = $1 AND is_active = true
       LIMIT 1
     `, [slug]);
 
@@ -396,7 +396,7 @@ export async function archiveExpiredJobs(): Promise<number> {
     // 1. On sélectionne les offres actives avec une deadline renseignée
     const res = await queryDb(`
       SELECT id, deadline FROM jobs 
-      WHERE (is_active = 1 OR is_active = true) 
+      WHERE is_active = true 
         AND deadline IS NOT NULL 
         AND deadline != ''
     `);
@@ -429,9 +429,9 @@ export async function archiveExpiredJobs(): Promise<number> {
 
     if (expiredIds.length > 0) {
       for (const id of expiredIds) {
-        await queryDb(`UPDATE jobs SET is_active = 0, updated_at = NOW() WHERE id = $1`, [id]);
+        await queryDb(`UPDATE jobs SET is_active = false, updated_at = NOW() WHERE id = $1`, [id]);
       }
-      console.log(`[DB] 🧹 Cycle de vie : ${expiredIds.length} offre(s) expirée(s) archivée(s) (is_active = 0).`);
+      console.log(`[DB] 🧹 Cycle de vie : ${expiredIds.length} offre(s) expirée(s) archivée(s) (is_active = false).`);
     }
 
     return expiredIds.length;
