@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS sources (
     etag TEXT,
     last_modified_header TEXT,
     failure_count INTEGER DEFAULT 0,
+    logo_url TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -108,6 +109,32 @@ CREATE INDEX IF NOT EXISTS idx_jobs_contract_type ON jobs(contract_type);
 CREATE INDEX IF NOT EXISTS idx_jobs_opportunity_type ON jobs(opportunity_type);
 CREATE INDEX IF NOT EXISTS idx_jobs_is_active ON jobs(is_active);
 CREATE INDEX IF NOT EXISTS idx_jobs_content_hash ON jobs(content_hash);
+
+CREATE TABLE IF NOT EXISTS ideas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    sector TEXT NOT NULL,
+    zone_cible TEXT DEFAULT 'Bamako, Mali',
+    demarrage_level TEXT NOT NULL,
+    besoin_identifie TEXT NOT NULL,
+    concept TEXT NOT NULL,
+    public_cible TEXT NOT NULL,
+    competences_cles TEXT DEFAULT '[]',
+    premiere_action TEXT NOT NULL,
+    source_inspiration_id TEXT REFERENCES sources(id) ON DELETE SET NULL,
+    is_active INTEGER DEFAULT 1,
+    content_hash TEXT UNIQUE,
+    metadata TEXT DEFAULT '{}',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_ideas_sector ON ideas(sector);
+CREATE INDEX IF NOT EXISTS idx_ideas_demarrage_level ON ideas(demarrage_level);
+CREATE INDEX IF NOT EXISTS idx_ideas_is_active ON ideas(is_active);
+CREATE INDEX IF NOT EXISTS idx_ideas_content_hash ON ideas(content_hash);
+CREATE INDEX IF NOT EXISTS idx_ideas_slug ON ideas(slug);
 `;
 
 const PG_SCHEMA_SQL = `
@@ -124,12 +151,14 @@ CREATE TABLE IF NOT EXISTS sources (
     etag TEXT,
     last_modified_header TEXT,
     failure_count INT DEFAULT 0,
+    logo_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS etag TEXT;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS last_modified_header TEXT;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS failure_count INT DEFAULT 0;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS logo_url TEXT;
 
 CREATE TABLE IF NOT EXISTS jobs (
     id SERIAL PRIMARY KEY,
@@ -167,6 +196,32 @@ CREATE INDEX IF NOT EXISTS idx_jobs_contract_type ON jobs(contract_type);
 CREATE INDEX IF NOT EXISTS idx_jobs_opportunity_type ON jobs(opportunity_type);
 CREATE INDEX IF NOT EXISTS idx_jobs_is_active ON jobs(is_active);
 CREATE INDEX IF NOT EXISTS idx_jobs_content_hash ON jobs(content_hash);
+
+CREATE TABLE IF NOT EXISTS ideas (
+    id SERIAL PRIMARY KEY,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    sector VARCHAR(100) NOT NULL,
+    zone_cible VARCHAR(100) DEFAULT 'Bamako, Mali',
+    demarrage_level VARCHAR(50) NOT NULL,
+    besoin_identifie TEXT NOT NULL,
+    concept TEXT NOT NULL,
+    public_cible TEXT NOT NULL,
+    competences_cles JSONB DEFAULT '[]'::jsonb,
+    premiere_action TEXT NOT NULL,
+    source_inspiration_id VARCHAR(50) REFERENCES sources(id) ON DELETE SET NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    content_hash VARCHAR(64) UNIQUE,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ideas_sector ON ideas(sector);
+CREATE INDEX IF NOT EXISTS idx_ideas_demarrage_level ON ideas(demarrage_level);
+CREATE INDEX IF NOT EXISTS idx_ideas_is_active ON ideas(is_active);
+CREATE INDEX IF NOT EXISTS idx_ideas_content_hash ON ideas(content_hash);
+CREATE INDEX IF NOT EXISTS idx_ideas_slug ON ideas(slug);
 `;
 
 /**
@@ -180,10 +235,14 @@ export async function queryDb(sql: string, params: any[] = []): Promise<{ rows: 
 
   const db = await getSqliteDb();
 
-  // Adapter les requêtes PostgreSQL spécifiques vers SQLite
+  // Adapter les requêtes PostgreSQL spécifiques vers SQLite en respectant l'ordre des paramètres positionnels
+  const paramIndices: number[] = [];
   let sqliteSql = sql
-    // Remplacement des paramètres positionnels $1, $2, etc. par ?
-    .replace(/\$(\d+)/g, '?')
+    // Détecte les $1, $2 et enregistre leur ordre d'apparition
+    .replace(/\$(\d+)/g, (_, idx) => {
+      paramIndices.push(parseInt(idx, 10) - 1);
+      return '?';
+    })
     // NOW() -> datetime('now')
     .replace(/\bNOW\(\)/gi, "datetime('now')")
     // to_char(published_date, 'YYYY-MM-DD') -> strftime('%Y-%m-%d', published_date)
@@ -195,19 +254,23 @@ export async function queryDb(sql: string, params: any[] = []): Promise<{ rows: 
     // NULLS FIRST n'est pas nécessaire ou géré en SQLite de base
     .replace(/NULLS FIRST/gi, '');
 
+  const reorderedParams = paramIndices.length > 0 
+    ? paramIndices.map(i => params[i]) 
+    : params;
+
   const isSelect = /^\s*(SELECT|PRAGMA)/i.test(sqliteSql);
 
   try {
     const stmt = db.prepare(sqliteSql);
     if (isSelect) {
-      const rows = stmt.all(...params);
+      const rows = stmt.all(...reorderedParams);
       return { rows: rows as any[], rowCount: rows.length };
     } else {
-      const info = stmt.run(...params);
+      const info = stmt.run(...reorderedParams);
       return { rows: [], rowCount: Number(info.changes || 0) };
     }
   } catch (err) {
-    console.error('[DB-SQLite Error]', err, 'SQL:', sqliteSql, 'Params:', params);
+    console.error('[DB-SQLite Error]', err, 'SQL:', sqliteSql, 'Params:', reorderedParams);
     throw err;
   }
 }
@@ -219,6 +282,13 @@ export async function initDatabaseSchema() {
   if (isSqlite) {
     const db = await getSqliteDb();
     db.exec(SQLITE_SCHEMA_SQL);
+    try {
+      const columns = db.prepare("PRAGMA table_info(sources)").all();
+      const hasLogoUrl = columns.some((c: any) => c.name === 'logo_url');
+      if (!hasLogoUrl) {
+        db.exec("ALTER TABLE sources ADD COLUMN logo_url TEXT;");
+      }
+    } catch (_) {}
     console.log(`[DB] Schéma SQLite initialisé avec succès (${getSqlitePath()}).`);
     return;
   }
@@ -268,20 +338,23 @@ export async function getAllDbJobs(): Promise<DbJob[]> {
   try {
     const res = await queryDb(`
       SELECT 
-        slug, title, company, location,
-        contract_type as "contractType",
-        COALESCE(opportunity_type, 'JOB') as "opportunityType",
-        category, domain, salary, deadline,
-        to_char(published_date, 'YYYY-MM-DD') as "publishedDate",
-        featured, excerpt, description,
-        original_url as "originalUrl",
-        original_source as "originalSource",
-        how_to_apply as "howToApply",
-        requirements,
-        COALESCE(metadata, '{}'::jsonb) as "metadata"
-      FROM jobs
-      WHERE is_active = true
-      ORDER BY published_date DESC, id DESC
+        j.slug, j.title, j.company, j.location,
+        j.contract_type as "contractType",
+        COALESCE(j.opportunity_type, 'JOB') as "opportunityType",
+        j.category, j.domain, j.salary, j.deadline,
+        to_char(j.published_date, 'YYYY-MM-DD') as "publishedDate",
+        j.featured, j.excerpt, j.description,
+        j.original_url as "originalUrl",
+        j.original_source as "originalSource",
+        j.source_id as "sourceId",
+        s.logo_url as "sourceLogoUrl",
+        j.how_to_apply as "howToApply",
+        j.requirements,
+        COALESCE(j.metadata, '{}'::jsonb) as "metadata"
+      FROM jobs j
+      LEFT JOIN sources s ON j.source_id = s.id
+      WHERE j.is_active = true
+      ORDER BY j.published_date DESC, j.id DESC
     `);
     
     return res.rows.map(r => ({
@@ -297,13 +370,19 @@ export async function getAllDbJobs(): Promise<DbJob[]> {
 }
 
 /**
- * Retourne les offres dynamiques unifiées
+ * Retourne les opportunités dynamiques unifiées (Jobs, Stages, Formations, Projets, Annonces ET Idées business)
  */
 export async function getUnifiedJobs(): Promise<any[]> {
-  const dbJobs = await getAllDbJobs();
-  return dbJobs.map(j => ({
+  const [dbJobs, dbIdeas] = await Promise.all([
+    getAllDbJobs(),
+    getAllDbIdeas()
+  ]);
+
+  const unifiedJobs = dbJobs.map(j => ({
     slug: j.slug,
     body: j.description || '',
+    isIdea: false,
+    url: `/opportunites/${j.slug}`,
     data: {
       title: j.title,
       company: j.company,
@@ -319,11 +398,47 @@ export async function getUnifiedJobs(): Promise<any[]> {
       excerpt: j.excerpt,
       originalUrl: j.originalUrl,
       originalSource: j.originalSource,
+      sourceId: j.sourceId,
+      sourceLogoUrl: j.sourceLogoUrl,
       howToApply: j.howToApply,
       requirements: Array.isArray(j.requirements) ? j.requirements : [],
       metadata: j.metadata || {}
     }
   }));
+
+  const unifiedIdeas = dbIdeas.map(i => ({
+    slug: i.slug,
+    body: `${i.concept}\n\n**Besoin identifié :** ${i.besoinIdentifie}\n\n**Première action recommandée (48h) :** ${i.premiereAction}`,
+    isIdea: true,
+    url: `/idees/${i.slug}`,
+    data: {
+      title: i.title,
+      company: 'Auto-emploi / Micro-entreprise',
+      location: i.zoneCible || 'Bamako, Mali',
+      contractType: 'Idée business',
+      opportunityType: 'IDEA',
+      category: i.sector,
+      domain: i.demarrageLevel,
+      salary: `Démarrage ${i.demarrageLevel.toLowerCase()}`,
+      deadline: null,
+      publishedDate: i.createdAt ? i.createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      featured: false,
+      excerpt: `${i.concept.slice(0, 180)}... Action 48h : ${i.premiereAction}`,
+      originalUrl: `/idees/${i.slug}`,
+      originalSource: i.metadata?.source_name || 'Inspiration locale JobAvenir',
+      howToApply: `Action immédiate sans capital : ${i.premiereAction}`,
+      requirements: Array.isArray(i.competencesCles) ? i.competencesCles : [],
+      metadata: {
+        ...(i.metadata || {}),
+        isIdea: true,
+        demarrageLevel: i.demarrageLevel,
+        premiereAction: i.premiereAction,
+        publicCible: i.publicCible
+      }
+    }
+  }));
+
+  return [...unifiedJobs, ...unifiedIdeas];
 }
 
 /**
@@ -333,23 +448,56 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
   try {
     const res = await queryDb(`
       SELECT 
-        slug, title, company, location,
-        contract_type as "contractType",
-        COALESCE(opportunity_type, 'JOB') as "opportunityType",
-        category, domain, salary, deadline,
-        to_char(published_date, 'YYYY-MM-DD') as "publishedDate",
-        featured, excerpt, description,
-        original_url as "originalUrl",
-        original_source as "originalSource",
-        how_to_apply as "howToApply",
-        requirements,
-        COALESCE(metadata, '{}'::jsonb) as "metadata"
-      FROM jobs
-      WHERE slug = $1 AND is_active = true
+        j.slug, j.title, j.company, j.location,
+        j.contract_type as "contractType",
+        COALESCE(j.opportunity_type, 'JOB') as "opportunityType",
+        j.category, j.domain, j.salary, j.deadline,
+        to_char(j.published_date, 'YYYY-MM-DD') as "publishedDate",
+        j.featured, j.excerpt, j.description,
+        j.original_url as "originalUrl",
+        j.original_source as "originalSource",
+        j.source_id as "sourceId",
+        s.logo_url as "sourceLogoUrl",
+        j.how_to_apply as "howToApply",
+        j.requirements,
+        COALESCE(j.metadata, '{}'::jsonb) as "metadata"
+      FROM jobs j
+      LEFT JOIN sources s ON j.source_id = s.id
+      WHERE j.slug = $1 AND j.is_active = true
       LIMIT 1
     `, [slug]);
 
-    if (res.rows.length === 0) return null;
+    if (res.rows.length === 0) {
+      // Fallback si c'est une idée demandée
+      const idea = await getIdeaBySlug(slug);
+      if (idea) {
+        return {
+          slug: idea.slug,
+          body: `${idea.concept}\n\n${idea.besoinIdentifie}`,
+          isIdea: true,
+          data: {
+            title: idea.title,
+            company: 'Auto-emploi / Micro-entreprise',
+            location: idea.zoneCible || 'Bamako, Mali',
+            contractType: 'Idée business',
+            opportunityType: 'IDEA',
+            category: idea.sector,
+            domain: idea.demarrageLevel,
+            salary: `Démarrage ${idea.demarrageLevel.toLowerCase()}`,
+            deadline: null,
+            publishedDate: idea.createdAt ? idea.createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
+            featured: false,
+            excerpt: idea.concept,
+            originalUrl: `/idees/${idea.slug}`,
+            originalSource: idea.metadata?.source_name || 'JobAvenir',
+            howToApply: idea.premiereAction,
+            requirements: idea.competencesCles || [],
+            metadata: { ...idea.metadata, isIdea: true }
+          }
+        };
+      }
+      return null;
+    }
     const j = res.rows[0];
     const requirements = typeof j.requirements === 'string' ? JSON.parse(j.requirements || '[]') : (j.requirements || []);
     const metadata = typeof j.metadata === 'string' ? JSON.parse(j.metadata || '{}') : (j.metadata || {});
@@ -357,6 +505,7 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
     return {
       slug: j.slug,
       body: j.description || '',
+      isIdea: false,
       data: {
         title: j.title,
         company: j.company,
@@ -372,6 +521,8 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
         excerpt: j.excerpt,
         originalUrl: j.originalUrl,
         originalSource: j.originalSource,
+        sourceId: j.sourceId,
+        sourceLogoUrl: j.sourceLogoUrl,
         howToApply: j.howToApply,
         requirements: Array.isArray(requirements) ? requirements : [],
         metadata: metadata
@@ -440,3 +591,233 @@ export async function archiveExpiredJobs(): Promise<number> {
     return 0;
   }
 }
+
+export interface DbIdea {
+  id?: number;
+  slug: string;
+  title: string;
+  sector: string;
+  zoneCible: string;
+  demarrageLevel: 'Très faible' | 'Modéré' | 'Conséquent';
+  besoinIdentifie: string;
+  concept: string;
+  publicCible: string;
+  competencesCles: string[];
+  premiereAction: string;
+  sourceInspirationId?: string | null;
+  isActive?: boolean;
+  contentHash?: string;
+  metadata?: Record<string, any>;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/**
+ * Récupère toutes les idées actives avec filtres optionnels
+ */
+export async function getAllDbIdeas(filters?: { sector?: string; demarrageLevel?: string; zone?: string }): Promise<DbIdea[]> {
+  try {
+    let sql = `
+      SELECT 
+        id, slug, title, sector,
+        zone_cible as "zoneCible",
+        demarrage_level as "demarrageLevel",
+        besoin_identifie as "besoinIdentifie",
+        concept,
+        public_cible as "publicCible",
+        competences_cles as "competencesCles",
+        premiere_action as "premiereAction",
+        source_inspiration_id as "sourceInspirationId",
+        is_active as "isActive",
+        content_hash as "contentHash",
+        COALESCE(metadata, '{}'::jsonb) as "metadata",
+        created_at as "createdAt",
+        updated_at as "updatedAt"
+      FROM ideas
+      WHERE is_active = true
+    `;
+    const params: any[] = [];
+
+    if (filters?.sector && filters.sector !== 'tous') {
+      params.push(filters.sector);
+      sql += ` AND LOWER(sector) = LOWER($${params.length})`;
+    }
+
+    if (filters?.demarrageLevel && filters.demarrageLevel !== 'tous') {
+      params.push(filters.demarrageLevel);
+      sql += ` AND LOWER(demarrage_level) = LOWER($${params.length})`;
+    }
+
+    if (filters?.zone && filters.zone !== 'tous') {
+      params.push(`%${filters.zone}%`);
+      sql += ` AND LOWER(zone_cible) LIKE LOWER($${params.length})`;
+    }
+
+    sql += ` ORDER BY id DESC`;
+
+    const res = await queryDb(sql, params);
+
+    return res.rows.map(r => ({
+      ...r,
+      isActive: Boolean(r.isActive),
+      competencesCles: typeof r.competencesCles === 'string' ? JSON.parse(r.competencesCles || '[]') : (r.competencesCles || []),
+      metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {})
+    }));
+  } catch (err) {
+    console.warn('[DB] Impossible de récupérer les idées SQL:', err);
+    return [];
+  }
+}
+
+/**
+ * Récupère une fiche idée par son slug
+ */
+export async function getIdeaBySlug(slug: string): Promise<DbIdea | null> {
+  try {
+    const res = await queryDb(`
+      SELECT 
+        id, slug, title, sector,
+        zone_cible as "zoneCible",
+        demarrage_level as "demarrageLevel",
+        besoin_identifie as "besoinIdentifie",
+        concept,
+        public_cible as "publicCible",
+        competences_cles as "competencesCles",
+        premiere_action as "premiereAction",
+        source_inspiration_id as "sourceInspirationId",
+        is_active as "isActive",
+        content_hash as "contentHash",
+        COALESCE(metadata, '{}'::jsonb) as "metadata",
+        created_at as "createdAt",
+        updated_at as "updatedAt"
+      FROM ideas
+      WHERE slug = $1 AND is_active = true
+      LIMIT 1
+    `, [slug]);
+
+    if (res.rows.length === 0) return null;
+    const r = res.rows[0];
+
+    return {
+      ...r,
+      isActive: Boolean(r.isActive),
+      competencesCles: typeof r.competencesCles === 'string' ? JSON.parse(r.competencesCles || '[]') : (r.competencesCles || []),
+      metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {})
+    };
+  } catch (err) {
+    console.warn('[DB] Erreur getIdeaBySlug:', err);
+    return null;
+  }
+}
+
+/**
+ * Insère ou met à jour une idée en base (déduplication par content_hash)
+ */
+export async function insertIdea(idea: DbIdea): Promise<boolean> {
+  try {
+    const competencesJson = JSON.stringify(idea.competencesCles || []);
+    const metadataJson = JSON.stringify(idea.metadata || {});
+
+    await queryDb(`
+      INSERT INTO ideas (
+        slug, title, sector, zone_cible, demarrage_level,
+        besoin_identifie, concept, public_cible,
+        competences_cles, premiere_action, source_inspiration_id,
+        content_hash, metadata, is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 1)
+      ON CONFLICT (content_hash) DO UPDATE SET
+        title = EXCLUDED.title,
+        sector = EXCLUDED.sector,
+        zone_cible = EXCLUDED.zone_cible,
+        demarrage_level = EXCLUDED.demarrage_level,
+        besoin_identifie = EXCLUDED.besoin_identifie,
+        concept = EXCLUDED.concept,
+        public_cible = EXCLUDED.public_cible,
+        competences_cles = EXCLUDED.competences_cles,
+        premiere_action = EXCLUDED.premiere_action,
+        metadata = EXCLUDED.metadata,
+        updated_at = NOW()
+    `, [
+      idea.slug,
+      idea.title,
+      idea.sector,
+      idea.zoneCible || 'Bamako, Mali',
+      idea.demarrageLevel,
+      idea.besoinIdentifie,
+      idea.concept,
+      idea.publicCible,
+      competencesJson,
+      idea.premiereAction,
+      idea.sourceInspirationId || null,
+      idea.contentHash,
+      metadataJson
+    ]);
+
+    return true;
+  } catch (err) {
+    console.error('[DB] Erreur insertIdea:', err);
+    return false;
+  }
+}
+
+export interface DbSource {
+  id: string;
+  name: string;
+  category?: string;
+  subCategory?: string;
+  url: string;
+  statusTechnical?: string;
+  scraperType?: string;
+  frequency?: string;
+  lastScrapedAt?: string;
+  etag?: string;
+  lastModifiedHeader?: string;
+  failureCount?: number;
+  logoUrl?: string | null;
+}
+
+export async function getSourceById(id: string): Promise<DbSource | null> {
+  try {
+    const res = await queryDb(
+      `SELECT id, name, category, sub_category as "subCategory", url, 
+              status_technical as "statusTechnical", scraper_type as "scraperType",
+              logo_url as "logoUrl"
+       FROM sources WHERE id = $1 LIMIT 1`,
+      [id]
+    );
+    return res.rows[0] || null;
+  } catch (err) {
+    console.error(`[DB] Erreur getSourceById(${id}):`, err);
+    return null;
+  }
+}
+
+export async function updateSourceLogo(id: string, logoUrl: string | null): Promise<boolean> {
+  try {
+    await queryDb(
+      `UPDATE sources SET logo_url = $2 WHERE id = $1`,
+      [id, logoUrl]
+    );
+    return true;
+  } catch (err) {
+    console.error(`[DB] Erreur updateSourceLogo(${id}):`, err);
+    return false;
+  }
+}
+
+export async function getAllSourcesWithLogos(): Promise<DbSource[]> {
+  try {
+    const res = await queryDb(
+      `SELECT id, name, category, sub_category as "subCategory", url, 
+              status_technical as "statusTechnical", scraper_type as "scraperType",
+              logo_url as "logoUrl"
+       FROM sources
+       ORDER BY id ASC`
+    );
+    return res.rows;
+  } catch (err) {
+    console.error('[DB] Erreur getAllSourcesWithLogos:', err);
+    return [];
+  }
+}
+

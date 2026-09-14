@@ -31,6 +31,10 @@
         "href": "/opportunites"
       },
       {
+        "label": "Idées business",
+        "href": "/opportunites?type=idee"
+      },
+      {
         "label": "À propos",
         "href": "/a-propos"
       },
@@ -47,6 +51,10 @@
         {
           "label": "Toutes les opportunités",
           "href": "/opportunites"
+        },
+        {
+          "label": "Idées business",
+          "href": "/opportunites?type=idee"
         },
         {
           "label": "Emplois CDI / CDD",

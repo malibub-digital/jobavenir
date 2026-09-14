@@ -6,8 +6,22 @@ import MinimalHeader from "../../components/MinimalHeader.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
 import siteConfig from '../../../site.config.json';
 import { getUnifiedJobs } from '../../lib/db';
+import { getCategoryImage } from '../../lib/image-bank';
+import { getCompanyOrSourceLogo } from '../../lib/source-logo-fetcher';
 
 const allJobs = await getUnifiedJobs();
+
+// Résolution asynchrone préalable des logos pour chaque opportunité
+const jobsWithLogos = await Promise.all(
+  allJobs.map(async (job) => {
+    const logoUrl = job.data.sourceLogoUrl || await getCompanyOrSourceLogo({
+      sourceId: job.data.sourceId,
+      company: job.data.company,
+      originalSource: job.data.originalSource
+    });
+    return { ...job, logoUrl };
+  })
+);
 
 // Récupération du filtre initial depuis l'URL (SSR)
 const queryType = Astro.url.searchParams.get('type')?.toLowerCase() || 'tous';
@@ -19,6 +33,7 @@ const filterCategories = [
   { id: 'stage', label: '🎓 Stages & Immersion' },
   { id: 'formation', label: '📚 Formations Métiers' },
   { id: 'projet', label: '🚀 Projets & Subventions' },
+  { id: 'idee', label: '💡 Idées business' },
   { id: 'annonce', label: '📢 Annonces & Veille' }
 ];
 
@@ -37,7 +52,7 @@ const availableSectors = [
   'Artisanat & Métiers'
 ];
 
-const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
+const sortedJobs = jobsWithLogos.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
 ---
 
 <BaseLayout title={`Offres & Opportunités — ${siteConfig.title}`} description="Inventaire complet des offres d'emploi, stages, formations métiers et appels à projets au Mali.">
@@ -209,7 +224,9 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
             const cType = (job.data.contractType || '').toLowerCase();
             const cat = (job.data.category || '').toLowerCase();
 
-            if (oppType === 'STAGE' || cType.includes('stage') || cType.includes('apprentissage')) {
+            if (job.isIdea || oppType === 'IDEA' || cType.includes('idée') || cType.includes('idee')) {
+              inferredType = 'idee';
+            } else if (oppType === 'STAGE' || cType.includes('stage') || cType.includes('apprentissage')) {
               inferredType = 'stage';
             } else if (oppType === 'ANNOUNCEMENT' || cType.includes('annonce') || cType.includes('information') || cType.includes('officielle')) {
               inferredType = 'annonce';
@@ -221,7 +238,8 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
 
             // Libellé de badge de type
             let badgeText = job.data.contractType;
-            if (inferredType === 'projet') badgeText = 'Appel à projets';
+            if (inferredType === 'idee') badgeText = 'Idée business';
+            else if (inferredType === 'projet') badgeText = 'Appel à projets';
             else if (inferredType === 'formation') badgeText = 'Formation certifiante';
             else if (inferredType === 'annonce') badgeText = 'Veille & Info';
             else if (inferredType === 'stage' && (cType === 'autre' || !cType)) badgeText = 'Stage';
@@ -232,10 +250,12 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
 
             // Normalisation de la localisation pour le filtre
             const isOnline = job.data.location.toLowerCase().includes('meet') || job.data.location.toLowerCase().includes('zoom') || job.data.location.toLowerCase().includes('ligne');
+            const cardImage = job.data.heroImage || getCategoryImage(job.data.category, job.data.metadata?.subCategory || job.data.domain, job.slug);
+            const targetUrl = job.url || (inferredType === 'idee' ? `/idees/${job.slug}` : `/opportunites/${job.slug}`);
 
             return (
               <article 
-                class="job-card bg-white p-5 md:p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group"
+                class="job-card bg-white p-4 md:p-5 rounded-2xl border border-stone-200 shadow-sm hover:border-[var(--ml-color-mandingue-orange)] hover:shadow-md transition-all group"
                 data-type={inferredType}
                 data-contract={job.data.contractType.toLowerCase()}
                 data-location={job.data.location.toLowerCase()}
@@ -243,13 +263,31 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                 data-sector={job.data.category.toLowerCase()}
                 data-text={searchableText}
               >
-                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                  <div class="space-y-2.5 flex-1">
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                  <!-- Vignette de l'opportunité -->
+                  <a 
+                    href={targetUrl} 
+                    class="relative w-full sm:w-36 md:w-44 h-32 sm:h-32 md:h-36 rounded-xl overflow-hidden shrink-0 block bg-stone-100 border border-stone-200/80 group-hover:border-orange-200 transition-colors"
+                  >
+                    <img 
+                      src={cardImage} 
+                      alt={job.data.title}
+                      loading="lazy"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+                  </a>
+
+                  <!-- Contenu de l'opportunité -->
+                  <div class="flex-1 flex flex-col md:flex-row md:items-start justify-between gap-4 w-full">
+                    <div class="space-y-2 flex-1">
                     
                     <!-- Badges d'état et catégorie -->
                     <div class="flex flex-wrap items-center gap-2">
                       <span class={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
-                        inferredType === 'stage' 
+                        inferredType === 'idee'
+                          ? 'bg-emerald-100 text-emerald-950 border-emerald-300'
+                          : inferredType === 'stage' 
                           ? 'bg-amber-100 text-amber-900 border-amber-200' 
                           : inferredType === 'formation'
                           ? 'bg-orange-100 text-orange-950 border-orange-200'
@@ -267,8 +305,12 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                       </span>
 
                       {job.data.salary && (
-                        <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/80">
-                          {job.data.salary}
+                        <span class={`text-[11px] font-bold px-2.5 py-0.5 rounded-md border ${
+                          inferredType === 'idee'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200/80'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                        }`}>
+                          {inferredType === 'idee' ? `⚡ ${job.data.salary}` : job.data.salary}
                         </span>
                       )}
 
@@ -281,7 +323,7 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
 
                     <!-- Titre de l'opportunité -->
                     <h2 class="text-lg md:text-xl font-bold text-stone-900 font-title group-hover:text-[var(--ml-color-mandingue-orange)] transition-colors leading-snug">
-                      <a href={`/opportunites/${job.slug}`} class="no-underline text-inherit">
+                      <a href={targetUrl} class="no-underline text-inherit">
                         {job.data.title}
                       </a>
                     </h2>
@@ -308,9 +350,21 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                       </div>
                     )}
 
-                    <!-- Métadonnées pratiques (Organisme, Lieu, Date limite) -->
-                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500 pt-1">
-                      <span>🏢 <strong>{job.data.company}</strong></span>
+                    <!-- Métadonnées pratiques (Organisme avec logo, Lieu, Date limite) -->
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone-500 pt-1">
+                      <span class="inline-flex items-center gap-1.5 font-medium text-stone-700">
+                        {job.logoUrl ? (
+                          <img 
+                            src={job.logoUrl} 
+                            alt={job.data.company} 
+                            class="w-5 h-5 rounded-md object-contain bg-white border border-stone-200 shrink-0 p-0.5" 
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span>🏢</span>
+                        )}
+                        <strong>{job.data.company}</strong>
+                      </span>
                       <span>📍 {job.data.location}</span>
                       {job.data.deadline && <span class="text-orange-600 font-bold">📅 Date limite : {job.data.deadline}</span>}
                     </div>
@@ -320,15 +374,16 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
                   <div class="flex md:flex-col items-center md:items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-stone-100">
                     <span class="text-[11px] text-stone-400">Publié le {job.data.publishedDate}</span>
                     <a
-                      href={`/opportunites/${job.slug}`}
+                      href={targetUrl}
                       class="px-4 py-2 bg-stone-900 group-hover:bg-[var(--ml-color-mandingue-orange)] text-white text-xs font-bold rounded-xl transition-colors no-underline inline-flex items-center gap-1 shadow-sm"
                     >
-                      <span>Voir le détail</span>
+                      <span>{inferredType === 'idee' ? 'Tester l\'idée' : 'Voir le détail'}</span>
                       <span>&rarr;</span>
                     </a>
                   </div>
                 </div>
-              </article>
+              </div>
+            </article>
             );
           })}
         </div>
@@ -373,8 +428,8 @@ const sortedJobs = allJobs.sort((a, b) => new Date(b.data.publishedDate).getTime
       function updateContractFilterVisibility() {
         if (!contractWrapper || !contractSelect) return;
 
-        if (currentFilter === 'projet' || currentFilter === 'formation' || currentFilter === 'annonce') {
-          // Pour projets, formations et annonces : désactiver le sélecteur de contrat
+        if (currentFilter === 'projet' || currentFilter === 'formation' || currentFilter === 'annonce' || currentFilter === 'idee') {
+          // Pour projets, formations, annonces et idées business : désactiver le sélecteur de contrat salarié
           contractWrapper.classList.add('opacity-40', 'pointer-events-none');
           if (contractLabel) contractLabel.textContent = 'Contrat (Non applicable)';
           contractSelect.value = 'tous';

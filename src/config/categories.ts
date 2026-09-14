@@ -299,6 +299,44 @@ export function findCategory(identifier: string): CategoryConfig | undefined {
 }
 
 /**
+ * Normalise un nom de sous-catégorie en identifiant de dossier (ex: "Développement Web & Mobile" -> "developpement_web_mobile")
+ */
+export function normalizeSubCategoryId(subCategory: string): string {
+  return subCategory
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+/**
+ * Retrouve la sous-catégorie officielle correspondante dans une catégorie donnée
+ */
+export function findSubCategory(categoryIdentifier: string, subCategoryName: string): string | undefined {
+  const cat = findCategory(categoryIdentifier);
+  if (!cat || !subCategoryName) return undefined;
+
+  const normalizedInput = normalizeSubCategoryId(subCategoryName);
+  for (const sub of cat.subCategories) {
+    if (normalizeSubCategoryId(sub) === normalizedInput) {
+      return sub;
+    }
+  }
+
+  // Correspondance par inclusion
+  for (const sub of cat.subCategories) {
+    const normSub = normalizeSubCategoryId(sub);
+    if (normSub.includes(normalizedInput) || normalizedInput.includes(normSub)) {
+      return sub;
+    }
+  }
+
+  return undefined;
+}
+
+/**
  * Génère le bloc textuel pour le prompt de l'IA contenant les catégories et leurs sous-catégories
  */
 export function getCategoriesPromptInstruction(): string {
@@ -307,3 +345,4 @@ export function getCategoriesPromptInstruction(): string {
   });
   return lines.join('\n');
 }
+

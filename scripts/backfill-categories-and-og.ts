@@ -9,7 +9,7 @@ async function backfill() {
   console.log('=== DÉMARRAGE DU BACKFILL ET HARMONISATION DES ANNONCES ===');
   console.log(`Mode de base : ${isSqlite ? 'SQLite' : 'PostgreSQL'}`);
 
-  const res = await pool.query('SELECT id, slug, title, company, category, domain, location, opportunity_type, metadata FROM jobs ORDER BY id ASC');
+  const res = await pool.query('SELECT id, slug, title, company, category, domain, location, opportunity_type, metadata, source_id, original_source FROM jobs ORDER BY id ASC');
   const jobs = res.rows;
   console.log(`Nombre total d'offres à inspecter : ${jobs.length}`);
 
@@ -59,7 +59,9 @@ async function backfill() {
           subCategory: metadata.subCategory,
           location: job.location,
           opportunityType: job.opportunity_type,
-          slug: job.slug
+          slug: job.slug,
+          sourceId: job.source_id,
+          originalSource: job.original_source
         });
         ogGeneratedCount++;
       } catch (err) {

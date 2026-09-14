@@ -9,6 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "scrape": "tsx scripts/scrape.ts",
+    "scrape:ideas": "tsx scripts/scrape-ideas.ts",
+    "sync:sources": "tsx scripts/sync-sources-and-logos.ts",
     "backfill": "tsx scripts/backfill-categories-and-og.ts"
   },
   "dependencies": {

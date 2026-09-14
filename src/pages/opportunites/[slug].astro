@@ -7,6 +7,7 @@ import Footer from "@malihub/sites-core/components/Footer.astro";
 import siteConfig from "../../../site.config.json";
 import { getJobBySlug } from "../../lib/db";
 import { getCategoryImage } from "../../lib/image-bank";
+import { getCompanyOrSourceLogo } from "../../lib/source-logo-fetcher";
 
 const { slug } = Astro.params;
 const job = slug ? await getJobBySlug(slug) : null;
@@ -15,7 +16,13 @@ if (!job) {
   return Astro.redirect("/opportunites");
 }
 
-const bannerBgImage = job.data.heroImage || getCategoryImage(job.data.category, job.slug);
+const companyLogoUrl = job.data.sourceLogoUrl || await getCompanyOrSourceLogo({
+  sourceId: job.data.sourceId,
+  company: job.data.company,
+  originalSource: job.data.originalSource
+});
+
+const bannerBgImage = job.data.heroImage || getCategoryImage(job.data.category, job.data.metadata?.subCategory || job.data.domain, job.slug);
 
 const isAnnouncement = job.data.opportunityType === "ANNOUNCEMENT";
 const isProject =
@@ -173,13 +180,7 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
           <!-- Léger halo coloré selon la thématique pour une touche chaleureuse -->
           <div
-            class={`absolute inset-0 bg-gradient-to-r ${categoryGradient} opacity-30 mix-blend-color`}
-          >
-          </div>
-
-          <!-- Motifs géométriques décoratifs élégants et subtils -->
-          <div
-            class="banner-pattern absolute inset-0 pointer-events-none select-none opacity-10"
+            class={`absolute inset-0 bg-gradient-to-r ${categoryGradient} opacity-20 mix-blend-color`}
           >
           </div>
 
@@ -223,9 +224,18 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
               <span class="text-stone-400 block text-[11px] mb-0.5"
                 >{companyRoleLabel}</span
               >
-              <strong class="text-stone-900 font-semibold"
-                >{job.data.company}</strong
-              >
+              <div class="flex items-center gap-2 mt-0.5">
+                {companyLogoUrl && (
+                  <img
+                    src={companyLogoUrl}
+                    alt={job.data.company}
+                    class="w-6 h-6 rounded-md object-contain bg-white border border-stone-200 shrink-0 p-0.5 shadow-2xs"
+                  />
+                )}
+                <strong class="text-stone-900 font-semibold"
+                  >{job.data.company}</strong
+                >
+              </div>
             </div>
             <div>
               <span class="text-stone-400 block text-[11px] mb-0.5">Lieu</span>
@@ -369,12 +379,3 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
     footerLinks={siteConfig.footerLinks}
   />
 </BaseLayout>
-
-<style>
-  .banner-pattern {
-    opacity: 0.22;
-    background-repeat: repeat;
-    background-size: 36px 36px;
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='1.2' stroke-opacity='0.8'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20 Z'/%3E%3Ccircle cx='20' cy='20' r='3.5' fill='%23FFFFFF' fill-opacity='0.6'/%3E%3C/g%3E%3C/svg%3E");
-  }
-</style>
