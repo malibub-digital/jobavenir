@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { extractJobWithAI, ExtractedJob } from '../src/lib/ai-extractor';
+import { generateJobOgImage } from '../src/lib/og-generator';
 import { pool, initDatabaseSchema, isSqlite, archiveExpiredJobs } from '../src/lib/db';
 
 dotenv.config();
@@ -626,6 +627,31 @@ export async function runScraper(closePool = false) {
 
       if (hasDb) {
         const slug = `${slugify(extracted.title)}-${hash.slice(0, 6)}`;
+        
+        // Génération automatique de la miniature OpenGraph pour les réseaux sociaux
+        let ogImageUrl = `/images/og/${slug}.webp`;
+        try {
+          ogImageUrl = await generateJobOgImage({
+            title: extracted.title,
+            company: extracted.company,
+            category: extracted.category,
+            subCategory: extracted.subCategory,
+            location: extracted.location,
+            opportunityType: extracted.opportunityType,
+            slug
+          });
+          console.log(`         🖼️ Miniature OG générée : ${ogImageUrl}`);
+        } catch (ogErr) {
+          console.warn('         ⚠️ Erreur génération miniature OG:', ogErr);
+        }
+
+        const enrichedMetadata = {
+          ...(extracted.metadata || {}),
+          subCategory: extracted.subCategory || null,
+          teaser: extracted.teaser || null,
+          ogImageUrl
+        };
+
         try {
           await pool.query(
             `INSERT INTO jobs (
@@ -638,6 +664,7 @@ export async function runScraper(closePool = false) {
               title = EXCLUDED.title,
               opportunity_type = EXCLUDED.opportunity_type,
               deadline = EXCLUDED.deadline,
+              metadata = EXCLUDED.metadata,
               updated_at = NOW()`,
             [
               slug,
@@ -658,7 +685,7 @@ export async function runScraper(closePool = false) {
               source.id,
               extracted.howToApply || null,
               JSON.stringify(extracted.requirements || []),
-              JSON.stringify(extracted.metadata || {}),
+              JSON.stringify(enrichedMetadata),
               hash
             ]
           );

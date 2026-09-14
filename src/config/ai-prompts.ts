@@ -10,6 +10,8 @@
  * ou un fichier externe via la variable OPENROUTER_PROMPT_PATH.
  */
 
+import { getCategoriesPromptInstruction, CATEGORY_LABELS } from './categories';
+
 export interface PromptConfig {
   systemPrompt: string;
   defaultModel: string;
@@ -41,9 +43,9 @@ Réservé strictement aux guichets ouverts, financements, subventions et concour
 
 Si le texte correspond à une réelle opportunité, retourne STRICTEMENT cet objet JSON :
 {
-  "title": "Titre clair et orienté vers l'opportunité",
+  "title": "Titre clair et orienté vers l'opportunité (ex: 'Recrutement d'un Agronome de Terrain')",
   "company": "Nom de l'entreprise, institution, ministère ou organisme partenaire",
-  "location": "Ville ou région au Mali (ex: Bamako, Ségou, Mopti) ou 'Mali (National)'",
+  "location": "Ville ou région au Mali (ex: Bamako, Ségou, Mopti, Sikasso) ou 'Mali (National)'",
   "contractType": "CDI" | "CDD" | "Stage" | "Intérim" | "Apprentissage" | "Autre" (pour JOB ou STAGE, sinon mettre "Autre"),
   "opportunityType": 
       "JOB" (emploi salarié/consultance)
@@ -51,14 +53,20 @@ Si le texte correspond à une réelle opportunité, retourne STRICTEMENT cet obj
     | "TRAINING" (formation/atelier de renforcement de compétences)
     | "PROJECT_CALL" (appel à candidatures, concours, subvention ouverte avec dépôt de dossier)
     | "ANNOUNCEMENT" (annonce d'un programme d'appui, forum/conférence participative, guichet ou veille d'opportunité d'intérêt public),
-  "category": "Choisis STRICTEMENT parmi : 'Informatique', 'Finance & Gestion', 'Agriculture & Foncier', 'Santé & Social', 'BTP & Industrie', 'Humanitaire & Coopération', 'Formation professionnelle', 'Communication & Digital', 'Artisanat & Métiers', 'Administration publique', 'Défense & Sécurité', 'Services & Polyvalent'",
-  "domain": "Sous-domaine spécifique ou null",
+  "category": "Choisis STRICTEMENT l'un des libellés suivants : ${CATEGORY_LABELS.map(l => `'${l}'`).join(', ')}",
+  "subCategory": "Sous-catégorie la plus pertinente parmi celles de la catégorie choisie",
+  "domain": "Sous-domaine spécifique libre ou null",
   "salary": "Rémunération, dotation financière ou montant du soutien si mentionné, sinon null",
-  "deadline": "Date limite de participation, d'inscription ou d'échéance si applicable, sinon null",
+  "deadline": "Date limite de participation, d'inscription ou d'échéance si applicable (format YYYY-MM-DD), sinon null",
   "publishedDate": "Date de publication YYYY-MM-DD ou null",
+  "teaser": "Phrase d'accroche courte et percutante (max 100 caractères) résumant l'opportunité pour les réseaux sociaux (ex: 'Rejoignez une ONG leader en santé communautaire à Mopti.')",
   "excerpt": "Court résumé (1-2 phrases) expliquant concrètement en quoi cette publication représente une opportunité et qui peut en bénéficier",
   "howToApply": "Modalités de participation ou consultation (lien officiel, inscription, contact) ou null",
   "requirements": ["Compétence ou critère clé 1", "Compétence ou critère clé 2", "Compétence ou critère clé 3"],
   "metadata": {}
-}`
+}
+
+RÉFÉRENTIEL DES CATÉGORIES ET SOUS-CATÉGORIES VALIDES :
+${getCategoriesPromptInstruction()}`
 };
+

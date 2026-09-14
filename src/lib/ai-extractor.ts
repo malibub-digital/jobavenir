@@ -10,10 +10,12 @@ export interface ExtractedJob {
   contractType: 'CDI' | 'CDD' | 'Stage' | 'Intérim' | 'Apprentissage' | 'Autre';
   opportunityType?: 'JOB' | 'STAGE' | 'TRAINING' | 'PROJECT_CALL' | 'ANNOUNCEMENT';
   category: string;
+  subCategory?: string;
   domain?: string;
   salary?: string | null;
   deadline?: string | null;
   publishedDate?: string;
+  teaser?: string;
   excerpt: string;
   howToApply?: string | null;
   requirements?: string[];
