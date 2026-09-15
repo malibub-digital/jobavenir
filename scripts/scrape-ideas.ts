@@ -391,8 +391,39 @@ export async function runIdeaScraper(closePool = false) {
       console.warn(`[Ideas Scraper] Source ${cliSourceId} introuvable parmi les sources d'idées.`);
     }
   } else {
-    // Échantillon par défaut (ex: 5 sources prioritaires)
-    targetSources = allSources.slice(0, 5);
+    // Rotation basée sur la date du dernier scrape en base (last_scraped_at ASC NULLS FIRST)
+    const sourceIds = allSources.map(s => s.id);
+    const placeholders = sourceIds.map((_, i) => `$${i + 1}`).join(', ');
+    const dbSourcesRes = await queryDb(
+      `SELECT id, etag, last_modified_header, last_scraped_at
+       FROM sources
+       WHERE id IN (${placeholders})
+       ORDER BY last_scraped_at ASC NULLS FIRST
+       LIMIT 8`,
+      sourceIds
+    );
+
+    const orderedIds: string[] = dbSourcesRes.rows.map((r: any) => r.id);
+    const idMap = new Map(allSources.map(s => [s.id, s]));
+
+    // Associer les données ETag / LastModified récupérées en base
+    for (const r of dbSourcesRes.rows) {
+      const src = idMap.get(r.id);
+      if (src) {
+        src.etag = r.etag;
+        src.lastModifiedHeader = r.last_modified_header;
+      }
+    }
+
+    targetSources = orderedIds
+      .map(id => idMap.get(id))
+      .filter((s): s is SourceRow => !!s);
+
+    // Si la DB ne renvoie rien pour une raison quelconque, fallback sur les 8 premières
+    if (targetSources.length === 0) {
+      targetSources = allSources.slice(0, 8);
+    }
+    console.log(`[Ideas Scraper] 🔄 Lot de ${targetSources.length} sources sélectionnées par rotation (les moins récemment scrapées).`);
   }
 
   let totalNewIdeas = 0;
@@ -403,7 +434,19 @@ export async function runIdeaScraper(closePool = false) {
     console.log(`\n--------------------------------------------------`);
     console.log(`[Source ${source.id}] ${source.name} (${source.url})`);
 
-    const result = await scrapeIdeaSource(source, 3);
+    const result = await scrapeIdeaSource(source, 5);
+
+    // Mettre à jour la date de passage et métadonnées HTTP en base pour assurer la rotation au prochain run
+    await queryDb(
+      `UPDATE sources 
+       SET last_scraped_at = CURRENT_TIMESTAMP,
+           etag = $2,
+           last_modified_header = $3,
+           failure_count = 0
+       WHERE id = $1`,
+      [source.id, result.etag || source.etag || null, result.lastModified || source.lastModifiedHeader || null]
+    );
+
     if (!result.modified || result.posts.length === 0) {
       console.log(`   ⏭️ Aucun nouveau contenu ou source inchangée.`);
       continue;
