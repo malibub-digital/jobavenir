@@ -245,8 +245,8 @@ export async function queryDb(sql: string, params: any[] = []): Promise<{ rows: 
     })
     // NOW() -> datetime('now')
     .replace(/\bNOW\(\)/gi, "datetime('now')")
-    // to_char(published_date, 'YYYY-MM-DD') -> strftime('%Y-%m-%d', published_date)
-    .replace(/to_char\s*\(\s*published_date\s*,\s*'YYYY-MM-DD'\s*\)/gi, "strftime('%Y-%m-%d', published_date)")
+    // to_char(published_date, 'YYYY-MM-DD') ou to_char(j.published_date, 'YYYY-MM-DD') -> strftime('%Y-%m-%d', ...)
+    .replace(/to_char\s*\(\s*([a-zA-Z0-9_.]+)\s*,\s*'YYYY-MM-DD'\s*\)/gi, "strftime('%Y-%m-%d', $1)")
     // EXCLUDED.field -> excluded.field
     .replace(/EXCLUDED\./g, "excluded.")
     // '[]'::jsonb ou '{}'::jsonb

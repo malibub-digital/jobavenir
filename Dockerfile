@@ -30,6 +30,6 @@ ENV PORT=3000
 # Expose port
 EXPOSE 3000
 
-# Start Astro Node server
-CMD ["node", "dist/server/entry.mjs"]
+# Start Astro Node server with automated schema check & backfill
+CMD ["sh", "-c", "npx tsx scripts/init-prod-db.ts && npx tsx scripts/backfill-categories-and-og.ts && node dist/server/entry.mjs"]
 

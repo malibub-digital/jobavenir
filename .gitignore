@@ -6,3 +6,4 @@ dist
 *.log
 .dev/
 src/data/sources_cache.csv
+*.db
