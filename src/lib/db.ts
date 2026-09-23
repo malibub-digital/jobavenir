@@ -370,6 +370,28 @@ export async function getAllDbJobs(): Promise<DbJob[]> {
 }
 
 /**
+ * Formate de manière sécurisée une date (string, Date ou timestamp) en format YYYY-MM-DD
+ */
+export function safeFormatDate(val: any, fallbackToday: boolean = true): string {
+  if (!val) {
+    return fallbackToday ? new Date().toISOString().slice(0, 10) : '';
+  }
+  if (val instanceof Date) {
+    return !isNaN(val.getTime()) ? val.toISOString().slice(0, 10) : (fallbackToday ? new Date().toISOString().slice(0, 10) : '');
+  }
+  if (typeof val === 'string') {
+    if (val.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+      return val.slice(0, 10);
+    }
+    const d = new Date(val);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().slice(0, 10);
+    }
+  }
+  return fallbackToday ? new Date().toISOString().slice(0, 10) : '';
+}
+
+/**
  * Retourne les opportunités dynamiques unifiées (Jobs, Stages, Formations, Projets, Annonces ET Idées business)
  */
 export async function getUnifiedJobs(): Promise<any[]> {
@@ -393,7 +415,7 @@ export async function getUnifiedJobs(): Promise<any[]> {
       domain: j.domain,
       salary: j.salary,
       deadline: j.deadline,
-      publishedDate: j.publishedDate,
+      publishedDate: safeFormatDate(j.publishedDate),
       featured: j.featured,
       excerpt: j.excerpt,
       originalUrl: j.originalUrl,
@@ -421,9 +443,9 @@ export async function getUnifiedJobs(): Promise<any[]> {
       domain: i.demarrageLevel,
       salary: `Démarrage ${i.demarrageLevel.toLowerCase()}`,
       deadline: null,
-      publishedDate: i.createdAt ? i.createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      publishedDate: safeFormatDate(i.createdAt),
       featured: false,
-      excerpt: `${i.concept.slice(0, 180)}... Action 48h : ${i.premiereAction}`,
+      excerpt: `${(i.concept || '').slice(0, 180)}... Action 48h : ${i.premiereAction || ''}`,
       originalUrl: `/idees/${i.slug}`,
       originalSource: i.metadata?.source_name || 'Inspiration locale JobAvenir',
       howToApply: `Action immédiate sans capital : ${i.premiereAction}`,
@@ -485,7 +507,7 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
             domain: idea.demarrageLevel,
             salary: `Démarrage ${idea.demarrageLevel.toLowerCase()}`,
             deadline: null,
-            publishedDate: idea.createdAt ? idea.createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
+            publishedDate: safeFormatDate(idea.createdAt),
             featured: false,
             excerpt: idea.concept,
             originalUrl: `/idees/${idea.slug}`,
@@ -661,7 +683,9 @@ export async function getAllDbIdeas(filters?: { sector?: string; demarrageLevel?
       ...r,
       isActive: Boolean(r.isActive),
       competencesCles: typeof r.competencesCles === 'string' ? JSON.parse(r.competencesCles || '[]') : (r.competencesCles || []),
-      metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {})
+      metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {}),
+      createdAt: safeFormatDate(r.createdAt),
+      updatedAt: safeFormatDate(r.updatedAt)
     }));
   } catch (err) {
     console.warn('[DB] Impossible de récupérer les idées SQL:', err);
@@ -702,7 +726,9 @@ export async function getIdeaBySlug(slug: string): Promise<DbIdea | null> {
       ...r,
       isActive: Boolean(r.isActive),
       competencesCles: typeof r.competencesCles === 'string' ? JSON.parse(r.competencesCles || '[]') : (r.competencesCles || []),
-      metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {})
+      metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {}),
+      createdAt: safeFormatDate(r.createdAt),
+      updatedAt: safeFormatDate(r.updatedAt)
     };
   } catch (err) {
     console.warn('[DB] Erreur getIdeaBySlug:', err);
