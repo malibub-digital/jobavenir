@@ -724,7 +724,7 @@ export async function insertIdea(idea: DbIdea): Promise<boolean> {
         besoin_identifie, concept, public_cible,
         competences_cles, premiere_action, source_inspiration_id,
         content_hash, metadata, is_active
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 1)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, true)
       ON CONFLICT (content_hash) DO UPDATE SET
         title = EXCLUDED.title,
         sector = EXCLUDED.sector,

@@ -90,49 +90,63 @@ export async function extractIdeaWithAI(rawText: string, fallbackTitle?: string)
   const temperature = IDEA_PROMPT_CONFIG.temperature;
   const systemPrompt = IDEA_PROMPT_CONFIG.systemPrompt;
 
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://jobavenir.ml',
-        'X-Title': 'JobAvenir Idea Extractor'
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Contenu source à analyser et contextualiser en micro-projet pour le Mali :\n\nTitre initial: ${fallbackTitle || ''}\n\n${rawText.slice(0, 8000)}` }
-        ],
-        temperature
-      })
-    });
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://jobavenir.ml',
+          'X-Title': 'JobAvenir Idea Extractor'
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Contenu source à analyser et contextualiser en micro-projet pour le Mali :\n\nTitre initial: ${fallbackTitle || ''}\n\n${rawText.slice(0, 8000)}` }
+          ],
+          temperature
+        })
+      });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error(`[AI Ideas] Erreur OpenRouter (${response.status}): ${errText}`);
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error(`[AI Ideas] Erreur OpenRouter (${response.status}) [Tentative ${attempt}/${maxAttempts}]: ${errText}`);
+        if ((response.status === 429 || response.status >= 500) && attempt < maxAttempts) {
+          const delay = attempt * 2500;
+          console.log(`[AI Ideas] ⏳ Pause de ${delay}ms avant nouvelle tentative suite au rate limit...`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        return null;
+      }
+
+      const data = await response.json();
+      const content: string = data.choices?.[0]?.message?.content?.trim() || '';
+
+      // Détection d'un objet JSON
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.warn('[AI Ideas] Aucun objet JSON détecté dans la réponse');
+        return null;
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.ignore === true) {
+        return null;
+      }
+
+      return validateExtractedIdea(parsed);
+    } catch (err: any) {
+      console.error(`[AI Ideas] Erreur de parsing LLM [Tentative ${attempt}/${maxAttempts}]:`, err?.message || err);
+      if (attempt < maxAttempts) {
+        await new Promise(r => setTimeout(r, 2000));
+        continue;
+      }
       return null;
     }
-
-    const data = await response.json();
-    const content: string = data.choices?.[0]?.message?.content?.trim() || '';
-
-    // Détection d'un objet JSON
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.warn('[AI Ideas] Aucun objet JSON détecté dans la réponse');
-      return null;
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]);
-    if (parsed.ignore === true) {
-      return null;
-    }
-
-    return validateExtractedIdea(parsed);
-  } catch (err) {
-    console.error('[AI Ideas] Erreur de parsing LLM:', err);
-    return null;
   }
+  return null;
 }
