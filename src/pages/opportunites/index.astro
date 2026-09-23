@@ -238,7 +238,7 @@ const sortedJobs = jobsWithLogos.sort((a, b) => new Date(b.data.publishedDate).g
 
             // Libellé de badge de type
             let badgeText = job.data.contractType;
-            if (inferredType === 'idee') badgeText = 'Idée business';
+            if (inferredType === 'idee') badgeText = '💡 Idée à lancer';
             else if (inferredType === 'projet') badgeText = 'Appel à projets';
             else if (inferredType === 'formation') badgeText = 'Formation certifiante';
             else if (inferredType === 'annonce') badgeText = 'Veille & Info';
@@ -286,7 +286,7 @@ const sortedJobs = jobsWithLogos.sort((a, b) => new Date(b.data.publishedDate).g
                     <div class="flex flex-wrap items-center gap-2">
                       <span class={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
                         inferredType === 'idee'
-                          ? 'bg-emerald-100 text-emerald-950 border-emerald-300'
+                          ? 'bg-amber-100 text-amber-950 border-amber-300 font-black'
                           : inferredType === 'stage' 
                           ? 'bg-amber-100 text-amber-900 border-amber-200' 
                           : inferredType === 'formation'

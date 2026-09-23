@@ -14,6 +14,7 @@ const allIdeas = await getAllDbIdeas();
 const recentIdeas = allIdeas.slice(0, 2);
 
 const recentJobs = allJobs
+  .filter((j) => !j.isIdea && j.data.opportunityType !== "IDEA")
   .sort(
     (a, b) =>
       new Date(b.data.publishedDate).getTime() -
@@ -720,12 +721,17 @@ const footerLogos = [
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                   <div class="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                    <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-white/95 text-stone-900 shadow-sm">
-                      {idea.sector}
+                    <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-amber-500 text-stone-950 shadow-sm border border-amber-300">
+                      💡 Idée à lancer
                     </span>
-                    <span class={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${levelColor} bg-white/95`}>
-                      {idea.demarrageLevel}
-                    </span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-white/95 text-stone-900 shadow-sm">
+                        {idea.sector}
+                      </span>
+                      <span class={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${levelColor} bg-white/95`}>
+                        {idea.demarrageLevel}
+                      </span>
+                    </div>
                   </div>
                   <span class="absolute bottom-2.5 left-3 text-[11px] font-semibold text-white/90">
                     📍 {idea.zoneCible}

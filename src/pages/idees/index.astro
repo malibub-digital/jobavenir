@@ -199,12 +199,17 @@ const zones = [
                   
                   <!-- Badges flottants -->
                   <div class="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-white/95 text-stone-900 shadow-sm backdrop-blur-sm">
-                      {idea.sector}
+                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-black bg-amber-500 text-stone-950 shadow-sm border border-amber-300">
+                      💡 Idée à lancer
                     </span>
-                    <span class={`px-2 py-0.5 rounded-lg text-[10px] font-bold border backdrop-blur-sm bg-white/95 ${levelColor}`}>
-                      {idea.demarrageLevel}
-                    </span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-white/95 text-stone-900 shadow-sm backdrop-blur-sm">
+                        {idea.sector}
+                      </span>
+                      <span class={`px-2 py-0.5 rounded-lg text-[10px] font-bold border backdrop-blur-sm bg-white/95 ${levelColor}`}>
+                        {idea.demarrageLevel}
+                      </span>
+                    </div>
                   </div>
 
                   <div class="absolute bottom-3 left-3 right-3">
