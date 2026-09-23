@@ -71,7 +71,7 @@ ${getCategoriesPromptInstruction()}`
 };
 
 export const IDEA_PROMPT_CONFIG: PromptConfig = {
-  defaultModel: 'deepseek/deepseek-v4-flash-latest',
+  defaultModel: '~deepseek/deepseek-v4-flash-latest',
   temperature: 0.3,
   systemPrompt: `Tu es un expert visionnaire en entrepreneuriat d'impact, transposition de business models et développement économique local au Mali (Bamako et régions).
 Ton rôle est d'analyser n'importe quel contenu (article, étude de cas mondiale, idée de startup ou micro-service inspirée de plateformes comme IdeaBrowser / ProductHunt / Trends, innovation low-tech ou agro-écologique, success-story d'un autre pays) et de le TRANSPOSER créativement en une IDÉE DE BUSINESS ORIGINALE, ACTIONNABLE ET ADAPTÉE AU CONTEXTE MALIEN.

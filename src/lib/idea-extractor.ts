@@ -124,7 +124,11 @@ export async function extractIdeaWithAI(rawText: string, fallbackTitle?: string)
       }
 
       const data = await response.json();
-      const content: string = data.choices?.[0]?.message?.content?.trim() || '';
+      const choice = data.choices?.[0]?.message;
+      let content: string = (choice?.content || '').trim();
+      if (!content && choice?.reasoning) {
+        content = choice.reasoning.trim();
+      }
 
       // Détection d'un objet JSON
       const jsonMatch = content.match(/\{[\s\S]*\}/);
