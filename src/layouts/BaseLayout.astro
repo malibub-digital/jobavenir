@@ -1,0 +1,116 @@
+---
+import '@malihub/dsml-core/css/dsml.css';
+import '@malihub/dsml-core/css/dsml-icons.css';
+import AdminToolbar from '@malihub/sites-core/components/AdminToolbar.astro';
+import EmergencyBanner from '@malihub/sites-core/components/EmergencyBanner.astro';
+import type { EmergencyNotice } from '@malihub/sites-core/schemas/index.js';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+  adminSecret?: string;
+  siteId?: string;
+  gitEnabled?: boolean;
+  emergencyNotice?: EmergencyNotice;
+}
+
+const {
+  title,
+  description = 'Site officiel de l\'administration du Mali',
+  lang = 'fr',
+  adminSecret = import.meta.env.CMS_ADMIN_SECRET || process.env.CMS_ADMIN_SECRET || '',
+  siteId = 'default',
+  gitEnabled = Astro.props.gitEnabled,
+  emergencyNotice,
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <script is:inline>
+    (function () {
+      try {
+        const saved = localStorage.getItem('ml_theme') || localStorage.getItem('consulat_theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved === 'dark' || (!saved && prefersDark) ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <slot name="head" />
+</head>
+<body class="ml-body">
+  <AdminToolbar adminSecret={adminSecret} siteId={siteId} gitEnabled={gitEnabled} />
+  {emergencyNotice && (
+    <EmergencyBanner
+      enabled={emergencyNotice.enabled}
+      type={emergencyNotice.type}
+      message={emergencyNotice.message}
+      ctaLabel={emergencyNotice.ctaLabel}
+      ctaHref={emergencyNotice.ctaHref}
+    />
+  )}
+  <div class="ml-page-wrapper">
+    <slot name="header" />
+    <main id="main-content" class="ml-main-content">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </div>
+
+  <style is:global>
+    body.cms-mode-editing [data-cms-bind] {
+      position: relative;
+      outline: 1.5px dashed rgba(2, 132, 199, 0.4);
+      outline-offset: 2px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: outline 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    body.cms-mode-editing [data-cms-bind]:hover {
+      outline: 2px solid #0284c7;
+      outline-offset: 2px;
+      background-color: rgba(2, 132, 199, 0.08);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    body.cms-mode-editing [data-cms-bind][data-cms-active="true"] {
+      outline: 2px solid #0284c7;
+      outline-offset: 2px;
+      background-color: rgba(2, 132, 199, 0.12);
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25);
+    }
+    body.cms-mode-editing [data-cms-bind][data-cms-has-draft="true"] {
+      outline: 2px dashed #f59e0b;
+      outline-offset: 2px;
+      background-color: rgba(245, 158, 11, 0.06);
+    }
+    body.cms-mode-editing [data-cms-bind][data-cms-has-draft="true"]:hover {
+      outline: 2px solid #d97706;
+      background-color: rgba(245, 158, 11, 0.12);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    body.cms-mode-editing .brand-text {
+      gap: 6px;
+    }
+  </style>
+</body>
+</html>
