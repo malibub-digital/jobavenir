@@ -286,9 +286,9 @@ export async function queryDb(sql: string, params: any[] = []): Promise<{ rows: 
     // NULLS FIRST n'est pas nécessaire ou géré en SQLite de base
     .replace(/NULLS FIRST/gi, '');
 
-  const reorderedParams = paramIndices.length > 0 
+  const reorderedParams = (paramIndices.length > 0 
     ? paramIndices.map(i => params[i]) 
-    : params;
+    : params).map(val => (typeof val === 'boolean' ? (val ? 1 : 0) : val));
 
   const isSelect = /^\s*(SELECT|PRAGMA)/i.test(sqliteSql);
 
