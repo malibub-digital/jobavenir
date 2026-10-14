@@ -53,9 +53,31 @@ if (fs.existsSync(filePath)) {
 }
 
 const cmsBase = `src/content/actualites/${targetSlug}.md`;
+const siteUrl = Astro.site?.origin || siteConfig.siteUrl || "https://job.malihub.digital";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const rawImage = article.image || '/images/categories/default.webp';
+const ogImageUrl = rawImage.startsWith('http') ? rawImage : `${siteUrl}${rawImage}`;
+const pageDescription = article.excerpt || article.title;
 ---
 
-<BaseLayout title={`${article.title} — ${siteConfig.title}`} description={article.excerpt || article.title}>
+<BaseLayout title={`${article.title} — ${siteConfig.title}`} description={pageDescription}>
+  <Fragment slot="head">
+    <meta property="og:site_name" content="JobAvenir Mali" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={`${article.title} | JobAvenir Mali`} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:locale" content="fr_FR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={`${article.title} | JobAvenir Mali`} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+  </Fragment>
+
   <MinimalHeader slot="header" />
 
   <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/40 min-h-screen">
