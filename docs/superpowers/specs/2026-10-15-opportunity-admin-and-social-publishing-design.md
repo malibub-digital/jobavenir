@@ -1,4 +1,4 @@
-# Design Doc : Gestion des Opportunités et Planification Réseaux Sociaux par l'Administrateur
+# Design Doc : Gestion Simplifiée des Opportunités et Diffusion Réseaux Sociaux
 
 **Date :** 2026-10-15  
 **Auteur :** Antigravity & Sylvain  
@@ -6,168 +6,147 @@
 
 ---
 
-## 1. Contexte & Objectifs
+## 1. Vision & Principes Directeurs
 
-Le portail **JobAvenir** centralise des opportunités d'emploi, de stage, de formation, de projets et d'idées d'entreprise collectées automatiquement par des scripts de scraping ou rédigées manuellement.
+Le portail **JobAvenir** référence des opportunités d'emploi, de stage, de formation, de projets et d'idées business.
 
-L'administrateur du site, authentifié via le système d'authentification existant (cookie `ml_admin_token` validé par le secret `CMS_ADMIN_SECRET`), doit pouvoir :
-1. **Gérer la publication** de chaque opportunité : basculer entre **Publié** et **Dépublié** (`is_active`). Par défaut, les opportunités collectées arrivent publiées ; l'admin doit pouvoir dépublier une offre à tout moment et la republier si nécessaire.
-2. **Préparer la diffusion sur les réseaux sociaux** :
-   - Définir une date et heure de publication planifiée (`social_publish_at`).
-   - Définir un statut de publication sociale (`DRAFT`, `SCHEDULED`, `PUBLISHED`).
-   - Rédiger ou pré-remplir automatiquement 3 textes dédiés pour :
-     - **WhatsApp** (style direct, puces claires, liens faciles à ouvrir).
-     - **Telegram** (style informatif avec émojis attractifs et hashtags ciblés).
-     - **TikTok** (script court / hook accrocheur, points forts du poste/idée, appel à l'action en bio).
-   - Ces champs permettront aux futurs scripts d'automatisation de récupérer les offres prêtes à être publiées à l'horodatage convenu.
-3. **Expérience utilisateur mobile-first** :
-   - Éviter les modales fenêtrées rigides susceptibles d'être tronquées ou pénibles sur smartphone.
-   - Proposer une zone / panneau de configuration dépliable directement dans la page (*In-page collapsible drawer / section*), parfaitement responsive.
-4. **Visibilité pour l'administrateur** :
-   - Les visiteurs non-authentifiés ne voient que les offres publiées (`is_active = true`).
-   - L'administrateur peut visualiser les offres dépubliées sur le listing `/opportunites` avec un filtre dédié *(Toutes / Publiées / Dépubliées)* et un badge distinctif.
+Pour éliminer la charge quotidienne de modération et de maintenance manuelle :
+1. **Zéro action manuelle obligatoire (Prêt à l'emploi par défaut) :**
+   - Chaque opportunité collectée est immédiatement planifiée avec un horodatage par défaut (`social_publish_at = NOW() + 1 heure`).
+   - Les 3 textes pour les réseaux sociaux (**WhatsApp**, **Telegram**, **TikTok**) sont générés automatiquement lors de la collecte ou de l'affichage initial.
+   - Les textes exploitent la richesse des balises **Open Graph** déjà en place (carte d'aperçu dynamique avec image de catégorie/logo, titre accrocheur et détails télégraphiques).
+2. **Modération "par exception" en 1 clic :**
+   - Si une opportunité est inadéquate ou expirée, l'administrateur peut la **dépublier en un seul clic direct** depuis la carte dans le listing `/opportunites`.
+   - Si l'offre est dépubliée (`is_active = false`), elle disparaît immédiatement pour le public et sa diffusion sur les réseaux sociaux est neutralisée.
+3. **Zone de réglages "In-Page" sans modale :**
+   - Sur la fiche détaillée (`/opportunites/[slug]` et `/idees/[slug]`), un panneau dépliable discret permet d'ajuster l'horodatage ou de retoucher un texte si nécessaire, sans encombrer l'écran sur mobile.
+4. **Visibilité réservée à l'administrateur :**
+   - Les visiteurs non authentifiés ne voient que les offres publiées.
+   - L'administrateur authentifié peut afficher les offres dépubliées (avec badge d'alerte et filtre dédié) pour les réactiver si besoin.
 
 ---
 
-## 2. Architecture & Modèle de Données
+## 2. Modèle de Données & Persistance
 
-Les modifications s'appliquent de manière rétrocompatible et transparente aux deux tables de contenu : `jobs` (offres, stages, formations, concours) et `ideas` (idées business).
+Les tables `jobs` et `ideas` intègrent des colonnes pour la diffusion sociale, compatibles SQLite et PostgreSQL.
 
-### 2.1 Évolution du Schéma SQL (SQLite & PostgreSQL)
+### 2.1 Schéma des tables
 
-Nouvelles colonnes ajoutées :
-* `social_publish_at` : `TIMESTAMP WITH TIME ZONE` (PostgreSQL) / `TEXT` (SQLite format ISO8601).
-* `social_status` : `VARCHAR(50) DEFAULT 'DRAFT'` (valeurs: `DRAFT`, `SCHEDULED`, `PUBLISHED`, `FAILED`).
-* `social_whatsapp` : `TEXT` (contenu personnalisé pour WhatsApp).
-* `social_telegram` : `TEXT` (contenu personnalisé pour Telegram).
-* `social_tiktok` : `TEXT` (script / description courte pour TikTok).
+* `is_active` : `BOOLEAN` (PG) / `INTEGER` (SQLite), défaut `1` / `true`.
+* `social_publish_at` : `TIMESTAMP WITH TIME ZONE` (PG) / `TEXT` (SQLite ISO8601).
+  - Par défaut : calculé automatiquement à la date de collecte + 1 heure (ou date de publication).
+* `social_status` : `VARCHAR(50) DEFAULT 'SCHEDULED'` :
+  - Valeurs : `'SCHEDULED'` (planifié par défaut), `'PUBLISHED'` (diffusé), `'PAUSED'` (en pause / offre dépubliée), `'DRAFT'` (brouillon).
+* `social_whatsapp` : `TEXT` (texte pré-généré prêt pour diffusion WhatsApp).
+* `social_telegram` : `TEXT` (texte pré-généré prêt pour diffusion Telegram).
+* `social_tiktok` : `TEXT` (script court / description vidéo pour TikTok).
 
-Ces colonnes sont accompagnées d'un index sur `(is_active, social_status, social_publish_at)` pour permettre aux futurs cron-jobs de collecter rapidement les messages à envoyer.
-
-Dans `src/lib/db.ts` :
-- Mise à jour des chaînes `SQLITE_SCHEMA_SQL` et `PG_SCHEMA_SQL`.
-- Ajout de directives `ALTER TABLE jobs ADD COLUMN IF NOT EXISTS ...` et `ALTER TABLE ideas ADD COLUMN IF NOT EXISTS ...` dans `initDatabaseSchema()` pour migrer les bases de données existantes sans perte de données.
-- Enrichissement des interfaces `DbJob` et `DbIdea` ainsi que des fonctions de requêtage `getAllDbJobs()`, `getUnifiedJobs(options?: { includeInactive?: boolean })` et `getJobBySlug(slug: string, options?: { includeInactive?: boolean })`.
-
----
-
-## 3. API Backend : `/api/admin/opportunity`
-
-Un endpoint dynamique SSR Astro est créé dans `src/pages/api/admin/opportunity.ts` (`export const prerender = false`).
-
-### 3.1 Authentification & Autorisation
-Toute requête vérifie la validité du jeton admin :
-- Récupération du token depuis le cookie `ml_admin_token` ou l'en-tête `Authorization: Bearer <token>`.
-- Comparaison avec le hachage SHA-256 du secret `CMS_ADMIN_SECRET` (avec timing-safe comparison ou correspondance de hash).
-- Si invalide : retour immédiat `401 Unauthorized` `{ error: "Accès refusé" }`.
-
-### 3.2 Méthodes supportées
-* **`GET /api/admin/opportunity?type=job|idea&slug=<slug>`** :
-  - Renvoie les détails complets de l'opportunité (statut `is_active`, `social_publish_at`, `social_status`, `social_whatsapp`, `social_telegram`, `social_tiktok`).
-* **`POST /api/admin/opportunity`** :
-  - Corps JSON :
-    ```json
-    {
-      "type": "job" | "idea",
-      "slug": "string",
-      "isActive": boolean,
-      "socialPublishAt": string | null,
-      "socialStatus": "DRAFT" | "SCHEDULED" | "PUBLISHED",
-      "socialWhatsapp": string,
-      "socialTelegram": string,
-      "socialTiktok": string
-    }
-    ```
-  - Met à jour l'enregistrement ciblé dans la table appropriée (`jobs` ou `ideas`) avec `updated_at = NOW()`.
-  - Renvoie `{ success: true, updated: { ... } }`.
+### 2.2 Migrations et requêtes dans `src/lib/db.ts`
+- Mises à jour transparentes via `ALTER TABLE jobs ADD COLUMN IF NOT EXISTS ...` et `ALTER TABLE ideas ADD COLUMN IF NOT EXISTS ...`.
+- Indexation sur `(is_active, social_status, social_publish_at)` pour les requêtes des futurs robots de diffusion :
+  ```sql
+  SELECT * FROM jobs 
+  WHERE is_active = true 
+    AND social_status = 'SCHEDULED' 
+    AND social_publish_at <= NOW()
+  ORDER BY social_publish_at ASC;
+  ```
+- Ajout d'une fonction utilitaire `generateSocialTexts(item)` qui produit les textes optimisés si les colonnes sont vides en base.
 
 ---
 
-## 4. Générateur de Contenus Réseaux Sociaux
+## 3. Format des Textes Réseaux Sociaux & Optimisation Open Graph
 
-Pour faciliter le travail de l'administrateur, une fonction utilitaire côté client (ou partagée) génère des textes pré-remplis optimisés :
+Comme chaque page `/opportunites/[slug]` dispose déjà d'un aperçu enrichi (grande image Open Graph, titre propre sans doublon de site, faits clés comme lieu, type et date limite), les messages sociaux sont concis et incitent au clic :
 
-1. **WhatsApp :**
-   ```text
-   📢 *OPPORTUNITÉ MALI — [TITRE]*
-   🏢 Organisme : [ENTREPRISE/SECTEUR]
-   📍 Lieu : [LIEU]
-   📄 Type : [TYPE DE CONTRAT]
-   
-   👉 Consultez les détails et postulez ici :
-   https://job.malihub.digital/opportunites/[SLUG]
-   ```
-2. **Telegram :**
-   ```text
-   🚀 *[TITRE]*
-   
-   📍 *Lieu :* [LIEU]
-   🏢 *Organisme :* [ENTREPRISE]
-   ⏳ *Date limite :* [DEADLINE ou "Dès que possible"]
-   
-   🔗 *Consulter l'offre complète :*
-   https://job.malihub.digital/opportunites/[SLUG]
-   
-   #EmploiMali #MaliJobs #Recrutement #Bamako
-   ```
-3. **TikTok (Script vidéo court) :**
-   ```text
-   🎬 [ACCROCHE] : "Tu cherches une opportunité au Mali en ce moment ? Regarde ça !"
-   
-   📌 Poste : [TITRE]
-   📍 Lieu : [LIEU]
-   🏢 Entreprise : [ENTREPRISE]
-   
-   💡 Conseil express : Prépare ton CV et postule avant le [DEADLINE].
-   👉 Lien de l'offre disponible dans la bio ou sur JobAvenir Mali !
-   
-   Hashtags : #Mali #Bamako #JobAvenir #EmploiMali #Opportunites
-   ```
+### 3.1 WhatsApp
+```text
+📢 *[TITRE]*
+🏢 [ENTREPRISE/ORGANISME] • 📍 [LIEU] • 📄 [CONTRAT]
 
-L'administrateur peut modifier ces textes à sa guise ou cliquer sur "✨ Générer / Réinitialiser" pour recalculer les propositions.
+👉 Détails complets et candidature :
+https://job.malihub.digital/opportunites/[SLUG]
+```
+
+### 3.2 Telegram
+```text
+🚀 *[TITRE]*
+🏢 *Organisme :* [ENTREPRISE]
+📍 *Lieu :* [LIEU]
+⏳ *Date limite :* [DEADLINE]
+
+🔗 *Consulter et postuler :*
+https://job.malihub.digital/opportunites/[SLUG]
+
+#EmploiMali #MaliJobs #Recrutement #Bamako
+```
+
+### 3.3 TikTok (Script court pour créateur / vidéo automatisée)
+```text
+🎬 Hook : "Une nouvelle opportunité vient de tomber au Mali !"
+📌 Poste : [TITRE]
+🏢 Organisme : [ENTREPRISE] • 📍 [LIEU]
+💡 Postule avant le [DEADLINE]
+👉 Lien direct dans la bio ou sur JobAvenir Mali !
+
+#Mali #Bamako #JobAvenir #EmploiMali
+```
 
 ---
 
-## 5. Interface Utilisateur & Intégration
+## 4. API Backend : `/api/admin/opportunity`
 
-### 5.1 Composant `OpportunityAdminPanel.astro`
-Un composant autonome est injecté sur :
-- `src/pages/opportunites/[slug].astro`
-- `src/pages/idees/[slug].astro`
-
-**Comportement :**
-- Côté client, vérifie si l'administrateur est connecté (`getAdminCookieToken()`).
-- Si non connecté : le composant reste totalement invisible et inerte.
-- Si connecté :
-  - Affiche un bandeau d'administration élégant avec le statut actuel (🟢 *En ligne* ou 🔴 *Dépublié*).
-  - Un bouton d'action *"⚙️ Gérer l'opportunité & Réseaux sociaux"* permet de déplier le panneau intégré.
-  - Le panneau se déploie avec une transition fluide au sein de la page (responsive mobile et desktop).
-  - Contrôles disponibles :
-    - Switch interactif "Publié / Dépublié" avec retour immédiat.
-    - Date & heure de publication planifiée.
-    - Statut de diffusion sociale.
-    - Édition des 3 blocs WhatsApp, Telegram, TikTok avec boutons de copie presse-papier 📋.
-    - Bouton d'enregistrement avec message de confirmation toast.
-
-### 5.2 Vue Listing `src/pages/opportunites/index.astro`
-- En mode admin, la page permet d'afficher les offres dépubliées (avec un filtre supplémentaire "Toutes / Publiées / Dépubliées").
-- Les cartes des offres dépubliées affichent un badge rouge `"Hors-ligne / Dépublié"` et un contour distinctif.
-- Un bouton d'action rapide sur chaque carte permet à l'admin de basculer la publication en un clic.
+Endpoint SSR Astro (`src/pages/api/admin/opportunity.ts`) :
+- **Sécurité :** Authentification obligatoire via le token du cookie `ml_admin_token` (SHA-256 de `CMS_ADMIN_SECRET`). Retourne `401 Unauthorized` si absent ou non conforme.
+- **Actions rapides supportées :**
+  1. **Bascule de publication (`togglePublish`)** :
+     - Reçoit `{ type: "job" | "idea", slug: string, isActive: boolean }`.
+     - Si `isActive` passe à `false` : `is_active = false` et `social_status = 'PAUSED'`.
+     - Si `isActive` passe à `true` : `is_active = true` et `social_status = 'SCHEDULED'`.
+     - Réponse instantanée pour les boutons 1-clic.
+  2. **Mise à jour complète (`updateDetails`)** :
+     - Reçoit `{ type, slug, isActive, socialPublishAt, socialStatus, socialWhatsapp, socialTelegram, socialTiktok }`.
+     - Sauvegarde les modifications personnalisées de l'administrateur.
 
 ---
 
-## 6. Stratégie de Test & Validation
+## 5. Interface Utilisateur & Ergonomie Mobile-First
 
-1. **Test unitaire et d'intégration base de données :**
-   - Migration de la base locale SQLite via `initDatabaseSchema()`.
-   - Vérification de la présence des colonnes `social_publish_at`, `social_whatsapp`, etc.
-2. **Test de sécurité API :**
-   - Requête non authentifiée vers `/api/admin/opportunity` -> doit retourner `401`.
-   - Requête avec cookie/token admin valide -> mise à jour effective en base.
-3. **Test fonctionnel UI (Desktop & Mobile) :**
-   - Connexion admin sur `/login`.
-   - Visite d'une opportunité sur `/opportunites/[slug]`.
-   - Dépliage du panneau d'administration.
-   - Dépublication de l'offre -> vérification de la persistance.
-   - Génération des textes réseaux sociaux + planification horaire -> enregistrement.
-   - Déconnexion admin -> vérification que l'offre dépubliée n'est plus visible pour les visiteurs ordinaires.
+### 5.1 Listing Général `/opportunites/index.astro`
+- **En mode visiteur normal :** Seules les opportunités actives (`is_active = true`) sont renvoyées.
+- **En mode administrateur :**
+  - Les offres inactives sont également incluses avec une apparence estompée et un badge visible `"🔴 Dépubliée / Hors-ligne"`.
+  - Un filtre rapide **[Toutes] [Publiées] [Dépubliées]** est proposé.
+  - Chaque carte d'opportunité affiche un bouton d'action directe :
+    - Si publiée : bouton **"🚫 Dépublier"** (1 clic direct, mise à jour immédiate sans rechargement lourd).
+    - Si dépubliée : bouton **"✅ Republier"**.
+
+### 5.2 Fiche Détaillée `/opportunites/[slug].astro` et `/idees/[slug].astro`
+- Un composant `OpportunityAdminPanel.astro` est inséré en haut du contenu :
+  - **Bandeau de statut :** Indique clairement l'état en ligne et la prochaine date de diffusion sociale planifiée.
+  - **Bouton 1-clic :** "Dépublier l'annonce" / "Republier".
+  - **Bouton dépliable :** "⚙️ Modifier la programmation sociale".
+  - Au clic, le panneau s'ouvre dans la page (100% compatible mobile, aucun débordement). Les champs sont déjà pré-remplis avec la date par défaut et les textes générés. Un bouton "Enregistrer" valide les modifications.
+
+---
+
+## 6. Automatisation des Scripts de Collecte
+
+Dans `scripts/scrape.ts` et `scripts/scrape-ideas.ts` :
+- Lors de l'insertion de nouvelles opportunités :
+  - Calcul automatique de `social_publish_at` (1 heure après l'insertion).
+  - Génération automatique des textes `social_whatsapp`, `social_telegram`, `social_tiktok`.
+  - `social_status` fixé à `'SCHEDULED'`.
+- De cette façon, toute nouvelle opportunité arrivant par scraping est immédiatement prête pour les futurs robots de publication.
+
+---
+
+## 7. Plan de Validation
+
+1. **Migration DB :** Démarrer le serveur / exécuter un script pour vérifier que les colonnes sont créées sur la base SQLite sans erreur.
+2. **Scraping / Remplissage :** Vérifier que les offres existantes ont des textes sociaux générés et un horodatage par défaut.
+3. **Bascule 1-clic :**
+   - Connecté en admin, cliquer sur "🚫 Dépublier" sur une offre -> vérifier que l'offre passe en inactif.
+   - En navigation privée / déconnecté -> vérifier que l'offre dépubliée n'apparaît plus dans le listing ni par son URL directe.
+4. **Programmation sociale :**
+   - Modifier une date et un texte dans le panneau de la fiche -> vérifier l'enregistrement en base.
