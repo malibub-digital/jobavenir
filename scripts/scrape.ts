@@ -10,6 +10,7 @@ import path from 'path';
 import { extractJobWithAI, ExtractedJob } from '../src/lib/ai-extractor';
 import { generateJobOgImage } from '../src/lib/og-generator';
 import { pool, initDatabaseSchema, isSqlite, archiveExpiredJobs } from '../src/lib/db';
+import { generateSocialTexts, calculateDefaultSocialPublishAt } from '../src/lib/social-generator';
 
 dotenv.config();
 
@@ -652,14 +653,26 @@ export async function runScraper(closePool = false) {
           ogImageUrl
         };
 
+        const socialTexts = generateSocialTexts({
+          title: extracted.title,
+          company: extracted.company,
+          location: extracted.location,
+          contractType: extracted.contractType,
+          slug,
+          deadline: extracted.deadline,
+          isIdea: false
+        });
+        const socialPublishAt = calculateDefaultSocialPublishAt(extracted.publishedDate || post.date);
+
         try {
           await pool.query(
             `INSERT INTO jobs (
               slug, title, company, location, contract_type, opportunity_type, category, domain,
               salary, deadline, published_date, excerpt, description,
               original_url, original_source, source_id, how_to_apply,
-              requirements, metadata, content_hash
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+              requirements, metadata, content_hash,
+              social_publish_at, social_status, social_whatsapp, social_telegram, social_tiktok
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
             ON CONFLICT (content_hash) DO UPDATE SET
               title = EXCLUDED.title,
               opportunity_type = EXCLUDED.opportunity_type,
@@ -686,7 +699,12 @@ export async function runScraper(closePool = false) {
               extracted.howToApply || null,
               JSON.stringify(extracted.requirements || []),
               JSON.stringify(enrichedMetadata),
-              hash
+              hash,
+              socialPublishAt,
+              'SCHEDULED',
+              socialTexts.whatsapp,
+              socialTexts.telegram,
+              socialTexts.tiktok
             ]
           );
           console.log(`         💾 Sauvegardée en base (${isSqlite ? 'SQLite' : 'PostgreSQL'}).`);

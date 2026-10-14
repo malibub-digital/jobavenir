@@ -2,6 +2,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { generateSocialTexts, calculateDefaultSocialPublishAt } from './social-generator';
 
 dotenv.config();
 
@@ -855,13 +856,39 @@ export async function insertIdea(idea: DbIdea): Promise<boolean> {
     const competencesJson = JSON.stringify(idea.competencesCles || []);
     const metadataJson = JSON.stringify(idea.metadata || {});
 
+    // Génération automatique des champs sociaux si non fournis
+    let socialPublishAt = idea.socialPublishAt;
+    let socialStatus = idea.socialStatus || 'SCHEDULED';
+    let socialWhatsapp = idea.socialWhatsapp;
+    let socialTelegram = idea.socialTelegram;
+    let socialTiktok = idea.socialTiktok;
+
+    if (!socialPublishAt) {
+      socialPublishAt = calculateDefaultSocialPublishAt(idea.createdAt);
+    }
+
+    if (!socialWhatsapp || !socialTelegram || !socialTiktok) {
+      const generated = generateSocialTexts({
+        title: idea.title,
+        company: 'Projet d\'entreprise',
+        location: idea.zoneCible || 'Bamako, Mali',
+        contractType: 'Idée business',
+        slug: idea.slug,
+        isIdea: true
+      });
+      if (!socialWhatsapp) socialWhatsapp = generated.whatsapp;
+      if (!socialTelegram) socialTelegram = generated.telegram;
+      if (!socialTiktok) socialTiktok = generated.tiktok;
+    }
+
     await queryDb(`
       INSERT INTO ideas (
         slug, title, sector, zone_cible, demarrage_level,
         besoin_identifie, concept, public_cible,
         competences_cles, premiere_action, source_inspiration_id,
-        content_hash, metadata, is_active
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, true)
+        content_hash, metadata, is_active,
+        social_publish_at, social_status, social_whatsapp, social_telegram, social_tiktok
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, true, $14, $15, $16, $17, $18)
       ON CONFLICT (content_hash) DO UPDATE SET
         title = EXCLUDED.title,
         sector = EXCLUDED.sector,
@@ -887,7 +914,12 @@ export async function insertIdea(idea: DbIdea): Promise<boolean> {
       idea.premiereAction,
       idea.sourceInspirationId || null,
       idea.contentHash,
-      metadataJson
+      metadataJson,
+      socialPublishAt,
+      socialStatus,
+      socialWhatsapp,
+      socialTelegram,
+      socialTiktok
     ]);
 
     return true;
