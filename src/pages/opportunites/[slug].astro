@@ -10,6 +10,7 @@ import path from "path";
 import { getJobBySlug } from "../../lib/db";
 import { getCategoryImage } from "../../lib/image-bank";
 import { getCompanyOrSourceLogo } from "../../lib/source-logo-fetcher";
+import OpportunityAdminPanel from "../../components/OpportunityAdminPanel.astro";
 
 const { slug } = Astro.params;
 const job = slug ? await getJobBySlug(slug) : null;
@@ -204,6 +205,19 @@ const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'im
           >Référence : #{job.slug.slice(0, 8)}</span
         >
       </div>
+
+      <!-- PANNEAU D'ADMINISTRATION IN-PAGE -->
+      <OpportunityAdminPanel
+        type="job"
+        slug={job.slug}
+        isActive={job.data.isActive ?? true}
+        title={job.data.title}
+        socialPublishAt={job.data.socialPublishAt}
+        socialStatus={job.data.socialStatus}
+        socialWhatsapp={job.data.socialWhatsapp}
+        socialTelegram={job.data.socialTelegram}
+        socialTiktok={job.data.socialTiktok}
+      />
 
       <!-- CARTE SOCIAL / HUB HUB-AVENIR -->
       <div

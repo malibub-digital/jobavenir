@@ -7,6 +7,7 @@ import Footer from "@malihub/sites-core/components/Footer.astro";
 import siteConfig from "../../../site.config.json";
 import { getIdeaBySlug } from "../../lib/db";
 import { getCategoryImage } from "../../lib/image-bank";
+import OpportunityAdminPanel from "../../components/OpportunityAdminPanel.astro";
 
 import fs from "fs";
 import path from "path";
@@ -105,6 +106,19 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
         </a>
         <span class="text-stone-400 font-medium">Fiche #{idea.slug.slice(0, 8)}</span>
       </div>
+
+      <!-- PANNEAU D'ADMINISTRATION IN-PAGE -->
+      <OpportunityAdminPanel
+        type="idea"
+        slug={idea.slug}
+        isActive={idea.isActive ?? true}
+        title={idea.title}
+        socialPublishAt={idea.socialPublishAt}
+        socialStatus={idea.socialStatus}
+        socialWhatsapp={idea.socialWhatsapp}
+        socialTelegram={idea.socialTelegram}
+        socialTiktok={idea.socialTiktok}
+      />
 
       <!-- CARTE CENTRALE FICHE D'ACTION -->
       <div class="bg-white rounded-3xl border border-stone-200/90 shadow-md overflow-hidden transition-all">

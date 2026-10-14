@@ -1,0 +1,506 @@
+---
+// src/components/OpportunityAdminPanel.astro
+interface Props {
+  type: 'job' | 'idea';
+  slug: string;
+  isActive: boolean;
+  title: string;
+  socialPublishAt?: string | null;
+  socialStatus?: string;
+  socialWhatsapp?: string;
+  socialTelegram?: string;
+  socialTiktok?: string;
+}
+
+const {
+  type,
+  slug,
+  isActive = true,
+  title,
+  socialPublishAt = null,
+  socialStatus = 'SCHEDULED',
+  socialWhatsapp = '',
+  socialTelegram = '',
+  socialTiktok = '',
+} = Astro.props;
+
+// Formatage de la date ISO pour l'input datetime-local (YYYY-MM-DDTHH:mm)
+let formattedDate = '';
+if (socialPublishAt) {
+  try {
+    const d = new Date(socialPublishAt);
+    if (!isNaN(d.getTime())) {
+      // Ajustement au format local ou ISO tronqué
+      const offset = d.getTimezoneOffset() * 60000;
+      const localTime = new Date(d.getTime() - offset);
+      formattedDate = localTime.toISOString().slice(0, 16);
+    }
+  } catch (e) {
+    formattedDate = '';
+  }
+}
+---
+
+<!-- Panneau Admin In-Page (Masqué par défaut avec hidden, rendu visible via script si admin authentifié) -->
+<div
+  id="opportunity-admin-root"
+  class="hidden border border-amber-300 bg-amber-50/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 mb-6 shadow-sm text-stone-900 transition-all duration-200"
+  data-type={type}
+  data-slug={slug}
+  data-title={title}
+  data-active={isActive ? 'true' : 'false'}
+>
+  <!-- Barre d'en-tête admin -->
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5">
+      <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-200/80 text-amber-900 text-sm font-bold shadow-xs">
+        🛡️
+      </span>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black uppercase tracking-wider text-amber-900/80">Administration</span>
+          <span
+            id="admin-status-badge"
+            class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs ${
+              isActive
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                : 'bg-rose-100 text-rose-800 border border-rose-300'
+            }`}
+          >
+            <span id="admin-status-dot" class={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+            <span id="admin-status-text">{isActive ? 'En ligne / Publié' : 'Dépublié / Masqué'}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions rapides en-tête -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <!-- Bouton 1-clic direct pour basculer la visibilité -->
+      <button
+        type="button"
+        id="admin-toggle-publish-btn"
+        class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+          isActive
+            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 hover:border-rose-300'
+            : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
+        }`}
+      >
+        <span id="admin-toggle-btn-icon">{isActive ? '🚫' : '✅'}</span>
+        <span id="admin-toggle-btn-text">{isActive ? "Dépublier l'annonce" : "Publier l'annonce"}</span>
+      </button>
+
+      <!-- Bouton déplier la diffusion réseaux sociaux -->
+      <button
+        type="button"
+        id="admin-toggle-social-btn"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-stone-700 hover:bg-stone-50 border border-stone-200 hover:border-stone-300 shadow-xs transition-all cursor-pointer"
+        aria-expanded="false"
+      >
+        <span>⚙️</span>
+        <span>Diffusion réseaux sociaux</span>
+        <svg id="admin-social-chevron" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast / Message de notification dynamique -->
+  <div
+    id="admin-notification"
+    class="hidden mt-3 p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all"
+    role="alert"
+  >
+    <div class="flex items-center gap-2">
+      <span id="admin-notification-icon">✅</span>
+      <span id="admin-notification-message">Action effectuée</span>
+    </div>
+    <button type="button" id="admin-notification-close" class="text-stone-400 hover:text-stone-600 text-sm">✕</button>
+  </div>
+
+  <!-- Section dépliable intégrée dans la page -->
+  <div id="social-settings-panel" class="hidden mt-4 pt-4 border-t border-amber-200/80">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <!-- Horodatage planifié -->
+      <div>
+        <label for="admin-social-publish-at" class="block text-xs font-bold text-stone-700 mb-1">
+          📅 Horodatage planifié de publication
+        </label>
+        <input
+          type="datetime-local"
+          id="admin-social-publish-at"
+          value={formattedDate}
+          class="w-full text-xs bg-white border border-stone-300 rounded-xl px-3 py-2 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
+        />
+        <p class="text-[11px] text-stone-500 mt-1">L'heure à laquelle l'automatisation doit diffuser le post.</p>
+      </div>
+
+      <!-- Statut réseaux sociaux -->
+      <div>
+        <label for="admin-social-status" class="block text-xs font-bold text-stone-700 mb-1">
+          📊 Statut de diffusion
+        </label>
+        <select
+          id="admin-social-status"
+          class="w-full text-xs bg-white border border-stone-300 rounded-xl px-3 py-2 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium"
+        >
+          <option value="SCHEDULED" selected={socialStatus === 'SCHEDULED'}>⏳ SCHEDULED (Planifié pour diffusion)</option>
+          <option value="PUBLISHED" selected={socialStatus === 'PUBLISHED'}>✅ PUBLISHED (Déjà publié / Diffusé)</option>
+          <option value="PAUSED" selected={socialStatus === 'PAUSED'}>⏸️ PAUSED (En pause / Suspendu)</option>
+          <option value="DRAFT" selected={socialStatus === 'DRAFT'}>📝 DRAFT (Brouillon)</option>
+        </select>
+        <p class="text-[11px] text-stone-500 mt-1">Contrôle l'éligibilité pour les bots de publication Telegram/WhatsApp.</p>
+      </div>
+    </div>
+
+    <!-- 3 zones de texte avec label, icône et bouton Copier -->
+    <div class="space-y-4">
+      <!-- Zone WhatsApp -->
+      <div class="bg-white/80 rounded-xl border border-stone-200 p-3 shadow-xs">
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="admin-social-whatsapp" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-800">
+            <span class="text-sm">📱</span>
+            <span>WhatsApp</span>
+          </label>
+          <button
+            type="button"
+            class="admin-copy-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 transition-all cursor-pointer"
+            data-target="admin-social-whatsapp"
+          >
+            <span>📋</span>
+            <span>Copier</span>
+          </button>
+        </div>
+        <textarea
+          id="admin-social-whatsapp"
+          rows="3"
+          class="w-full text-xs font-mono bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-y"
+          placeholder="Texte pour diffusion WhatsApp..."
+        >{socialWhatsapp}</textarea>
+      </div>
+
+      <!-- Zone Telegram -->
+      <div class="bg-white/80 rounded-xl border border-stone-200 p-3 shadow-xs">
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="admin-social-telegram" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-800">
+            <span class="text-sm">✈️</span>
+            <span>Telegram</span>
+          </label>
+          <button
+            type="button"
+            class="admin-copy-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 transition-all cursor-pointer"
+            data-target="admin-social-telegram"
+          >
+            <span>📋</span>
+            <span>Copier</span>
+          </button>
+        </div>
+        <textarea
+          id="admin-social-telegram"
+          rows="4"
+          class="w-full text-xs font-mono bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-y"
+          placeholder="Texte pour diffusion Telegram..."
+        >{socialTelegram}</textarea>
+      </div>
+
+      <!-- Zone TikTok -->
+      <div class="bg-white/80 rounded-xl border border-stone-200 p-3 shadow-xs">
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="admin-social-tiktok" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-800">
+            <span class="text-sm">🎵</span>
+            <span>TikTok / Short Script</span>
+          </label>
+          <button
+            type="button"
+            class="admin-copy-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 transition-all cursor-pointer"
+            data-target="admin-social-tiktok"
+          >
+            <span>📋</span>
+            <span>Copier</span>
+          </button>
+        </div>
+        <textarea
+          id="admin-social-tiktok"
+          rows="4"
+          class="w-full text-xs font-mono bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all resize-y"
+          placeholder="Texte / Script TikTok..."
+        >{socialTiktok}</textarea>
+      </div>
+    </div>
+
+    <!-- Actions du formulaire bas de page -->
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-2.5">
+      <button
+        type="button"
+        id="admin-regenerate-texts-btn"
+        class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 shadow-xs transition-all cursor-pointer"
+      >
+        <span>✨</span>
+        <span>Régénérer les textes par défaut</span>
+      </button>
+
+      <button
+        type="button"
+        id="admin-save-social-btn"
+        class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold shadow-sm transition-all cursor-pointer"
+      >
+        <span>💾</span>
+        <span>Enregistrer les modifications</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { getAdminCookieToken } from '@malihub/sites-core/utils/auth.js';
+
+  function initOpportunityAdmin() {
+    const root = document.getElementById('opportunity-admin-root');
+    if (!root) return;
+
+    // Masqué par défaut, affiché uniquement si connecté admin
+    const token = getAdminCookieToken();
+    if (!token || token.length === 0) {
+      root.classList.add('hidden');
+      return;
+    }
+    root.classList.remove('hidden');
+
+    const type = root.getAttribute('data-type') || 'job';
+    const slug = root.getAttribute('data-slug') || '';
+    const title = root.getAttribute('data-title') || '';
+    let isActive = root.getAttribute('data-active') === 'true';
+
+    const statusBadge = document.getElementById('admin-status-badge');
+    const statusDot = document.getElementById('admin-status-dot');
+    const statusText = document.getElementById('admin-status-text');
+    const togglePublishBtn = document.getElementById('admin-toggle-publish-btn');
+    const toggleBtnIcon = document.getElementById('admin-toggle-btn-icon');
+    const toggleBtnText = document.getElementById('admin-toggle-btn-text');
+
+    const toggleSocialBtn = document.getElementById('admin-toggle-social-btn');
+    const socialChevron = document.getElementById('admin-social-chevron');
+    const socialPanel = document.getElementById('social-settings-panel');
+
+    const publishAtInput = document.getElementById('admin-social-publish-at') as HTMLInputElement | null;
+    const statusSelect = document.getElementById('admin-social-status') as HTMLSelectElement | null;
+    const whatsappTextarea = document.getElementById('admin-social-whatsapp') as HTMLTextAreaElement | null;
+    const telegramTextarea = document.getElementById('admin-social-telegram') as HTMLTextAreaElement | null;
+    const tiktokTextarea = document.getElementById('admin-social-tiktok') as HTMLTextAreaElement | null;
+
+    const regenerateBtn = document.getElementById('admin-regenerate-texts-btn');
+    const saveSocialBtn = document.getElementById('admin-save-social-btn');
+
+    const notification = document.getElementById('admin-notification');
+    const notificationIcon = document.getElementById('admin-notification-icon');
+    const notificationMsg = document.getElementById('admin-notification-message');
+    const notificationClose = document.getElementById('admin-notification-close');
+
+    let notificationTimeout: any = null;
+
+    function showNotification(message: string, isError = false) {
+      if (!notification || !notificationMsg) return;
+      if (notificationTimeout) clearTimeout(notificationTimeout);
+
+      notificationMsg.textContent = message;
+      if (notificationIcon) {
+        notificationIcon.textContent = isError ? '❌' : '✅';
+      }
+
+      notification.className = `mt-3 p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
+        isError ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+      }`;
+      notification.classList.remove('hidden');
+
+      notificationTimeout = setTimeout(() => {
+        notification.classList.add('hidden');
+      }, 5000);
+    }
+
+    notificationClose?.addEventListener('click', () => {
+      notification?.classList.add('hidden');
+    });
+
+    function updateActiveStateUi(active: boolean) {
+      isActive = active;
+      root?.setAttribute('data-active', active ? 'true' : 'false');
+
+      if (statusBadge && statusDot && statusText) {
+        if (active) {
+          statusBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs bg-emerald-100 text-emerald-800 border border-emerald-300';
+          statusDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          statusText.textContent = 'En ligne / Publié';
+        } else {
+          statusBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs bg-rose-100 text-rose-800 border border-rose-300';
+          statusDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+          statusText.textContent = 'Dépublié / Masqué';
+        }
+      }
+
+      if (togglePublishBtn && toggleBtnIcon && toggleBtnText) {
+        if (active) {
+          togglePublishBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 hover:border-rose-300';
+          toggleBtnIcon.textContent = '🚫';
+          toggleBtnText.textContent = "Dépublier l'annonce";
+        } else {
+          togglePublishBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm';
+          toggleBtnIcon.textContent = '✅';
+          toggleBtnText.textContent = "Publier l'annonce";
+        }
+      }
+    }
+
+    // Bascule 1-clic direct
+    togglePublishBtn?.addEventListener('click', async () => {
+      const targetState = !isActive;
+      togglePublishBtn.setAttribute('disabled', 'true');
+      const originalText = toggleBtnText?.textContent || '';
+      if (toggleBtnText) toggleBtnText.textContent = 'Mise à jour...';
+
+      try {
+        const res = await fetch('/api/admin/opportunity', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            action: 'toggle-publish',
+            type,
+            slug,
+            isActive: targetState
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          throw new Error(data.error || 'Erreur lors de la bascule');
+        }
+
+        updateActiveStateUi(data.isActive);
+        if (statusSelect && data.socialStatus) {
+          statusSelect.value = data.socialStatus;
+        }
+        showNotification(data.isActive ? "L'opportunité a été publiée et mise en ligne." : "L'opportunité a été dépubliée.");
+      } catch (err: any) {
+        showNotification(err.message || 'Erreur de connexion', true);
+        if (toggleBtnText) toggleBtnText.textContent = originalText;
+      } finally {
+        togglePublishBtn.removeAttribute('disabled');
+      }
+    });
+
+    // Déplier / replier le panneau réseaux sociaux
+    toggleSocialBtn?.addEventListener('click', () => {
+      const isHidden = socialPanel?.classList.contains('hidden');
+      if (isHidden) {
+        socialPanel?.classList.remove('hidden');
+        socialChevron?.classList.add('rotate-180');
+        toggleSocialBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        socialPanel?.classList.add('hidden');
+        socialChevron?.classList.remove('rotate-180');
+        toggleSocialBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Boutons de copie rapide dans le presse-papier
+    document.querySelectorAll<HTMLButtonElement>('.admin-copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const targetId = btn.getAttribute('data-target');
+        if (!targetId) return;
+        const textarea = document.getElementById(targetId) as HTMLTextAreaElement | null;
+        if (!textarea) return;
+
+        try {
+          await navigator.clipboard.writeText(textarea.value);
+          const originalContent = btn.innerHTML;
+          btn.innerHTML = '<span>✅</span><span>Copié !</span>';
+          btn.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+          setTimeout(() => {
+            btn.innerHTML = originalContent;
+            btn.classList.remove('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+          }, 2000);
+        } catch (e) {
+          showNotification('Impossible de copier dans le presse-papier', true);
+        }
+      });
+    });
+
+    // Régénérer les textes par défaut localement
+    regenerateBtn?.addEventListener('click', () => {
+      const isIdea = type === 'idea';
+      const baseUrl = 'https://job.malihub.digital';
+      const targetUrl = isIdea ? `${baseUrl}/idees/${slug}` : `${baseUrl}/opportunites/${slug}`;
+      const org = isIdea ? "Idée d'entreprise locale" : "Organisme partenaire";
+      const loc = "Bamako, Mali";
+      const contract = isIdea ? "Projet d'entreprise" : "Opportunité";
+      const deadlineStr = "Candidatures ouvertes";
+
+      const whatsapp = `📢 *${title.trim()}*\n🏢 ${org} • 📍 ${loc} • 📄 ${contract}\n\n👉 Voir tous les détails et postuler :\n${targetUrl}`;
+      const telegram = `🚀 *${title.trim()}*\n\n🏢 *Organisme :* ${org}\n📍 *Lieu :* ${loc}\n⏳ *Date limite :* ${deadlineStr}\n\n🔗 *Consulter l'annonce complète :*\n${targetUrl}\n\n#EmploiMali #MaliJobs #Recrutement #Bamako #JobAvenir`;
+      const tiktok = `🎬 Hook : "Une nouvelle opportunité vient d'ouvrir au Mali !"\n📌 Poste / Projet : ${title.trim()}\n🏢 Organisme : ${org}\n📍 Lieu : ${loc}\n💡 Date limite : ${deadlineStr}\n👉 Lien complet dans la bio ou sur JobAvenir Mali !\n\n#Mali #Bamako #JobAvenir #EmploiMali #Opportunites`;
+
+      if (whatsappTextarea) whatsappTextarea.value = whatsapp;
+      if (telegramTextarea) telegramTextarea.value = telegram;
+      if (tiktokTextarea) tiktokTextarea.value = tiktok;
+
+      if (publishAtInput && !publishAtInput.value) {
+        const nextHour = new Date();
+        nextHour.setHours(nextHour.getHours() + 1);
+        const offset = nextHour.getTimezoneOffset() * 60000;
+        publishAtInput.value = new Date(nextHour.getTime() - offset).toISOString().slice(0, 16);
+      }
+
+      showNotification('Textes par défaut générés avec succès !');
+    });
+
+    // Enregistrer les modifications
+    saveSocialBtn?.addEventListener('click', async () => {
+      saveSocialBtn.setAttribute('disabled', 'true');
+      const originalText = saveSocialBtn.innerHTML;
+      saveSocialBtn.innerHTML = '<span>⏳</span><span>Enregistrement...</span>';
+
+      try {
+        let isoDate: string | null = null;
+        if (publishAtInput?.value) {
+          isoDate = new Date(publishAtInput.value).toISOString();
+        }
+
+        const res = await fetch('/api/admin/opportunity', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            type,
+            slug,
+            isActive,
+            socialPublishAt: isoDate,
+            socialStatus: statusSelect?.value || 'SCHEDULED',
+            socialWhatsapp: whatsappTextarea?.value || '',
+            socialTelegram: telegramTextarea?.value || '',
+            socialTiktok: tiktokTextarea?.value || '',
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          throw new Error(data.error || "Erreur lors de l'enregistrement");
+        }
+
+        showNotification('Paramètres et textes sociaux enregistrés avec succès !');
+      } catch (err: any) {
+        showNotification(err.message || 'Erreur lors de la sauvegarde', true);
+      } finally {
+        saveSocialBtn.removeAttribute('disabled');
+        saveSocialBtn.innerHTML = originalText;
+      }
+    });
+  }
+
+  initOpportunityAdmin();
+  document.addEventListener('astro:after-swap', initOpportunityAdmin);
+</script>
