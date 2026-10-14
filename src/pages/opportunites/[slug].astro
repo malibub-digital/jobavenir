@@ -117,10 +117,10 @@ const siteUrl = Astro.site?.origin || siteConfig.siteUrl || "https://job.malihub
 const ogImageUrl = ogImagePath.startsWith('http') ? ogImagePath : `${siteUrl}${ogImagePath}`;
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 
-// 1. Titre percutant avec émoji de statut et sans suffixe parasite
-const typeEmoji = isProject ? '🚀' : isAnnouncement ? '📢' : isTraining ? '📚' : isStage ? '🎓' : '💼';
+// 1. Titre percutant avec catégorie explicite en texte (sans émojis pour éviter les doublons avec le favicon)
+const typePrefix = isProject ? "Appel à projets" : isAnnouncement ? "Annonce officielle" : isTraining ? "Formation" : isStage ? "Stage" : "Recrutement";
 const companySuffix = job.data.company ? ` — ${job.data.company}` : '';
-const ogTitle = `${typeEmoji} ${job.data.title}${companySuffix}`.trim();
+const ogTitle = `${typePrefix} : ${job.data.title}${companySuffix}`.trim();
 const pageTitle = `${ogTitle} | ${siteConfig.title}`;
 
 // 2. Description télégraphique orientée action (sans répéter le titre)
@@ -137,6 +137,8 @@ if (job.data.deadline) {
 
 // Extraction d'une phrase de contenu si disponible (autre que le titre)
 let baseText = rawMetadata.teaser || job.data.excerpt || '';
+// Nettoyage des phrases automatiques type "Découvrez l'opportunité X avec Y"
+baseText = baseText.replace(/^Découvrez l'opportunité\s+["“][^"”]+["”]\s+(avec\s+[^.]+\.?)?/i, '').trim();
 if (baseText.toLowerCase().startsWith(job.data.title.toLowerCase())) {
   baseText = baseText.slice(job.data.title.length).replace(/^[:\s.–-]+/, '').trim();
 }

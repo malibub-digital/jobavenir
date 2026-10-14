@@ -37,9 +37,9 @@ const levelColor =
       ? 'bg-rose-500 text-white'
       : 'bg-amber-500 text-white';
 
-// Titre percutant sans bavardage ni troncature parasite
-const budgetTag = idea.demarrageLevel ? `(Budget : ${idea.demarrageLevel.toLowerCase()})` : '';
-const ogTitle = `💡 ${idea.title} ${budgetTag}`.trim();
+// Titre percutant avec catégorie explicite en texte (sans émojis pour éviter les doublons avec le favicon)
+const budgetTag = idea.demarrageLevel ? `(Budget ${idea.demarrageLevel.toLowerCase()})` : '';
+const ogTitle = `Idée Business : ${idea.title} ${budgetTag}`.trim();
 const pageTitle = `${ogTitle} — ${siteConfig.title}`;
 
 // Description télégraphique : Problème ciblé + niveau de capital + CTA

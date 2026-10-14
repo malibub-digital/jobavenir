@@ -629,7 +629,7 @@ async function main() {
   let totalSkipped = 0;
   let totalErrors = 0;
   let totalCost = 0;
-  const costPerImage = MODEL.includes('flux') ? 0.014 : 0.005; // estimation
+  const costPerImage = MODEL.includes('flux') ? 0.014 : 0.06; // Gemini Flash Image est à ~0.06$
 
   const categories = CATEGORY_FILTER
     ? Object.entries(CATEGORIES).filter(([id]) => id === CATEGORY_FILTER)
@@ -671,9 +671,20 @@ async function main() {
 
       let nextIdx = getNextImageIndex(catId, subCatId);
       
+      const VARIATIONS = [
+        'warm natural morning light, medium close-up shot',
+        'bright modern daylight, wide environmental shot showcasing workplace',
+        'golden hour warm sunlight, professional side angle shot',
+        'clean studio lighting, confident direct eye contact shot',
+        'soft natural interior lighting, collaborative action shot',
+        'vibrant daylight, dynamic working angle'
+      ];
+
       for (let i = 0; i < needed; i++) {
         const promptIdx = (existing + i) % prompts.length;
-        const prompt = prompts[promptIdx];
+        const variation = VARIATIONS[i % VARIATIONS.length];
+        const basePrompt = prompts[promptIdx];
+        const prompt = `${basePrompt}, ${variation}`;
         const outputPath = path.join(CATEGORIES_DIR, catId, subCatId, `${String(nextIdx).padStart(2, '0')}.webp`);
 
         console.log(`    [${i + 1}/${needed}] Génération...`);
