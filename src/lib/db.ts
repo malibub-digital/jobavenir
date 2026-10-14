@@ -100,6 +100,11 @@ CREATE TABLE IF NOT EXISTS jobs (
     metadata TEXT DEFAULT '{}',
     content_hash TEXT UNIQUE,
     is_active INTEGER DEFAULT 1,
+    social_publish_at TEXT,
+    social_status TEXT DEFAULT 'SCHEDULED',
+    social_whatsapp TEXT,
+    social_telegram TEXT,
+    social_tiktok TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
@@ -124,6 +129,11 @@ CREATE TABLE IF NOT EXISTS ideas (
     premiere_action TEXT NOT NULL,
     source_inspiration_id TEXT REFERENCES sources(id) ON DELETE SET NULL,
     is_active INTEGER DEFAULT 1,
+    social_publish_at TEXT,
+    social_status TEXT DEFAULT 'SCHEDULED',
+    social_whatsapp TEXT,
+    social_telegram TEXT,
+    social_tiktok TEXT,
     content_hash TEXT UNIQUE,
     metadata TEXT DEFAULT '{}',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -184,12 +194,22 @@ CREATE TABLE IF NOT EXISTS jobs (
     metadata JSONB DEFAULT '{}'::jsonb,
     content_hash VARCHAR(64) UNIQUE,
     is_active BOOLEAN DEFAULT TRUE,
+    social_publish_at TIMESTAMP WITH TIME ZONE,
+    social_status VARCHAR(50) DEFAULT 'SCHEDULED',
+    social_whatsapp TEXT,
+    social_telegram TEXT,
+    social_tiktok TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 ALTER TABLE jobs ADD COLUMN IF NOT EXISTS opportunity_type VARCHAR(50) DEFAULT 'JOB';
 ALTER TABLE jobs ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS social_publish_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS social_status VARCHAR(50) DEFAULT 'SCHEDULED';
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS social_whatsapp TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS social_telegram TEXT;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS social_tiktok TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_jobs_published_date ON jobs(published_date DESC);
 CREATE INDEX IF NOT EXISTS idx_jobs_contract_type ON jobs(contract_type);
@@ -211,11 +231,22 @@ CREATE TABLE IF NOT EXISTS ideas (
     premiere_action TEXT NOT NULL,
     source_inspiration_id VARCHAR(50) REFERENCES sources(id) ON DELETE SET NULL,
     is_active BOOLEAN DEFAULT TRUE,
+    social_publish_at TIMESTAMP WITH TIME ZONE,
+    social_status VARCHAR(50) DEFAULT 'SCHEDULED',
+    social_whatsapp TEXT,
+    social_telegram TEXT,
+    social_tiktok TEXT,
     content_hash VARCHAR(64) UNIQUE,
     metadata JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS social_publish_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS social_status VARCHAR(50) DEFAULT 'SCHEDULED';
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS social_whatsapp TEXT;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS social_telegram TEXT;
+ALTER TABLE ideas ADD COLUMN IF NOT EXISTS social_tiktok TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_ideas_sector ON ideas(sector);
 CREATE INDEX IF NOT EXISTS idx_ideas_demarrage_level ON ideas(demarrage_level);
@@ -283,12 +314,30 @@ export async function initDatabaseSchema() {
     const db = await getSqliteDb();
     db.exec(SQLITE_SCHEMA_SQL);
     try {
-      const columns = db.prepare("PRAGMA table_info(sources)").all();
-      const hasLogoUrl = columns.some((c: any) => c.name === 'logo_url');
+      const sourceCols = db.prepare("PRAGMA table_info(sources)").all();
+      const hasLogoUrl = sourceCols.some((c: any) => c.name === 'logo_url');
       if (!hasLogoUrl) {
         db.exec("ALTER TABLE sources ADD COLUMN logo_url TEXT;");
       }
-    } catch (_) {}
+
+      const jobCols = db.prepare("PRAGMA table_info(jobs)").all();
+      const jobColNames = jobCols.map((c: any) => c.name);
+      if (!jobColNames.includes('social_publish_at')) db.exec("ALTER TABLE jobs ADD COLUMN social_publish_at TEXT;");
+      if (!jobColNames.includes('social_status')) db.exec("ALTER TABLE jobs ADD COLUMN social_status TEXT DEFAULT 'SCHEDULED';");
+      if (!jobColNames.includes('social_whatsapp')) db.exec("ALTER TABLE jobs ADD COLUMN social_whatsapp TEXT;");
+      if (!jobColNames.includes('social_telegram')) db.exec("ALTER TABLE jobs ADD COLUMN social_telegram TEXT;");
+      if (!jobColNames.includes('social_tiktok')) db.exec("ALTER TABLE jobs ADD COLUMN social_tiktok TEXT;");
+
+      const ideaCols = db.prepare("PRAGMA table_info(ideas)").all();
+      const ideaColNames = ideaCols.map((c: any) => c.name);
+      if (!ideaColNames.includes('social_publish_at')) db.exec("ALTER TABLE ideas ADD COLUMN social_publish_at TEXT;");
+      if (!ideaColNames.includes('social_status')) db.exec("ALTER TABLE ideas ADD COLUMN social_status TEXT DEFAULT 'SCHEDULED';");
+      if (!ideaColNames.includes('social_whatsapp')) db.exec("ALTER TABLE ideas ADD COLUMN social_whatsapp TEXT;");
+      if (!ideaColNames.includes('social_telegram')) db.exec("ALTER TABLE ideas ADD COLUMN social_telegram TEXT;");
+      if (!ideaColNames.includes('social_tiktok')) db.exec("ALTER TABLE ideas ADD COLUMN social_tiktok TEXT;");
+    } catch (err) {
+      console.warn('[DB] Migration SQLite warning:', err);
+    }
     console.log(`[DB] Schéma SQLite initialisé avec succès (${getSqlitePath()}).`);
     return;
   }
@@ -329,13 +378,20 @@ export interface DbJob {
   howToApply?: string;
   requirements?: string[];
   metadata?: Record<string, any>;
+  isActive?: boolean;
+  socialPublishAt?: string;
+  socialStatus?: string;
+  socialWhatsapp?: string;
+  socialTelegram?: string;
+  socialTiktok?: string;
 }
 
 /**
  * Récupère les offres depuis SQLite ou PostgreSQL
  */
-export async function getAllDbJobs(): Promise<DbJob[]> {
+export async function getAllDbJobs(options?: { includeInactive?: boolean }): Promise<DbJob[]> {
   try {
+    const whereClause = options?.includeInactive ? '' : 'WHERE j.is_active = true';
     const res = await queryDb(`
       SELECT 
         j.slug, j.title, j.company, j.location,
@@ -350,16 +406,23 @@ export async function getAllDbJobs(): Promise<DbJob[]> {
         s.logo_url as "sourceLogoUrl",
         j.how_to_apply as "howToApply",
         j.requirements,
-        COALESCE(j.metadata, '{}'::jsonb) as "metadata"
+        COALESCE(j.metadata, '{}'::jsonb) as "metadata",
+        j.is_active as "isActive",
+        j.social_publish_at as "socialPublishAt",
+        j.social_status as "socialStatus",
+        j.social_whatsapp as "socialWhatsapp",
+        j.social_telegram as "socialTelegram",
+        j.social_tiktok as "socialTiktok"
       FROM jobs j
       LEFT JOIN sources s ON j.source_id = s.id
-      WHERE j.is_active = true
+      ${whereClause}
       ORDER BY j.published_date DESC, j.id DESC
     `);
     
     return res.rows.map(r => ({
       ...r,
       featured: Boolean(r.featured),
+      isActive: Boolean(r.isActive),
       requirements: typeof r.requirements === 'string' ? JSON.parse(r.requirements || '[]') : (r.requirements || []),
       metadata: typeof r.metadata === 'string' ? JSON.parse(r.metadata || '{}') : (r.metadata || {})
     }));
@@ -394,10 +457,10 @@ export function safeFormatDate(val: any, fallbackToday: boolean = true): string 
 /**
  * Retourne les opportunités dynamiques unifiées (Jobs, Stages, Formations, Projets, Annonces ET Idées business)
  */
-export async function getUnifiedJobs(): Promise<any[]> {
+export async function getUnifiedJobs(options?: { includeInactive?: boolean }): Promise<any[]> {
   const [dbJobs, dbIdeas] = await Promise.all([
-    getAllDbJobs(),
-    getAllDbIdeas()
+    getAllDbJobs(options),
+    getAllDbIdeas(options ? { includeInactive: options.includeInactive } : undefined)
   ]);
 
   const unifiedJobs = dbJobs.map(j => ({
@@ -424,7 +487,13 @@ export async function getUnifiedJobs(): Promise<any[]> {
       sourceLogoUrl: j.sourceLogoUrl,
       howToApply: j.howToApply,
       requirements: Array.isArray(j.requirements) ? j.requirements : [],
-      metadata: j.metadata || {}
+      metadata: j.metadata || {},
+      isActive: j.isActive !== undefined ? j.isActive : true,
+      socialPublishAt: j.socialPublishAt,
+      socialStatus: j.socialStatus || 'SCHEDULED',
+      socialWhatsapp: j.socialWhatsapp,
+      socialTelegram: j.socialTelegram,
+      socialTiktok: j.socialTiktok
     }
   }));
 
@@ -456,7 +525,13 @@ export async function getUnifiedJobs(): Promise<any[]> {
         demarrageLevel: i.demarrageLevel,
         premiereAction: i.premiereAction,
         publicCible: i.publicCible
-      }
+      },
+      isActive: i.isActive !== undefined ? i.isActive : true,
+      socialPublishAt: i.socialPublishAt,
+      socialStatus: i.socialStatus || 'SCHEDULED',
+      socialWhatsapp: i.socialWhatsapp,
+      socialTelegram: i.socialTelegram,
+      socialTiktok: i.socialTiktok
     }
   }));
 
@@ -466,8 +541,9 @@ export async function getUnifiedJobs(): Promise<any[]> {
 /**
  * Récupère une offre spécifique par son slug
  */
-export async function getJobBySlug(slug: string): Promise<any | null> {
+export async function getJobBySlug(slug: string, options?: { includeInactive?: boolean }): Promise<any | null> {
   try {
+    const whereActive = options?.includeInactive ? '' : 'AND j.is_active = true';
     const res = await queryDb(`
       SELECT 
         j.slug, j.title, j.company, j.location,
@@ -482,16 +558,22 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
         s.logo_url as "sourceLogoUrl",
         j.how_to_apply as "howToApply",
         j.requirements,
-        COALESCE(j.metadata, '{}'::jsonb) as "metadata"
+        COALESCE(j.metadata, '{}'::jsonb) as "metadata",
+        j.is_active as "isActive",
+        j.social_publish_at as "socialPublishAt",
+        j.social_status as "socialStatus",
+        j.social_whatsapp as "socialWhatsapp",
+        j.social_telegram as "socialTelegram",
+        j.social_tiktok as "socialTiktok"
       FROM jobs j
       LEFT JOIN sources s ON j.source_id = s.id
-      WHERE j.slug = $1 AND j.is_active = true
+      WHERE j.slug = $1 ${whereActive}
       LIMIT 1
     `, [slug]);
 
     if (res.rows.length === 0) {
       // Fallback si c'est une idée demandée
-      const idea = await getIdeaBySlug(slug);
+      const idea = await getIdeaBySlug(slug, options);
       if (idea) {
         return {
           slug: idea.slug,
@@ -514,7 +596,13 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
             originalSource: idea.metadata?.source_name || 'JobAvenir',
             howToApply: idea.premiereAction,
             requirements: idea.competencesCles || [],
-            metadata: { ...idea.metadata, isIdea: true }
+            metadata: { ...idea.metadata, isIdea: true },
+            isActive: idea.isActive !== undefined ? idea.isActive : true,
+            socialPublishAt: idea.socialPublishAt,
+            socialStatus: idea.socialStatus || 'SCHEDULED',
+            socialWhatsapp: idea.socialWhatsapp,
+            socialTelegram: idea.socialTelegram,
+            socialTiktok: idea.socialTiktok
           }
         };
       }
@@ -547,7 +635,13 @@ export async function getJobBySlug(slug: string): Promise<any | null> {
         sourceLogoUrl: j.sourceLogoUrl,
         howToApply: j.howToApply,
         requirements: Array.isArray(requirements) ? requirements : [],
-        metadata: metadata
+        metadata: metadata,
+        isActive: Boolean(j.isActive),
+        socialPublishAt: j.socialPublishAt,
+        socialStatus: j.socialStatus || 'SCHEDULED',
+        socialWhatsapp: j.socialWhatsapp,
+        socialTelegram: j.socialTelegram,
+        socialTiktok: j.socialTiktok
       }
     };
   } catch (err) {
@@ -628,6 +722,11 @@ export interface DbIdea {
   premiereAction: string;
   sourceInspirationId?: string | null;
   isActive?: boolean;
+  socialPublishAt?: string;
+  socialStatus?: string;
+  socialWhatsapp?: string;
+  socialTelegram?: string;
+  socialTiktok?: string;
   contentHash?: string;
   metadata?: Record<string, any>;
   createdAt?: string;
@@ -637,8 +736,9 @@ export interface DbIdea {
 /**
  * Récupère toutes les idées actives avec filtres optionnels
  */
-export async function getAllDbIdeas(filters?: { sector?: string; demarrageLevel?: string; zone?: string }): Promise<DbIdea[]> {
+export async function getAllDbIdeas(filters?: { sector?: string; demarrageLevel?: string; zone?: string; includeInactive?: boolean }): Promise<DbIdea[]> {
   try {
+    const whereActive = filters?.includeInactive ? '1=1' : 'is_active = true';
     let sql = `
       SELECT 
         id, slug, title, sector,
@@ -651,12 +751,17 @@ export async function getAllDbIdeas(filters?: { sector?: string; demarrageLevel?
         premiere_action as "premiereAction",
         source_inspiration_id as "sourceInspirationId",
         is_active as "isActive",
+        social_publish_at as "socialPublishAt",
+        social_status as "socialStatus",
+        social_whatsapp as "socialWhatsapp",
+        social_telegram as "socialTelegram",
+        social_tiktok as "socialTiktok",
         content_hash as "contentHash",
         COALESCE(metadata, '{}'::jsonb) as "metadata",
         created_at as "createdAt",
         updated_at as "updatedAt"
       FROM ideas
-      WHERE is_active = true
+      WHERE ${whereActive}
     `;
     const params: any[] = [];
 
@@ -696,8 +801,9 @@ export async function getAllDbIdeas(filters?: { sector?: string; demarrageLevel?
 /**
  * Récupère une fiche idée par son slug
  */
-export async function getIdeaBySlug(slug: string): Promise<DbIdea | null> {
+export async function getIdeaBySlug(slug: string, options?: { includeInactive?: boolean }): Promise<DbIdea | null> {
   try {
+    const whereActive = options?.includeInactive ? '' : 'AND is_active = true';
     const res = await queryDb(`
       SELECT 
         id, slug, title, sector,
@@ -710,12 +816,17 @@ export async function getIdeaBySlug(slug: string): Promise<DbIdea | null> {
         premiere_action as "premiereAction",
         source_inspiration_id as "sourceInspirationId",
         is_active as "isActive",
+        social_publish_at as "socialPublishAt",
+        social_status as "socialStatus",
+        social_whatsapp as "socialWhatsapp",
+        social_telegram as "socialTelegram",
+        social_tiktok as "socialTiktok",
         content_hash as "contentHash",
         COALESCE(metadata, '{}'::jsonb) as "metadata",
         created_at as "createdAt",
         updated_at as "updatedAt"
       FROM ideas
-      WHERE slug = $1 AND is_active = true
+      WHERE slug = $1 ${whereActive}
       LIMIT 1
     `, [slug]);
 
