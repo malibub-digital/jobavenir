@@ -14,6 +14,8 @@ export interface ExtractedIdea {
   publicCible: string;
   competencesCles: string[];
   premiereAction: string;
+  pertinenceScore?: number;
+  justificationScore?: string;
   metadata?: Record<string, any>;
 }
 
@@ -63,6 +65,8 @@ export function validateExtractedIdea(idea: any): ExtractedIdea | null {
     return null;
   }
 
+  const score = typeof idea.pertinenceScore === 'number' ? Math.max(1, Math.min(10, Math.round(idea.pertinenceScore))) : 7;
+
   return {
     title: idea.title.trim().slice(0, 120),
     sector,
@@ -73,6 +77,8 @@ export function validateExtractedIdea(idea: any): ExtractedIdea | null {
     publicCible: idea.publicCible?.trim() || 'Particuliers et micro-commerces locaux',
     competencesCles: Array.isArray(idea.competencesCles) ? idea.competencesCles.slice(0, 5) : ['Sens du commerce', 'Organisation'],
     premiereAction: idea.premiereAction.trim(),
+    pertinenceScore: score,
+    justificationScore: idea.justificationScore?.trim() || '',
     metadata: idea.metadata || {}
   };
 }

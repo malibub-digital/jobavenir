@@ -426,7 +426,21 @@ export async function runIdeaScraper(closePool = false) {
     console.log(`[Ideas Scraper] 🔄 Lot de ${targetSources.length} sources sélectionnées par rotation (les moins récemment scrapées).`);
   }
 
-  let totalNewIdeas = 0;
+  const MAX_IDEAS_PER_RUN = 3;
+  const MIN_PERTINENCE_SCORE = 7;
+
+  interface CandidateIdea {
+    extracted: ExtractedIdea;
+    rawContentHash: string;
+    source: SourceRow;
+    post: {
+      title: string;
+      link: string;
+      date: string;
+    };
+  }
+
+  const candidateIdeas: CandidateIdea[] = [];
   let totalProcessed = 0;
   let totalCached = 0;
 
@@ -471,46 +485,107 @@ export async function runIdeaScraper(closePool = false) {
         continue;
       }
 
-      console.log(`   💡 Envoi au LLM pour contextualisation au Mali : "${post.title.slice(0, 60)}..."`);
+      console.log(`   💡 Envoi au LLM pour analyse & notation : "${post.title.slice(0, 60)}..."`);
       const rawText = `${post.title}\n\n${post.content}`;
       const extracted = await extractIdeaWithAI(rawText, post.title);
 
       if (!extracted) {
-        console.log(`      🛡️ Contenu écarté (pas d'opportunité d'entreprise concrète pour le Mali).`);
+        console.log(`      🛡️ Contenu écarté par le filtre sélectif.`);
         continue;
       }
 
-      const ideaSlug = `${slugify(extracted.title)}-${rawContentHash.slice(0, 6)}`;
-      const ideaRecord: DbIdea = {
-        slug: ideaSlug,
-        title: extracted.title,
-        sector: extracted.sector,
-        zoneCible: extracted.zoneCible,
-        demarrageLevel: extracted.demarrageLevel,
-        besoinIdentifie: extracted.besoinIdentifie,
-        concept: extracted.concept,
-        publicCible: extracted.publicCible,
-        competencesCles: extracted.competencesCles,
-        premiereAction: extracted.premiereAction,
-        sourceInspirationId: source.id,
-        contentHash: rawContentHash,
-        metadata: {
-          source_name: source.name,
-          source_url: post.link,
-          original_title: post.title,
-          published_date: post.date
-        }
-      };
+      const score = extracted.pertinenceScore ?? 7;
+      console.log(`      ⭐ Note de viabilité locale : ${score}/10 ${extracted.justificationScore ? `(${extracted.justificationScore})` : ''}`);
 
-      const inserted = await insertIdea(ideaRecord);
-      if (inserted) {
-        totalNewIdeas++;
-        console.log(`      ✅ Idée insérée en base :`);
-        console.log(`         Titre : ${extracted.title}`);
-        console.log(`         Secteur : ${extracted.sector}`);
-        console.log(`         Niveau : ${extracted.demarrageLevel}`);
-        console.log(`         1ère Action 48h : ${extracted.premiereAction}`);
+      if (score < MIN_PERTINENCE_SCORE) {
+        console.log(`      ⏭️ Idée écartée car score insuffisant (< ${MIN_PERTINENCE_SCORE}/10).`);
+        continue;
       }
+
+      candidateIdeas.push({
+        extracted,
+        rawContentHash,
+        source,
+        post: {
+          title: post.title,
+          link: post.link,
+          date: post.date
+        }
+      });
+    }
+  }
+
+  // --- SÉLECTION DES 3 MEILLEURES IDÉES AVEC DIVERSIFICATION SECTORIELLE ---
+  console.log(`\n==================================================`);
+  console.log(`=== COMITÉ DE SÉLECTION (QUOTA : ${MAX_IDEAS_PER_RUN} IDÉES MAX) ===`);
+  console.log(`- Candidats qualifiés avec note >= ${MIN_PERTINENCE_SCORE}/10 : ${candidateIdeas.length}`);
+
+  // Trier les candidats par score décroissant (les meilleures en premier)
+  candidateIdeas.sort((a, b) => (b.extracted.pertinenceScore ?? 7) - (a.extracted.pertinenceScore ?? 7));
+
+  // Récupérer les secteurs récemment utilisés en base pour favoriser la diversification globale
+  const recentSectorsRes = await queryDb(`SELECT sector FROM ideas ORDER BY id DESC LIMIT 5`);
+  const recentDbSectors = new Set<string>(recentSectorsRes.rows.map((r: any) => r.sector));
+
+  const selectedIdeas: CandidateIdea[] = [];
+  const chosenSectorsInRun = new Set<string>();
+
+  // 1ère passe : 1 idée maximum par secteur parmi les candidats
+  for (const candidate of candidateIdeas) {
+    if (selectedIdeas.length >= MAX_IDEAS_PER_RUN) break;
+    const sector = candidate.extracted.sector;
+
+    if (!chosenSectorsInRun.has(sector)) {
+      selectedIdeas.push(candidate);
+      chosenSectorsInRun.add(sector);
+    }
+  }
+
+  // 2e passe (si on n'a pas atteint le quota et qu'il reste des candidats valides)
+  if (selectedIdeas.length < MAX_IDEAS_PER_RUN) {
+    for (const candidate of candidateIdeas) {
+      if (selectedIdeas.length >= MAX_IDEAS_PER_RUN) break;
+      if (!selectedIdeas.includes(candidate)) {
+        selectedIdeas.push(candidate);
+      }
+    }
+  }
+
+  let totalNewIdeas = 0;
+  for (const item of selectedIdeas) {
+    const { extracted, rawContentHash, source, post } = item;
+    const ideaSlug = `${slugify(extracted.title)}-${rawContentHash.slice(0, 6)}`;
+    const ideaRecord: DbIdea = {
+      slug: ideaSlug,
+      title: extracted.title,
+      sector: extracted.sector,
+      zoneCible: extracted.zoneCible,
+      demarrageLevel: extracted.demarrageLevel,
+      besoinIdentifie: extracted.besoinIdentifie,
+      concept: extracted.concept,
+      publicCible: extracted.publicCible,
+      competencesCles: extracted.competencesCles,
+      premiereAction: extracted.premiereAction,
+      sourceInspirationId: source.id,
+      contentHash: rawContentHash,
+      metadata: {
+        source_name: source.name,
+        source_url: post.link,
+        original_title: post.title,
+        published_date: post.date,
+        pertinence_score: extracted.pertinenceScore,
+        justification_score: extracted.justificationScore
+      }
+    };
+
+    const inserted = await insertIdea(ideaRecord);
+    if (inserted) {
+      totalNewIdeas++;
+      console.log(`\n   🏆 Idée retenue et insérée en base [Score ${extracted.pertinenceScore}/10] :`);
+      console.log(`      Titre : ${extracted.title}`);
+      console.log(`      Secteur : ${extracted.sector}`);
+      console.log(`      Niveau : ${extracted.demarrageLevel}`);
+      console.log(`      1ère Action 48h : ${extracted.premiereAction}`);
     }
   }
 
@@ -518,7 +593,8 @@ export async function runIdeaScraper(closePool = false) {
   console.log('=== BILAN DU SCRAPING D\'IDÉES ===');
   console.log(`- Publications inspectées : ${totalProcessed}`);
   console.log(`- Déjà en base (0 token) : ${totalCached}`);
-  console.log(`- Nouvelles idées créées : ${totalNewIdeas}`);
+  console.log(`- Candidats au-dessus du seuil (>= ${MIN_PERTINENCE_SCORE}/10) : ${candidateIdeas.length}`);
+  console.log(`- Idées finales retenues & créées (max ${MAX_IDEAS_PER_RUN}) : ${totalNewIdeas}`);
   console.log('==================================================');
 
   if (closePool) {
