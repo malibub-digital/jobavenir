@@ -33,11 +33,13 @@ const DELAY_BETWEEN_SUBCATS = 5000; // 5s entre chaque sous-catégorie
 
 // Modèles
 const MODELS = {
-  flux: 'black-forest-labs/flux.2-klein-4b',
-  gemini: 'google/gemini-3.1-flash-lite-image'
+  gemini: 'google/gemini-3.1-flash-image',
+  gemini_lite: 'google/gemini-3.1-flash-lite-image',
+  flux: 'black-forest-labs/flux.2-klein-4b'
 };
 
-const MODEL = USE_GEMINI ? MODELS.gemini : MODELS.flux;
+const USE_FLUX = process.argv.includes('--model=flux') || process.argv.includes('--flux');
+const MODEL = USE_FLUX ? MODELS.flux : MODELS.gemini;
 
 // ─── Prompts contextualisés par sous-catégorie ─────────────────
 // Chaque sous-catégorie a un ensemble de variations de prompts pour générer des images diversifiées
@@ -496,52 +498,95 @@ async function generateAndSaveImage(
   model: string
 ): Promise<boolean> {
   try {
-    const body: any = {
-      model,
-      prompt,
-      aspect_ratio: '16:9',
-      n: 1
-    };
+    let imageBuffer: Buffer | null = null;
 
-    // FLUX supporte output_format
-    if (model.includes('flux')) {
-      body.output_format = 'jpeg';
-    }
+    if (model.includes('gemini')) {
+      // Gemini Image via chat completions
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://jobavenir.ml',
+          'X-Title': 'JobAvenir Image Generator'
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{
+            role: 'user',
+            content: `Realistic professional photography, high resolution 16:9: ${prompt}. Clean empty space on the bottom left corner.`
+          }]
+        })
+      });
 
-    const res = await fetch('https://openrouter.ai/api/v1/images', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://jobavenir.ml',
-        'X-Title': 'JobAvenir Image Generator'
-      },
-      body: JSON.stringify(body)
-    });
+      if (!res.ok) {
+        const err = await res.text();
+        console.error(`  ❌ API error ${res.status}: ${err.slice(0, 200)}`);
+        return false;
+      }
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error(`  ❌ API error ${res.status}: ${err.slice(0, 200)}`);
-      return false;
-    }
+      const data = await res.json() as any;
+      const choice = data.choices?.[0]?.message;
+      let b64 = '';
+      if (typeof choice?.images?.[0] === 'string') {
+        b64 = choice.images[0];
+      } else if (choice?.images?.[0]?.image_url?.url) {
+        b64 = choice.images[0].image_url.url;
+      } else if (choice?.images?.[0]?.url) {
+        b64 = choice.images[0].url;
+      } else if (choice?.images?.[0]?.b64_json) {
+        b64 = choice.images[0].b64_json;
+      }
 
-    const data = await res.json() as any;
-    
-    if (!data.data?.[0]) {
-      console.error('  ❌ No image data in response');
-      return false;
-    }
+      if (b64.includes('base64,')) {
+        b64 = b64.split('base64,')[1];
+      }
 
-    const imgData = data.data[0];
-    let imageBuffer: Buffer;
+      if (!b64) {
+        console.error('  ❌ No image data returned from Gemini');
+        return false;
+      }
 
-    if (imgData.b64_json) {
-      imageBuffer = Buffer.from(imgData.b64_json, 'base64');
-    } else if (imgData.url) {
-      const imgRes = await fetch(imgData.url);
-      imageBuffer = Buffer.from(await imgRes.arrayBuffer());
+      imageBuffer = Buffer.from(b64, 'base64');
     } else {
-      console.error('  ❌ No image URL or base64 in response');
+      // FLUX via /api/v1/images
+      const body: any = {
+        model,
+        prompt,
+        aspect_ratio: '16:9',
+        n: 1,
+        output_format: 'jpeg'
+      };
+
+      const res = await fetch('https://openrouter.ai/api/v1/images', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://jobavenir.ml',
+          'X-Title': 'JobAvenir Image Generator'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        console.error(`  ❌ API error ${res.status}: ${err.slice(0, 200)}`);
+        return false;
+      }
+
+      const data = await res.json() as any;
+      const imgData = data.data?.[0];
+      if (imgData?.b64_json) {
+        imageBuffer = Buffer.from(imgData.b64_json, 'base64');
+      } else if (imgData?.url) {
+        const imgRes = await fetch(imgData.url);
+        imageBuffer = Buffer.from(await imgRes.arrayBuffer());
+      }
+    }
+
+    if (!imageBuffer) {
+      console.error('  ❌ Empty image buffer');
       return false;
     }
 
@@ -553,7 +598,7 @@ async function generateAndSaveImage(
 
     await sharp(imageBuffer)
       .resize(1200, 630, { fit: 'cover' })
-      .webp({ quality: 82 })
+      .webp({ quality: 85 })
       .toFile(outputPath);
 
     const stats = fs.statSync(outputPath);

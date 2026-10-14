@@ -37,9 +37,29 @@ const levelColor =
       ? 'bg-rose-500 text-white'
       : 'bg-amber-500 text-white';
 
-const pageTitle = `${idea.title} — Idée Business | ${siteConfig.title}`;
-const teaserText = idea.besoinIdentifie ? `${idea.title}. ${idea.besoinIdentifie}` : idea.concept;
-const pageDescription = teaserText.length > 160 ? teaserText.slice(0, 157) + '...' : teaserText;
+// Titre percutant sans bavardage ni troncature parasite
+const budgetTag = idea.demarrageLevel ? `(Budget : ${idea.demarrageLevel.toLowerCase()})` : '';
+const ogTitle = `💡 ${idea.title} ${budgetTag}`.trim();
+const pageTitle = `${ogTitle} — ${siteConfig.title}`;
+
+// Description télégraphique : Problème ciblé + niveau de capital + CTA
+const problemSnippet = idea.besoinIdentifie
+  ? idea.besoinIdentifie.replace(/\s+/g, ' ').trim()
+  : idea.concept.replace(/\s+/g, ' ').trim();
+
+// Nettoyage pour ne jamais répéter le titre dans la description
+let teaserClean = problemSnippet;
+if (teaserClean.toLowerCase().startsWith(idea.title.toLowerCase())) {
+  teaserClean = teaserClean.slice(idea.title.length).replace(/^[:\s.–-]+/, '').trim();
+}
+
+const actionSuffix = "Plan d'action & test 48h ➔";
+const maxProblemLen = 145 - actionSuffix.length;
+const truncatedProblem = teaserClean.length > maxProblemLen
+  ? teaserClean.slice(0, maxProblemLen - 3) + '... '
+  : teaserClean + '. ';
+
+const pageDescription = `${truncatedProblem}${actionSuffix}`.trim();
 const isImageWebp = ogImageUrl.endsWith('.webp');
 const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
 ---
@@ -50,7 +70,7 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
     <meta property="og:site_name" content="JobAvenir Mali" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={pageTitle} />
+    <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:secure_url" content={ogImageUrl} />
@@ -63,7 +83,7 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalUrl} />
-    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:image:alt" content={idea.title} />

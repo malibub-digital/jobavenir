@@ -115,15 +115,48 @@ if (!fs.existsSync(localOgFile)) {
 
 const siteUrl = Astro.site?.origin || siteConfig.siteUrl || "https://job.malihub.digital";
 const ogImageUrl = ogImagePath.startsWith('http') ? ogImagePath : `${siteUrl}${ogImagePath}`;
-const pageDescription = rawMetadata.teaser || job.data.excerpt || siteConfig.description;
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+
+// 1. Titre percutant avec émoji de statut et sans suffixe parasite
+const typeEmoji = isProject ? '🚀' : isAnnouncement ? '📢' : isTraining ? '📚' : isStage ? '🎓' : '💼';
+const companySuffix = job.data.company ? ` — ${job.data.company}` : '';
+const ogTitle = `${typeEmoji} ${job.data.title}${companySuffix}`.trim();
+const pageTitle = `${ogTitle} | ${siteConfig.title}`;
+
+// 2. Description télégraphique orientée action (sans répéter le titre)
+let factParts: string[] = [];
+if (job.data.location && job.data.location !== "Mali") {
+  factParts.push(job.data.location);
+}
+if (job.data.contractType && !isProject && !isAnnouncement) {
+  factParts.push(job.data.contractType);
+}
+if (job.data.deadline) {
+  factParts.push(`Date limite : ${job.data.deadline}`);
+}
+
+// Extraction d'une phrase de contenu si disponible (autre que le titre)
+let baseText = rawMetadata.teaser || job.data.excerpt || '';
+if (baseText.toLowerCase().startsWith(job.data.title.toLowerCase())) {
+  baseText = baseText.slice(job.data.title.length).replace(/^[:\s.–-]+/, '').trim();
+}
+
+const actionSuffix = isProject ? "Dossier & soumission ➔" : isTraining ? "Programme & inscription ➔" : "Conditions & candidature ➔";
+const factsHeader = factParts.length > 0 ? factParts.join(' • ') + '. ' : '';
+const maxBaseLen = 145 - factsHeader.length - actionSuffix.length;
+const truncatedBase = baseText.length > maxBaseLen
+  ? baseText.slice(0, Math.max(20, maxBaseLen - 3)) + '... '
+  : (baseText ? baseText + '. ' : '');
+
+const pageDescription = `${factsHeader}${truncatedBase}${actionSuffix}`.trim();
+
 const isImageWebp = ogImageUrl.endsWith('.webp');
 const isImagePng = ogImageUrl.endsWith('.png');
-const ogImageType = isImageWebp ? 'image/webp' : isImagePng ? 'image/png' : 'image/jpeg';
+const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'image/jpeg');
 ---
 
 <BaseLayout
-  title={`${job.data.title} — JobAvenir Mali`}
+  title={pageTitle}
   description={pageDescription}
 >
   <Fragment slot="head">
@@ -131,7 +164,7 @@ const ogImageType = isImageWebp ? 'image/webp' : isImagePng ? 'image/png' : 'ima
     <meta property="og:site_name" content="JobAvenir Mali" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={`${job.data.title} | JobAvenir Mali`} />
+    <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:secure_url" content={ogImageUrl} />
@@ -144,7 +177,7 @@ const ogImageType = isImageWebp ? 'image/webp' : isImagePng ? 'image/png' : 'ima
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalUrl} />
-    <meta name="twitter:title" content={`${job.data.title} | JobAvenir Mali`} />
+    <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:image:alt" content={job.data.title} />
