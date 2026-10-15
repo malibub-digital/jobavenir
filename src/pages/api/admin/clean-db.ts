@@ -83,12 +83,16 @@ export const GET: APIRoute = async ({ request }) => {
       FROM jobs
     `);
 
-    const statsIdeas = await queryDb(`
+    // 6. Liste complète des idées actives pour audit de pertinence approfondi
+    const allActiveIdeasRes = await queryDb(`
       SELECT 
-        COUNT(*) as total,
-        COUNT(*) FILTER (WHERE is_active = true) as active,
-        COUNT(*) FILTER (WHERE is_active = false) as inactive
+        id, slug, title, sector, zone_cible as "zoneCible", 
+        demarrage_level as "demarrageLevel", 
+        concept, premiere_action as "premiereAction",
+        metadata, created_at as "createdAt"
       FROM ideas
+      WHERE is_active = true
+      ORDER BY id DESC
     `);
 
     return new Response(JSON.stringify({
@@ -106,7 +110,8 @@ export const GET: APIRoute = async ({ request }) => {
         duplicateJobs: duplicateJobsRes.rows,
         duplicateIdeasCount: duplicateIdeasRes.rows.length,
         duplicateIdeas: duplicateIdeasRes.rows,
-      }
+      },
+      activeIdeas: allActiveIdeasRes.rows
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -244,6 +249,44 @@ export const POST: APIRoute = async ({ request }) => {
           jobsCount: allJobIdsToDeactivate.length,
           ideasCount: allIdeaIdsToDeactivate.length
         }
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (action === 'deactivate-ideas') {
+      const { ideaIds = [] } = body;
+      if (!Array.isArray(ideaIds) || ideaIds.length === 0) {
+        return new Response(JSON.stringify({ error: 'Aucun ID d\'idée fourni' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      if (dryRun) {
+        return new Response(JSON.stringify({
+          success: true,
+          dryRun: true,
+          toDeactivateCount: ideaIds.length,
+          ideaIds
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      const idList = ideaIds.map(Number).filter(n => !isNaN(n)).join(',');
+      await queryDb(`
+        UPDATE ideas 
+        SET is_active = false, social_status = 'ARCHIVED', updated_at = NOW()
+        WHERE id IN (${idList})
+      `);
+
+      return new Response(JSON.stringify({
+        success: true,
+        dryRun: false,
+        deactivatedCount: ideaIds.length
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
