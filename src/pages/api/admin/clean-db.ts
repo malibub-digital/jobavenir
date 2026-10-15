@@ -303,11 +303,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (action === 'run-scrape') {
       const { runScraper } = await import('../../../../scripts/scrape');
-      // Lancement sans fermer le pool
-      await runScraper(false);
+      // Lancement en tâche de fond pour ne pas bloquer la requête HTTP
+      runScraper(false).catch(err => console.error('[Scraper Admin Error]', err));
       return new Response(JSON.stringify({
         success: true,
-        message: 'Scraping des opportunités terminé avec succès'
+        message: 'Scraping des opportunités démarré en arrière-plan avec succès'
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
@@ -316,10 +316,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (action === 'run-scrape-ideas') {
       const { runIdeaScraper } = await import('../../../../scripts/scrape-ideas');
-      await runIdeaScraper(false);
+      // Lancement en tâche de fond pour ne pas bloquer la requête HTTP
+      runIdeaScraper(false).catch(err => console.error('[Ideas Scraper Admin Error]', err));
       return new Response(JSON.stringify({
         success: true,
-        message: 'Scraping des idées terminé avec succès'
+        message: 'Scraping des idées démarré en arrière-plan avec succès'
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
