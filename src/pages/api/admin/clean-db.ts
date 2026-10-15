@@ -301,6 +301,31 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    if (action === 'run-scrape') {
+      const { runScraper } = await import('../../../../scripts/scrape');
+      // Lancement sans fermer le pool
+      await runScraper(false);
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Scraping des opportunités terminé avec succès'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (action === 'run-scrape-ideas') {
+      const { runIdeaScraper } = await import('../../../../scripts/scrape-ideas');
+      await runIdeaScraper(false);
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Scraping des idées terminé avec succès'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     return new Response(JSON.stringify({ error: 'Action inconnue' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
