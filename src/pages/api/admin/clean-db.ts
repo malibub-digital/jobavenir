@@ -10,8 +10,8 @@ async function isAuthenticated(request: Request): Promise<boolean> {
 
   // Cookie
   const cookieHeader = request.headers.get('cookie') || '';
-  const match = cookieHeader.match(/ml_admin_token=([^;]+)/);
-  if (match && match[1] === expectedHash) return true;
+  const match = cookieHeader.match(/(?:cms_admin_token|ml_admin_token)=([^;]+)/);
+  if (match && decodeURIComponent(match[1]) === expectedHash) return true;
 
   // Header Bearer
   const authHeader = request.headers.get('authorization') || '';
@@ -74,7 +74,15 @@ export const GET: APIRoute = async ({ request }) => {
       HAVING COUNT(*) > 1
     `);
 
-    // 5. Total opportunités actives et inactives
+    // 5. Liste des jobs actifs
+    const activeJobsRes = await queryDb(`
+      SELECT id, slug, title, company, opportunity_type, contract_type, category, published_date, deadline
+      FROM jobs
+      WHERE is_active = true
+      ORDER BY id DESC
+    `);
+
+    // 6. Total opportunités actives et inactives
     const statsJobs = await queryDb(`
       SELECT 
         COUNT(*) as total,
@@ -119,7 +127,8 @@ export const GET: APIRoute = async ({ request }) => {
         duplicateIdeasCount: duplicateIdeasRes.rows.length,
         duplicateIdeas: duplicateIdeasRes.rows,
       },
-      activeIdeas: allActiveIdeasRes.rows
+      activeIdeas: allActiveIdeasRes.rows,
+      activeJobs: activeJobsRes.rows
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

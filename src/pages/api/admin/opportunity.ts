@@ -9,10 +9,10 @@ async function isAuthenticated(request: Request): Promise<boolean> {
   const rawSecret = (typeof import.meta !== 'undefined' && import.meta.env?.CMS_ADMIN_SECRET) || process.env.CMS_ADMIN_SECRET || 'admin123';
   const expectedHash = await hashSha256(rawSecret);
 
-  // Vérifier cookie ml_admin_token
+  // Vérifier cookie cms_admin_token ou ml_admin_token
   const cookieHeader = request.headers.get('cookie') || '';
-  const match = cookieHeader.match(/ml_admin_token=([^;]+)/);
-  if (match && match[1] === expectedHash) {
+  const match = cookieHeader.match(/(?:cms_admin_token|ml_admin_token)=([^;]+)/);
+  if (match && decodeURIComponent(match[1]) === expectedHash) {
     return true;
   }
 

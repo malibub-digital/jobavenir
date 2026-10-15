@@ -361,22 +361,45 @@ export async function runIdeaScraper(closePool = false) {
   console.log('=== DÉMARRAGE DU SCRAPER D\'IDÉES DE PROJETS (JOBAVENIR) ===');
   await initDatabaseSchema();
 
-  const allSources = await fetchIdeaSources();
+  let allSources: SourceRow[] = [];
+  const dbIdeaSources = await queryDb(`
+    SELECT id, name, category, sub_category as "subCategory", url, 
+           status_technical as "statusTechnical", scraper_type as "scraperType",
+           frequency, description
+    FROM sources
+    WHERE status_technical = 'ACTIF_200' 
+      AND (is_active = 1 OR is_active = true)
+      AND (
+        category LIKE '%Idées%' 
+        OR category LIKE '%Innovation%' 
+        OR category LIKE '%Incubateur%' 
+        OR category LIKE '%Études%' 
+        OR description LIKE '%micro-%'
+        OR description LIKE '%low-tech%'
+        OR description LIKE '%frugale%'
+      )
+  `);
 
-  // Synchroniser les sources d'idées dans la table sources pour respecter la clé étrangère
-  for (const s of allSources) {
-    await queryDb(`
-      INSERT INTO sources (id, name, category, sub_category, url, status_technical, scraper_type, frequency)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        category = EXCLUDED.category,
-        sub_category = EXCLUDED.sub_category,
-        url = EXCLUDED.url,
-        status_technical = EXCLUDED.status_technical,
-        scraper_type = EXCLUDED.scraper_type,
-        frequency = EXCLUDED.frequency
-    `, [s.id, s.name, s.category, s.subCategory, s.url, s.statusTechnical, s.scraperType, s.frequency || 'HEBDOMADAIRE']);
+  if (dbIdeaSources.rows.length > 0) {
+    allSources = dbIdeaSources.rows;
+    console.log(`[Ideas Scraper] ${allSources.length} sources d'idées actives chargées depuis la base de données.`);
+  } else {
+    console.log('[Ideas Scraper] Aucune source en base, chargement depuis le fichier maître...');
+    allSources = await fetchIdeaSources();
+    for (const s of allSources) {
+      await queryDb(`
+        INSERT INTO sources (id, name, category, sub_category, url, status_technical, scraper_type, frequency)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          category = EXCLUDED.category,
+          sub_category = EXCLUDED.sub_category,
+          url = EXCLUDED.url,
+          status_technical = EXCLUDED.status_technical,
+          scraper_type = EXCLUDED.scraper_type,
+          frequency = EXCLUDED.frequency
+      `, [s.id, s.name, s.category, s.subCategory, s.url, s.statusTechnical, s.scraperType, s.frequency || 'HEBDOMADAIRE']);
+    }
   }
 
   const cliSourceId = process.argv[2]?.startsWith('SRC_') ? process.argv[2] : null;

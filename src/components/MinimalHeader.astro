@@ -50,6 +50,15 @@ const { showBackHome = false } = Astro.props;
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span>Se connecter</span>
         </a>
+        <a
+          href="/admin"
+          id="header-admin-portal"
+          class="header-auth-btn header-admin-portal items-center gap-1.5 hidden"
+          title="Accéder au panneau d'administration"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Admin</span>
+        </a>
         <button
           type="button"
           id="header-auth-logout"
@@ -87,6 +96,17 @@ const { showBackHome = false } = Astro.props;
     color: #ffffff;
     border-color: var(--ml-color-river-700, #0284c7);
   }
+  .header-admin-portal {
+    color: #b45309;
+    border-color: #fde68a;
+    background-color: #fef3c7;
+    cursor: pointer;
+  }
+  .header-admin-portal:hover {
+    background-color: #d97706;
+    color: #ffffff;
+    border-color: #d97706;
+  }
   .header-auth-logout {
     color: #dc2626;
     border-color: #fecaca;
@@ -122,13 +142,16 @@ const { showBackHome = false } = Astro.props;
     const isLoggedIn = !!token && token.length > 0;
 
     const desktopLogin = document.getElementById("header-auth-login");
+    const desktopAdminPortal = document.getElementById("header-admin-portal");
     const desktopLogout = document.getElementById("header-auth-logout");
 
     if (isLoggedIn) {
       desktopLogin?.classList.add("hidden");
+      desktopAdminPortal?.classList.remove("hidden");
       desktopLogout?.classList.remove("hidden");
     } else {
       desktopLogin?.classList.remove("hidden");
+      desktopAdminPortal?.classList.add("hidden");
       desktopLogout?.classList.add("hidden");
     }
   }

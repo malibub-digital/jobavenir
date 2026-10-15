@@ -69,6 +69,9 @@ CREATE TABLE IF NOT EXISTS sources (
     status_technical TEXT,
     scraper_type TEXT,
     frequency TEXT DEFAULT 'QUOTIDIEN',
+    description TEXT,
+    is_active INTEGER DEFAULT 1,
+    discovery_status TEXT DEFAULT 'OFFICIAL',
     last_scraped_at TEXT,
     etag TEXT,
     last_modified_header TEXT,
@@ -158,6 +161,9 @@ CREATE TABLE IF NOT EXISTS sources (
     status_technical VARCHAR(50),
     scraper_type VARCHAR(50),
     frequency VARCHAR(50) DEFAULT 'QUOTIDIEN',
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    discovery_status VARCHAR(50) DEFAULT 'OFFICIAL',
     last_scraped_at TIMESTAMP WITH TIME ZONE,
     etag TEXT,
     last_modified_header TEXT,
@@ -166,6 +172,9 @@ CREATE TABLE IF NOT EXISTS sources (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS discovery_status VARCHAR(50) DEFAULT 'OFFICIAL';
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS etag TEXT;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS last_modified_header TEXT;
 ALTER TABLE sources ADD COLUMN IF NOT EXISTS failure_count INT DEFAULT 0;
@@ -316,9 +325,18 @@ export async function initDatabaseSchema() {
     db.exec(SQLITE_SCHEMA_SQL);
     try {
       const sourceCols = db.prepare("PRAGMA table_info(sources)").all();
-      const hasLogoUrl = sourceCols.some((c: any) => c.name === 'logo_url');
-      if (!hasLogoUrl) {
+      const sourceColNames = sourceCols.map((c: any) => c.name);
+      if (!sourceColNames.includes('logo_url')) {
         db.exec("ALTER TABLE sources ADD COLUMN logo_url TEXT;");
+      }
+      if (!sourceColNames.includes('description')) {
+        db.exec("ALTER TABLE sources ADD COLUMN description TEXT;");
+      }
+      if (!sourceColNames.includes('is_active')) {
+        db.exec("ALTER TABLE sources ADD COLUMN is_active INTEGER DEFAULT 1;");
+      }
+      if (!sourceColNames.includes('discovery_status')) {
+        db.exec("ALTER TABLE sources ADD COLUMN discovery_status TEXT DEFAULT 'OFFICIAL';");
       }
 
       const jobCols = db.prepare("PRAGMA table_info(jobs)").all();
@@ -954,11 +972,15 @@ export interface DbSource {
   statusTechnical?: string;
   scraperType?: string;
   frequency?: string;
+  description?: string;
+  isActive?: boolean;
+  discoveryStatus?: string;
   lastScrapedAt?: string;
   etag?: string;
   lastModifiedHeader?: string;
   failureCount?: number;
   logoUrl?: string | null;
+  createdAt?: string;
 }
 
 export async function getSourceById(id: string): Promise<DbSource | null> {
@@ -966,11 +988,21 @@ export async function getSourceById(id: string): Promise<DbSource | null> {
     const res = await queryDb(
       `SELECT id, name, category, sub_category as "subCategory", url, 
               status_technical as "statusTechnical", scraper_type as "scraperType",
-              logo_url as "logoUrl"
+              frequency, description, is_active as "isActive",
+              discovery_status as "discoveryStatus",
+              last_scraped_at as "lastScrapedAt",
+              failure_count as "failureCount",
+              logo_url as "logoUrl",
+              created_at as "createdAt"
        FROM sources WHERE id = $1 LIMIT 1`,
       [id]
     );
-    return res.rows[0] || null;
+    if (!res.rows[0]) return null;
+    const r = res.rows[0];
+    return {
+      ...r,
+      isActive: Boolean(r.isActive)
+    };
   } catch (err) {
     console.error(`[DB] Erreur getSourceById(${id}):`, err);
     return null;
@@ -990,19 +1022,136 @@ export async function updateSourceLogo(id: string, logoUrl: string | null): Prom
   }
 }
 
-export async function getAllSourcesWithLogos(): Promise<DbSource[]> {
+export async function getAllSources(options: { 
+  onlyActive?: boolean; 
+  category?: string;
+  statusTechnical?: string;
+  discoveryStatus?: string;
+  search?: string;
+} = {}): Promise<DbSource[]> {
   try {
-    const res = await queryDb(
-      `SELECT id, name, category, sub_category as "subCategory", url, 
-              status_technical as "statusTechnical", scraper_type as "scraperType",
-              logo_url as "logoUrl"
-       FROM sources
-       ORDER BY id ASC`
-    );
-    return res.rows;
+    let sql = `
+      SELECT id, name, category, sub_category as "subCategory", url, 
+             status_technical as "statusTechnical", scraper_type as "scraperType",
+             frequency, description, is_active as "isActive",
+             discovery_status as "discoveryStatus",
+             last_scraped_at as "lastScrapedAt",
+             failure_count as "failureCount",
+             logo_url as "logoUrl",
+             created_at as "createdAt"
+      FROM sources
+      WHERE 1=1
+    `;
+    const params: any[] = [];
+    let pIdx = 1;
+
+    if (options.onlyActive) {
+      sql += ` AND (is_active = 1 OR is_active = true)`;
+    }
+    if (options.category) {
+      sql += ` AND category = $${pIdx++}`;
+      params.push(options.category);
+    }
+    if (options.statusTechnical) {
+      sql += ` AND status_technical = $${pIdx++}`;
+      params.push(options.statusTechnical);
+    }
+    if (options.discoveryStatus) {
+      sql += ` AND discovery_status = $${pIdx++}`;
+      params.push(options.discoveryStatus);
+    }
+    if (options.search) {
+      sql += ` AND (name ILIKE $${pIdx} OR url ILIKE $${pIdx} OR description ILIKE $${pIdx} OR id ILIKE $${pIdx})`;
+      params.push(`%${options.search}%`);
+      pIdx++;
+    }
+
+    sql += ` ORDER BY id ASC`;
+
+    const res = await queryDb(sql, params);
+    return res.rows.map(r => ({
+      ...r,
+      isActive: Boolean(r.isActive)
+    }));
   } catch (err) {
-    console.error('[DB] Erreur getAllSourcesWithLogos:', err);
+    console.error('[DB] Erreur getAllSources:', err);
     return [];
   }
+}
+
+export async function toggleSourceActive(id: string, isActive?: boolean): Promise<{ success: boolean; isActive: boolean }> {
+  try {
+    const current = await queryDb(`SELECT is_active FROM sources WHERE id = $1`, [id]);
+    if (current.rows.length === 0) throw new Error('Source introuvable');
+    
+    const curVal = Boolean(current.rows[0].is_active);
+    const targetState = isActive !== undefined ? isActive : !curVal;
+    const dbVal = targetState ? 1 : 0;
+
+    await queryDb(`UPDATE sources SET is_active = $2 WHERE id = $1`, [id, dbVal]);
+    return { success: true, isActive: targetState };
+  } catch (err: any) {
+    console.error(`[DB] Erreur toggleSourceActive(${id}):`, err);
+    throw err;
+  }
+}
+
+export async function upsertSource(source: Partial<DbSource> & { id?: string; name: string; url: string }): Promise<string> {
+  const isUpdate = Boolean(source.id);
+  let sourceId = source.id;
+
+  if (!isUpdate) {
+    // Générer nouvel ID SRC_XXX basé sur le MAX existant
+    const maxRes = await queryDb(`SELECT id FROM sources WHERE id LIKE 'SRC_%' ORDER BY id DESC LIMIT 50`);
+    let maxNum = 0;
+    for (const row of maxRes.rows) {
+      const num = parseInt(row.id.replace('SRC_', ''), 10);
+      if (!isNaN(num) && num > maxNum) {
+        maxNum = num;
+      }
+    }
+    sourceId = `SRC_${String(maxNum + 1).padStart(3, '0')}`;
+  }
+
+  const isActiveVal = source.isActive !== false ? 1 : 0;
+  const statusTech = source.statusTechnical || 'ACTIF_200';
+  const scraperType = source.scraperType || 'API_OU_DOM_MONITOR';
+  const frequency = source.frequency || 'QUOTIDIEN';
+  const discoveryStatus = source.discoveryStatus || 'OFFICIAL';
+
+  await queryDb(
+    `INSERT INTO sources (
+      id, name, category, sub_category, url, status_technical,
+      scraper_type, frequency, description, is_active, discovery_status, logo_url
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    ON CONFLICT (id) DO UPDATE SET
+      name = EXCLUDED.name,
+      category = EXCLUDED.category,
+      sub_category = EXCLUDED.sub_category,
+      url = EXCLUDED.url,
+      status_technical = EXCLUDED.status_technical,
+      scraper_type = EXCLUDED.scraper_type,
+      frequency = EXCLUDED.frequency,
+      description = EXCLUDED.description,
+      is_active = EXCLUDED.is_active,
+      discovery_status = EXCLUDED.discovery_status,
+      logo_url = COALESCE(EXCLUDED.logo_url, sources.logo_url)`,
+    [
+      sourceId,
+      source.name,
+      source.category || 'Général',
+      source.subCategory || '',
+      source.url,
+      statusTech,
+      scraperType,
+      frequency,
+      source.description || '',
+      isActiveVal,
+      discoveryStatus,
+      source.logoUrl || null
+    ]
+  );
+
+  return sourceId!;
 }
 

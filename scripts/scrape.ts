@@ -179,6 +179,7 @@ async function getNextBatchSources(batchSize: number): Promise<SourceRow[]> {
        etag, last_modified_header as "lastModifiedHeader"
      FROM sources
      WHERE status_technical = 'ACTIF_200'
+       AND (is_active = 1 OR is_active = true)
      ORDER BY last_scraped_at ASC NULLS FIRST
      LIMIT $1`,
     [batchSize]
@@ -515,29 +516,44 @@ export async function runScraper(closePool = false) {
     }
   }
 
-  const allSources = await fetchMasterSources();
-  const activeSources = allSources.filter(s => s.statusTechnical === 'ACTIF_200');
-  console.log(`[Scraper] ${activeSources.length} sources prêtes (Statut ACTIF_200).`);
+  let activeSources: SourceRow[] = [];
+  const dbSourcesRes = await pool.query(
+    `SELECT id, name, category, sub_category as "subCategory", url, 
+            status_technical as "statusTechnical", scraper_type as "scraperType",
+            etag, last_modified_header as "lastModifiedHeader"
+     FROM sources
+     WHERE status_technical = 'ACTIF_200' AND (is_active = 1 OR is_active = true)`
+  );
+
+  if (dbSourcesRes.rows.length > 0) {
+    activeSources = dbSourcesRes.rows;
+    console.log(`[Scraper] ${activeSources.length} sources actives chargées directement depuis la base de données.`);
+  } else {
+    console.log('[Scraper] Aucune source en base, repli sur le fichier maître Google Sheets...');
+    const allSources = await fetchMasterSources();
+    activeSources = allSources.filter(s => s.statusTechnical === 'ACTIF_200');
+    if (activeSources.length > 0) {
+      await syncSourcesToDb(activeSources);
+    }
+  }
 
   const cliSourceId = process.argv[2]?.startsWith('SRC_') ? process.argv[2] : null;
   const batchSize = parseInt(process.env.SCRAPE_BATCH_SIZE || '10', 10);
   let targetBatch: SourceRow[] = [];
 
   if (cliSourceId) {
-    const found = activeSources.find(s => s.id === cliSourceId) || allSources.find(s => s.id === cliSourceId);
+    const found = activeSources.find(s => s.id === cliSourceId);
     if (found) {
       targetBatch = [found];
       console.log(`[Scraper] 🎯 Source ciblée par CLI : ${found.name} (${found.id}) - ${found.url}`);
     } else {
-      console.warn(`[Scraper] Source ${cliSourceId} introuvable dans l'inventaire.`);
+      console.warn(`[Scraper] Source ${cliSourceId} introuvable ou inactive.`);
     }
   }
 
   if (targetBatch.length === 0) {
     if (hasDb) {
-      // 1. Synchronisation de l'inventaire en base
-      await syncSourcesToDb(activeSources);
-      // 2. Échelonnement : sélection du lot prioritaire (sources jamais scrapées ou les plus anciennes)
+      // Échelonnement : sélection du lot prioritaire (sources jamais scrapées ou les plus anciennes)
       targetBatch = await getNextBatchSources(batchSize);
       console.log(`[Scraper] Lot sélectionné : ${targetBatch.length} sources prioritaires (taille lot = ${batchSize}).`);
     } else {

@@ -1,7 +1,794 @@
 ---
+export const prerender = false;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import MinimalHeader from "../components/MinimalHeader.astro";
+import Footer from "@malihub/sites-core/components/Footer.astro";
+import siteConfig from "../../site.config.json";
+import { queryDb, getAllSources } from "../lib/db";
+
+// Récupération initiale côté serveur
+const sources = await getAllSources();
+const categoriesRes = await queryDb(`SELECT DISTINCT category FROM sources WHERE category IS NOT NULL AND category != '' ORDER BY category ASC`);
+const categories = categoriesRes.rows.map((r: any) => r.category);
+
+const statsRes = await queryDb(`
+  SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN is_active = 1 OR is_active = true THEN 1 ELSE 0 END) as active,
+    SUM(CASE WHEN discovery_status = 'AUTO_DISCOVERED' THEN 1 ELSE 0 END) as discovered
+  FROM sources
+`);
+const stats = {
+  total: parseInt(statsRes.rows[0]?.total || '0', 10),
+  active: parseInt(statsRes.rows[0]?.active || '0', 10),
+  discovered: parseInt(statsRes.rows[0]?.discovered || '0', 10)
+};
 ---
 
-<script>
-  window.location.replace("/login");
-</script>
+<BaseLayout title={`Administration des Sources — ${siteConfig.title}`}>
+  <MinimalHeader slot="header" />
 
+  <!-- Écran de chargement / Vérification d'authentification -->
+  <div id="admin-auth-guard" class="min-h-[70vh] flex items-center justify-center py-12 px-4 bg-stone-50">
+    <div class="max-w-md w-full bg-white p-8 rounded-2xl border border-stone-200 text-center shadow-sm">
+      <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center mx-auto mb-4 text-xl">
+        🔒
+      </div>
+      <h1 class="text-lg font-bold text-stone-900 mb-2">Authentification requise</h1>
+      <p class="text-xs text-stone-600 mb-6">
+        Vous devez être connecté avec le mot de passe administrateur pour accéder à l'inventaire des sources.
+      </p>
+      <a
+        href="/login"
+        class="inline-flex items-center justify-center w-full py-2.5 px-4 bg-[var(--ml-color-river-700)] hover:bg-[var(--ml-color-river-800)] text-white text-xs font-bold rounded-xl transition-colors shadow-xs"
+      >
+        Se connecter à l'administration
+      </a>
+    </div>
+  </div>
+
+  <!-- Contenu Principal Backoffice Sources (affiché si token valide) -->
+  <main id="admin-sources-root" class="hidden py-8 md:py-10 bg-stone-50/60 min-h-screen">
+    <div class="ml-container max-w-7xl mx-auto px-4">
+      
+      <!-- Fil d'Ariane & Titre -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+          <div class="flex items-center gap-2 text-xs text-stone-500 mb-1">
+            <a href="/" class="hover:text-stone-900">Accueil</a>
+            <span>/</span>
+            <a href="/opportunites" class="hover:text-stone-900">Opportunités</a>
+            <span>/</span>
+            <span class="text-stone-800 font-semibold">Administration des Sources</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-stone-900 font-title tracking-tight">
+              Gestion de l'Inventaire des Sources
+            </h1>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Mode Admin Actif
+            </span>
+          </div>
+          <p class="text-xs text-stone-600 mt-1 max-w-2xl">
+            Inventaire autonome des 320+ organismes surveillés pour les opportunités et idées d'entrepreneuriat au Mali.
+          </p>
+        </div>
+
+        <!-- Boutons d'action rapides -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            id="open-create-source-modal-btn"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-stone-900 hover:bg-stone-800 text-white shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <span>➕</span>
+            <span>Nouvelle Source</span>
+          </button>
+          <button
+            type="button"
+            id="trigger-scrape-btn"
+            class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <span>⚡</span>
+            <span>Lancer Scraper</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bandeau de Notifications Toast In-Page -->
+      <div id="sources-toast" class="hidden mb-6 p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-2">
+          <span id="sources-toast-icon">✅</span>
+          <span id="sources-toast-msg">Opération effectuée</span>
+        </div>
+        <button type="button" id="sources-toast-close" class="text-stone-400 hover:text-stone-700 font-bold ml-4">✕</button>
+      </div>
+
+      <!-- Métriques Clés (Cards) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-6">
+        <div class="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1">Total Sources</div>
+          <div class="text-2xl font-black text-stone-900" id="stat-total">{stats.total}</div>
+          <div class="text-[11px] text-stone-500 mt-1">Surveillées en base</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 mb-1">Sources Actives</div>
+          <div class="text-2xl font-black text-emerald-700" id="stat-active">{stats.active}</div>
+          <div class="text-[11px] text-stone-500 mt-1">Incluses dans le scraping</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-rose-600 mb-1">Inactives / Pause</div>
+          <div class="text-2xl font-black text-rose-700" id="stat-inactive">{stats.total - stats.active}</div>
+          <div class="text-[11px] text-stone-500 mt-1">Désactivées temporairement</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 mb-1">Découvertes Auto</div>
+          <div class="text-2xl font-black text-amber-700" id="stat-discovered">{stats.discovered}</div>
+          <div class="text-[11px] text-stone-500 mt-1">À modérer / valider</div>
+        </div>
+      </div>
+
+      <!-- Barre de Filtres et Recherche -->
+      <div class="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs mb-6 space-y-3">
+        <div class="flex flex-col md:flex-row gap-3">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-400">🔍</span>
+            <input
+              type="text"
+              id="source-search-input"
+              placeholder="Rechercher par identifiant (ex: SRC_001), organisme, URL, mot-clé..."
+              class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <select
+              id="source-category-select"
+              class="py-2 px-3 text-xs rounded-xl border border-stone-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="">Toutes les catégories</option>
+              {categories.map((c) => (
+                <option value={c}>{c}</option>
+              ))}
+            </select>
+
+            <select
+              id="source-status-select"
+              class="py-2 px-3 text-xs rounded-xl border border-stone-200 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="all">Tous les statuts</option>
+              <option value="active">Actives uniquement</option>
+              <option value="inactive">Désactivées uniquement</option>
+            </select>
+
+            <button
+              type="button"
+              id="source-reset-filter-btn"
+              class="px-3 py-2 text-xs font-bold rounded-xl border border-stone-200 bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors"
+            >
+              Effacer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau des Sources -->
+      <div class="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
+        <div class="p-4 border-b border-stone-100 flex items-center justify-between text-xs text-stone-600">
+          <div>
+            Affichage de <span id="visible-sources-count" class="font-bold text-stone-900">{sources.length}</span> sources
+          </div>
+          <div class="text-[11px] text-stone-400">
+            Mise à jour en temps réel via l'API interne
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-stone-50/80 text-[11px] font-bold uppercase tracking-wider text-stone-500 border-b border-stone-200/80">
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Organisme & Description</th>
+                <th class="py-3 px-4">Catégorie</th>
+                <th class="py-3 px-4">Scraper & Fréquence</th>
+                <th class="py-3 px-4">Dernier Scrape</th>
+                <th class="py-3 px-4 text-center">Statut</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sources-table-body" class="divide-y divide-stone-100 text-stone-800">
+              {sources.map((s) => {
+                const isActive = s.isActive !== false;
+                return (
+                  <tr
+                    class="source-row hover:bg-amber-50/30 transition-colors"
+                    data-id={s.id}
+                    data-name={s.name.toLowerCase()}
+                    data-url={s.url.toLowerCase()}
+                    data-category={s.category || ''}
+                    data-active={isActive ? 'true' : 'false'}
+                  >
+                    <!-- ID & Logo -->
+                    <td class="py-3 px-4 whitespace-nowrap font-mono text-[11px]">
+                      <div class="flex items-center gap-2">
+                        {s.logoUrl ? (
+                          <img src={s.logoUrl} alt="" class="w-6 h-6 rounded-md object-contain border border-stone-200 bg-white" />
+                        ) : (
+                          <div class="w-6 h-6 rounded-md bg-stone-100 border border-stone-200 flex items-center justify-center text-[10px] font-bold text-stone-500">
+                            {s.id.slice(4)}
+                          </div>
+                        )}
+                        <span class="font-bold text-stone-700">{s.id}</span>
+                      </div>
+                    </td>
+
+                    <!-- Nom & URL -->
+                    <td class="py-3 px-4 max-w-sm">
+                      <div class="font-bold text-stone-950 text-xs flex items-center gap-1.5">
+                        <span>{s.name}</span>
+                        {s.discoveryStatus === 'AUTO_DISCOVERED' && (
+                          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                            Auto-découverte
+                          </span>
+                        )}
+                      </div>
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-[11px] text-[var(--ml-color-river-700)] hover:underline truncate block max-w-xs mt-0.5"
+                      >
+                        {s.url}
+                      </a>
+                      {s.description && (
+                        <p class="text-[11px] text-stone-500 truncate mt-0.5">{s.description}</p>
+                      )}
+                    </td>
+
+                    <!-- Catégorie -->
+                    <td class="py-3 px-4 whitespace-nowrap">
+                      <span class="inline-block px-2.5 py-1 rounded-md text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200">
+                        {s.category || 'Général'}
+                      </span>
+                    </td>
+
+                    <!-- Scraper & Fréquence -->
+                    <td class="py-3 px-4 whitespace-nowrap text-[11px]">
+                      <div class="font-mono text-stone-600">{s.scraperType || 'API_OU_DOM'}</div>
+                      <div class="text-[10px] text-stone-400 mt-0.5">{s.frequency || 'QUOTIDIEN'}</div>
+                    </td>
+
+                    <!-- Dernier scrape -->
+                    <td class="py-3 px-4 whitespace-nowrap text-[11px] text-stone-500">
+                      {s.lastScrapedAt ? new Date(s.lastScrapedAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Jamais'}
+                    </td>
+
+                    <!-- Statut (Toggle Switch) -->
+                    <td class="py-3 px-4 whitespace-nowrap text-center">
+                      <button
+                        type="button"
+                        class="toggle-status-btn px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer border inline-flex items-center gap-1"
+                        data-id={s.id}
+                        data-active={isActive ? 'true' : 'false'}
+                        style={isActive ? 'background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0;' : 'background-color: #fff1f2; color: #9f1239; border-color: #fecdd3;'}
+                      >
+                        <span class={`status-dot w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                        <span class="status-label">{isActive ? 'Actif' : 'Inactif'}</span>
+                      </button>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="py-3 px-4 whitespace-nowrap text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          class="edit-source-btn p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 cursor-pointer"
+                          title="Éditer la source"
+                          data-id={s.id}
+                          data-name={s.name}
+                          data-category={s.category || ''}
+                          data-subcategory={s.subCategory || ''}
+                          data-url={s.url}
+                          data-frequency={s.frequency || 'QUOTIDIEN'}
+                          data-scraper={s.scraperType || 'API_OU_DOM_MONITOR'}
+                          data-description={s.description || ''}
+                          data-active={isActive ? 'true' : 'false'}
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          type="button"
+                          class="test-source-btn p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 cursor-pointer"
+                          title="Tester l'accessibilité de l'URL"
+                          data-id={s.id}
+                        >
+                          🌐
+                        </button>
+                        <button
+                          type="button"
+                          class="refresh-logo-btn p-1.5 text-stone-500 hover:text-stone-900 rounded-lg hover:bg-stone-100 cursor-pointer"
+                          title="Régénérer le logo"
+                          data-id={s.id}
+                        >
+                          🖼️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL D'ÉDITION / CRÉATION D'UNE SOURCE -->
+  <div id="source-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-stone-200">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-100 mb-4">
+        <h2 id="modal-title" class="text-base font-bold text-stone-900">Ajouter une Source</h2>
+        <button type="button" id="close-modal-btn" class="text-stone-400 hover:text-stone-700 text-lg font-bold">✕</button>
+      </div>
+
+      <form id="source-form" class="space-y-3.5 text-xs">
+        <input type="hidden" id="form-source-id" />
+
+        <div>
+          <label for="form-source-name" class="block font-bold text-stone-700 mb-1">Nom de l'organisme / Site *</label>
+          <input
+            type="text"
+            id="form-source-name"
+            required
+            placeholder="ex: ANPE Mali, Banque de Développement..."
+            class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        </div>
+
+        <div>
+          <label for="form-source-url" class="block font-bold text-stone-700 mb-1">URL officielle du site ou portail *</label>
+          <input
+            type="url"
+            id="form-source-url"
+            required
+            placeholder="https://exemple.ml"
+            class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="form-source-category" class="block font-bold text-stone-700 mb-1">Catégorie</label>
+            <input
+              type="text"
+              id="form-source-category"
+              list="categories-datalist"
+              placeholder="ex: Institutions publiques"
+              class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            <datalist id="categories-datalist">
+              {categories.map((c) => (
+                <option value={c} />
+              ))}
+            </datalist>
+          </div>
+
+          <div>
+            <label for="form-source-subcategory" class="block font-bold text-stone-700 mb-1">Sous-catégorie</label>
+            <input
+              type="text"
+              id="form-source-subcategory"
+              placeholder="ex: Ministère, Banque, ONG"
+              class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="form-source-scraper" class="block font-bold text-stone-700 mb-1">Type de Scraper</label>
+            <select
+              id="form-source-scraper"
+              class="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="API_OU_DOM_MONITOR">API_OU_DOM_MONITOR</option>
+              <option value="HTML_GENERIC_PARSER">HTML_GENERIC_PARSER</option>
+              <option value="PLAYWRIGHT_RESIDENTIAL">PLAYWRIGHT_RESIDENTIAL</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="form-source-frequency" class="block font-bold text-stone-700 mb-1">Fréquence</label>
+            <select
+              id="form-source-frequency"
+              class="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="QUOTIDIEN">QUOTIDIEN</option>
+              <option value="HEBDOMADAIRE">HEBDOMADAIRE</option>
+              <option value="MENSUEL">MENSUEL</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="form-source-desc" class="block font-bold text-stone-700 mb-1">Notes & Description</label>
+          <textarea
+            id="form-source-desc"
+            rows="2"
+            placeholder="Informations utiles sur la structure, les types d'offres..."
+            class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="form-source-active" class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500" checked />
+          <label for="form-source-active" class="font-bold text-stone-800">Source active pour le scraping</label>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-stone-100">
+          <button
+            type="button"
+            id="cancel-modal-btn"
+            class="px-4 py-2 rounded-xl border border-stone-200 text-stone-700 hover:bg-stone-50 font-bold"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            id="save-source-submit"
+            class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold transition-colors"
+          >
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
+
+<script>
+  import { getAdminCookieToken } from '@malihub/sites-core/utils/auth.js';
+
+  function initAdminSources() {
+    const token = getAdminCookieToken();
+    const guard = document.getElementById('admin-auth-guard');
+    const root = document.getElementById('admin-sources-root');
+
+    // Vérification de sécurité client-side
+    if (!token || token.length === 0) {
+      if (guard) guard.classList.remove('hidden');
+      if (root) root.classList.add('hidden');
+      return;
+    }
+
+    if (guard) guard.classList.add('hidden');
+    if (root) root.classList.remove('hidden');
+
+    // Éléments UI
+    const searchInput = document.getElementById('source-search-input') as HTMLInputElement | null;
+    const categorySelect = document.getElementById('source-category-select') as HTMLSelectElement | null;
+    const statusSelect = document.getElementById('source-status-select') as HTMLSelectElement | null;
+    const resetFilterBtn = document.getElementById('source-reset-filter-btn');
+    const visibleCountSpan = document.getElementById('visible-sources-count');
+    const tableRows = document.querySelectorAll<HTMLTableRowElement>('.source-row');
+
+    const toast = document.getElementById('sources-toast');
+    const toastMsg = document.getElementById('sources-toast-msg');
+    const toastIcon = document.getElementById('sources-toast-icon');
+    const toastClose = document.getElementById('sources-toast-close');
+    let toastTimeout: any = null;
+
+    function showToast(message: string, isError = false) {
+      if (!toast || !toastMsg) return;
+      if (toastTimeout) clearTimeout(toastTimeout);
+
+      toastMsg.textContent = message;
+      if (toastIcon) toastIcon.textContent = isError ? '❌' : '✅';
+      toast.className = `mb-6 p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs ${
+        isError ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+      }`;
+      toast.classList.remove('hidden');
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 5000);
+    }
+
+    toastClose?.addEventListener('click', () => toast?.classList.add('hidden'));
+
+    // Filtrage dynamique du tableau
+    function filterTable() {
+      const query = (searchInput?.value || '').trim().toLowerCase();
+      const cat = categorySelect?.value || '';
+      const stat = statusSelect?.value || 'all';
+
+      let visible = 0;
+
+      tableRows.forEach(row => {
+        const rowId = (row.getAttribute('data-id') || '').toLowerCase();
+        const rowName = row.getAttribute('data-name') || '';
+        const rowUrl = row.getAttribute('data-url') || '';
+        const rowCat = row.getAttribute('data-category') || '';
+        const rowActive = row.getAttribute('data-active') === 'true';
+
+        const matchQuery = !query || rowId.includes(query) || rowName.includes(query) || rowUrl.includes(query);
+        const matchCat = !cat || rowCat === cat;
+        const matchStat = stat === 'all' || (stat === 'active' && rowActive) || (stat === 'inactive' && !rowActive);
+
+        if (matchQuery && matchCat && matchStat) {
+          row.style.display = '';
+          visible++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      if (visibleCountSpan) visibleCountSpan.textContent = String(visible);
+    }
+
+    searchInput?.addEventListener('input', filterTable);
+    categorySelect?.addEventListener('change', filterTable);
+    statusSelect?.addEventListener('change', filterTable);
+
+    resetFilterBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      if (categorySelect) categorySelect.value = '';
+      if (statusSelect) statusSelect.value = 'all';
+      filterTable();
+    });
+
+    // Basculer l'état Actif/Inactif d'une source
+    document.querySelectorAll<HTMLButtonElement>('.toggle-status-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const isCurrentActive = btn.getAttribute('data-active') === 'true';
+        const targetActive = !isCurrentActive;
+
+        btn.disabled = true;
+        try {
+          const res = await fetch('/api/admin/sources', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              action: 'toggle-active',
+              id,
+              isActive: targetActive
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok || data.error) throw new Error(data.error || 'Erreur');
+
+          btn.setAttribute('data-active', targetActive ? 'true' : 'false');
+          btn.style.backgroundColor = targetActive ? '#ecfdf5' : '#fff1f2';
+          btn.style.color = targetActive ? '#065f46' : '#9f1239';
+          btn.style.borderColor = targetActive ? '#a7f3d0' : '#fecdd3';
+
+          const dot = btn.querySelector('.status-dot');
+          if (dot) {
+            dot.className = `status-dot w-1.5 h-1.5 rounded-full ${targetActive ? 'bg-emerald-500' : 'bg-rose-500'}`;
+          }
+          const label = btn.querySelector('.status-label');
+          if (label) label.textContent = targetActive ? 'Actif' : 'Inactif';
+
+          const row = btn.closest('tr');
+          row?.setAttribute('data-active', targetActive ? 'true' : 'false');
+
+          showToast(`Source ${id} ${targetActive ? 'activée' : 'désactivée'}.`);
+        } catch (err: any) {
+          showToast(err.message, true);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+
+    // Tester l'accessibilité d'une source
+    document.querySelectorAll<HTMLButtonElement>('.test-source-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        btn.disabled = true;
+        btn.textContent = '⏳';
+        try {
+          const res = await fetch('/api/admin/sources', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ action: 'test-source', id })
+          });
+          const data = await res.json();
+          showToast(`[${id}] ${data.message}`, !data.reachable);
+        } catch (err: any) {
+          showToast(`Erreur test connexion: ${err.message}`, true);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '🌐';
+        }
+      });
+    });
+
+    // Régénérer le logo d'une source
+    document.querySelectorAll<HTMLButtonElement>('.refresh-logo-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        btn.disabled = true;
+        btn.textContent = '⏳';
+        try {
+          const res = await fetch('/api/admin/sources', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ action: 'refresh-logo', id })
+          });
+          const data = await res.json();
+          if (data.success && data.logoUrl) {
+            showToast(`Logo mis à jour pour ${id}. Rechargement dans un instant...`);
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            showToast(data.message || 'Échec logo', true);
+          }
+        } catch (err: any) {
+          showToast(err.message, true);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '🖼️';
+        }
+      });
+    });
+
+    // Modal de création & édition
+    const modal = document.getElementById('source-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const form = document.getElementById('source-form') as HTMLFormElement | null;
+    const openCreateBtn = document.getElementById('open-create-source-modal-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cancelModalBtn = document.getElementById('cancel-modal-btn');
+
+    const formId = document.getElementById('form-source-id') as HTMLInputElement | null;
+    const formName = document.getElementById('form-source-name') as HTMLInputElement | null;
+    const formUrl = document.getElementById('form-source-url') as HTMLInputElement | null;
+    const formCategory = document.getElementById('form-source-category') as HTMLInputElement | null;
+    const formSubCategory = document.getElementById('form-source-subcategory') as HTMLInputElement | null;
+    const formScraper = document.getElementById('form-source-scraper') as HTMLSelectElement | null;
+    const formFrequency = document.getElementById('form-source-frequency') as HTMLSelectElement | null;
+    const formDesc = document.getElementById('form-source-desc') as HTMLTextAreaElement | null;
+    const formActive = document.getElementById('form-source-active') as HTMLInputElement | null;
+
+    function openModal(isEdit = false, data: any = {}) {
+      if (!modal) return;
+      if (modalTitle) modalTitle.textContent = isEdit ? `Modifier la Source ${data.id}` : 'Nouvelle Source';
+      if (formId) formId.value = data.id || '';
+      if (formName) formName.value = data.name || '';
+      if (formUrl) formUrl.value = data.url || '';
+      if (formCategory) formCategory.value = data.category || '';
+      if (formSubCategory) formSubCategory.value = data.subcategory || '';
+      if (formScraper) formScraper.value = data.scraper || 'API_OU_DOM_MONITOR';
+      if (formFrequency) formFrequency.value = data.frequency || 'QUOTIDIEN';
+      if (formDesc) formDesc.value = data.description || '';
+      if (formActive) formActive.checked = data.active !== 'false';
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal?.classList.add('hidden');
+    }
+
+    openCreateBtn?.addEventListener('click', () => openModal(false));
+    closeModalBtn?.addEventListener('click', closeModal);
+    cancelModalBtn?.addEventListener('click', closeModal);
+
+    document.querySelectorAll<HTMLButtonElement>('.edit-source-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openModal(true, {
+          id: btn.getAttribute('data-id'),
+          name: btn.getAttribute('data-name'),
+          url: btn.getAttribute('data-url'),
+          category: btn.getAttribute('data-category'),
+          subcategory: btn.getAttribute('data-subcategory'),
+          scraper: btn.getAttribute('data-scraper'),
+          frequency: btn.getAttribute('data-frequency'),
+          description: btn.getAttribute('data-description'),
+          active: btn.getAttribute('data-active')
+        });
+      });
+    });
+
+    // Envoi du formulaire de création / édition
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('save-source-submit') as HTMLButtonElement | null;
+      if (submitBtn) submitBtn.disabled = true;
+
+      const sourceData = {
+        id: formId?.value || undefined,
+        name: formName?.value || '',
+        url: formUrl?.value || '',
+        category: formCategory?.value || 'Général',
+        subCategory: formSubCategory?.value || '',
+        scraperType: formScraper?.value || 'API_OU_DOM_MONITOR',
+        frequency: formFrequency?.value || 'QUOTIDIEN',
+        description: formDesc?.value || '',
+        isActive: formActive?.checked ?? true
+      };
+
+      try {
+        const res = await fetch('/api/admin/sources', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            action: 'save',
+            sourceData
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || 'Erreur sauvegarde');
+
+        closeModal();
+        showToast(data.message || 'Source enregistrée avec succès');
+        setTimeout(() => window.location.reload(), 1000);
+      } catch (err: any) {
+        showToast(err.message, true);
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+
+    // Lancer Scraper en tâche de fond depuis le backoffice
+    const triggerScrapeBtn = document.getElementById('trigger-scrape-btn');
+    triggerScrapeBtn?.addEventListener('click', async () => {
+      if (!confirm('Démarrer un cycle de scraping en arrière-plan maintenant ?')) return;
+
+      triggerScrapeBtn.setAttribute('disabled', 'true');
+      try {
+        const res = await fetch('/api/admin/clean-db', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: 'run-scrape' })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message || 'Scraper démarré en tâche de fond.');
+        } else {
+          throw new Error(data.error || 'Échec lancement');
+        }
+      } catch (err: any) {
+        showToast(err.message, true);
+      } finally {
+        triggerScrapeBtn.removeAttribute('disabled');
+      }
+    });
+  }
+
+  // Initialisation au chargement
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminSources);
+  } else {
+    initAdminSources();
+  }
+</script>
