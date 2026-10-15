@@ -76,20 +76,32 @@ export function getCategoryImage(
     }
   }
 
-  // 2. TENTATIVE AU NIVEAU DE LA MACRO-CATÉGORIE (REPLI 1)
+  // 2. TENTATIVE AU NIVEAU DE LA MACRO-CATÉGORIE (REPLI ÉTENDU : RACINE + SOUS-DOSSIERS)
   const targetDir = path.join(CATEGORIES_DIR, catId);
 
   try {
     if (fs.existsSync(targetDir)) {
-      const files = fs.readdirSync(targetDir).filter(f => {
-        const fullPath = path.join(targetDir, f);
-        return fs.statSync(fullPath).isFile() && /\.(webp|png|jpg|jpeg)$/i.test(f);
-      });
+      // Lister récursivement toutes les images disponibles dans la catégorie et ses sous-catégories
+      const allCategoryImages: string[] = [];
+      
+      const scanDir = (dirPath: string, relativeDir: string) => {
+        const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+        for (const entry of entries) {
+          const res = path.resolve(dirPath, entry.name);
+          if (entry.isDirectory()) {
+            scanDir(res, `${relativeDir}/${entry.name}`);
+          } else if (/\.(webp|png|jpg|jpeg)$/i.test(entry.name)) {
+            allCategoryImages.push(`${relativeDir}/${entry.name}`);
+          }
+        }
+      };
 
-      if (files.length > 0) {
-        files.sort();
-        const index = pickIndex(files.length, seed);
-        return `/images/categories/${catId}/${files[index]}`;
+      scanDir(targetDir, `/images/categories/${catId}`);
+
+      if (allCategoryImages.length > 0) {
+        allCategoryImages.sort();
+        const index = pickIndex(allCategoryImages.length, seed);
+        return allCategoryImages[index];
       }
     }
   } catch (err) {
