@@ -596,12 +596,15 @@ export async function runScraper(closePool = false) {
     for (const post of rawPosts) {
       totalProcessed++;
       const rawContent = `${post.title}\n\n${post.content}`;
-      // Hash canonique strict combinant URL et titre
-      const hash = crypto.createHash('sha256').update(post.link + post.title).digest('hex');
+      // Garde-fou 1 : Nettoyage de l'URL source (suppression UTM et hash)
+      const cleanUrl = post.link.split('?')[0].split('#')[0].replace(/\/+$/, '');
 
-      // Garde-fou 1 : Vérification pré-LLM en base de données (0 token consommé si déjà connu)
+      // Garde-fou 2 : Vérification pré-LLM en base de données (0 token consommé si déjà connu)
       if (hasDb) {
-        const existing = await pool.query('SELECT id FROM jobs WHERE content_hash = $1 LIMIT 1', [hash]);
+        const existing = await pool.query(
+          'SELECT id FROM jobs WHERE content_hash = $1 OR original_url = $2 OR original_url LIKE $3 LIMIT 1',
+          [hash, post.link, `${cleanUrl}%`]
+        );
         if (existing.rows.length > 0) {
           console.log(`   ⏭️ Déjà en base (${hash.slice(0, 8)}) : "${post.title.slice(0, 45)}..." [0 token]`);
           totalCached++;
@@ -616,6 +619,26 @@ export async function runScraper(closePool = false) {
       if (!extracted) {
         console.log('      ⏩ Annonce ignorée (non retenue par le filtre de pertinence).');
         continue;
+      }
+
+      // Garde-fou 3 : Vérification doublon post-LLM (Même entreprise + titre identique ou similaire dans les opportunités actives)
+      if (hasDb && extracted.company && extracted.company !== 'Organisme Partenaire') {
+        const similarJob = await pool.query(`
+          SELECT id, slug, title FROM jobs
+          WHERE is_active = true
+            AND LOWER(TRIM(company)) = LOWER(TRIM($1))
+            AND (
+              LOWER(TRIM(title)) = LOWER(TRIM($2))
+              OR LOWER(TRIM(title)) LIKE LOWER(TRIM($3))
+            )
+          LIMIT 1
+        `, [extracted.company, extracted.title, `%${extracted.title.slice(0, 30)}%`]);
+
+        if (similarJob.rows.length > 0) {
+          console.log(`   ⏭️ Doublon détecté pour "${extracted.company}" : "${extracted.title}" déjà actif (id: ${similarJob.rows[0].id}, slug: ${similarJob.rows[0].slug}). Ignoré.`);
+          totalCached++;
+          continue;
+        }
       }
 
       totalNew++;

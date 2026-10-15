@@ -652,17 +652,20 @@ export async function getJobBySlug(slug: string, options?: { includeInactive?: b
 }
 
 /**
- * Archive automatiquement les offres dont la date limite est échue (deadline < CURRENT_DATE)
- * Retourne le nombre d'offres archivées.
+ * Archive automatiquement les offres obsolètes :
+ * 1. Les offres dont la date limite est échue (deadline < CURRENT_DATE)
+ * 2. Les offres sans date limite publiées depuis plus de olderThanDays jours (défaut: 30 jours)
+ * Retourne le nombre total d'offres archivées.
  */
-export async function archiveExpiredJobs(): Promise<number> {
+export async function archiveExpiredJobs(options?: { olderThanDays?: number }): Promise<number> {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const olderThanDays = options?.olderThanDays ?? 30;
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const thresholdDate = new Date(now.getTime() - olderThanDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     
-    // Les deadlines peuvent être au format 'YYYY-MM-DD', 'YYYY-MM-DDTHH:mm:ss' ou 'DD/MM/YYYY'
-    // Pour assurer une compatibilité optimale sous SQLite et PostgreSQL :
-    // 1. On sélectionne les offres actives avec une deadline renseignée
-    const res = await queryDb(`
+    // 1. Sélection des offres actives avec deadline
+    const resDeadlines = await queryDb(`
       SELECT id, deadline FROM jobs 
       WHERE is_active = true 
         AND deadline IS NOT NULL 
@@ -671,7 +674,7 @@ export async function archiveExpiredJobs(): Promise<number> {
 
     const expiredIds: number[] = [];
 
-    for (const row of res.rows) {
+    for (const row of resDeadlines.rows) {
       const deadlineStr = String(row.deadline).trim();
       let deadlineDate: Date | null = null;
 
@@ -695,11 +698,24 @@ export async function archiveExpiredJobs(): Promise<number> {
       }
     }
 
-    if (expiredIds.length > 0) {
-      for (const id of expiredIds) {
-        await queryDb(`UPDATE jobs SET is_active = false, updated_at = NOW() WHERE id = $1`, [id]);
+    // 2. Sélection des offres sans date limite publiées depuis plus de olderThanDays jours
+    const resNoDeadlines = await queryDb(`
+      SELECT id FROM jobs
+      WHERE is_active = true
+        AND (deadline IS NULL OR deadline = '')
+        AND published_date < $1
+    `, [thresholdDate]);
+
+    for (const row of resNoDeadlines.rows) {
+      if (!expiredIds.includes(row.id)) {
+        expiredIds.push(row.id);
       }
-      console.log(`[DB] 🧹 Cycle de vie : ${expiredIds.length} offre(s) expirée(s) archivée(s) (is_active = false).`);
+    }
+
+    if (expiredIds.length > 0) {
+      const idList = expiredIds.join(',');
+      await queryDb(`UPDATE jobs SET is_active = false, social_status = 'ARCHIVED', updated_at = NOW() WHERE id IN (${idList})`);
+      console.log(`[DB] 🧹 Cycle de vie : ${expiredIds.length} offre(s) expirée(s) ou obsolètes (> ${olderThanDays}j) archivée(s) (is_active = false).`);
     }
 
     return expiredIds.length;

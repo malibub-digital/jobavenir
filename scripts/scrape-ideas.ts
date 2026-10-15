@@ -444,6 +444,10 @@ export async function runIdeaScraper(closePool = false) {
   let totalProcessed = 0;
   let totalCached = 0;
 
+  // Récupérer les titres des idées déjà actives en base pour déduplication sémantique pré-LLM
+  const existingActiveIdeasRes = await queryDb(`SELECT title FROM ideas WHERE is_active = true ORDER BY id DESC LIMIT 50`);
+  const activeIdeaTitles: string[] = existingActiveIdeasRes.rows.map((r: any) => r.title);
+
   for (const source of targetSources) {
     console.log(`\n--------------------------------------------------`);
     console.log(`[Source ${source.id}] ${source.name} (${source.url})`);
@@ -487,7 +491,7 @@ export async function runIdeaScraper(closePool = false) {
 
       console.log(`   💡 Envoi au LLM pour analyse & notation : "${post.title.slice(0, 60)}..."`);
       const rawText = `${post.title}\n\n${post.content}`;
-      const extracted = await extractIdeaWithAI(rawText, post.title);
+      const extracted = await extractIdeaWithAI(rawText, post.title, activeIdeaTitles);
 
       if (!extracted) {
         console.log(`      🛡️ Contenu écarté par le filtre sélectif.`);

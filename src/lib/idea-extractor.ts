@@ -86,7 +86,11 @@ export function validateExtractedIdea(idea: any): ExtractedIdea | null {
 /**
  * Extrait une idée d'entreprise contextualisée au Mali depuis un texte brut via LLM (OpenRouter)
  */
-export async function extractIdeaWithAI(rawText: string, fallbackTitle?: string): Promise<ExtractedIdea | null> {
+export async function extractIdeaWithAI(
+  rawText: string, 
+  fallbackTitle?: string,
+  existingIdeasContext?: string[]
+): Promise<ExtractedIdea | null> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error('OPENROUTER_API_KEY manquante dans l\'environnement.');
@@ -95,6 +99,10 @@ export async function extractIdeaWithAI(rawText: string, fallbackTitle?: string)
   const model = process.env.OPENROUTER_MODEL || IDEA_PROMPT_CONFIG.defaultModel;
   const temperature = IDEA_PROMPT_CONFIG.temperature;
   const systemPrompt = IDEA_PROMPT_CONFIG.systemPrompt;
+
+  const deduplicationInstruction = existingIdeasContext && existingIdeasContext.length > 0
+    ? `\n\nATTENTION DÉDUPLICATION : Voici la liste des idées récentes déjà présentes en base de données :\n${existingIdeasContext.slice(0, 30).map(t => `- "${t}"`).join('\n')}\nSi l'idée inspirée par ce texte est trop similaire ou redondante avec une idée déjà existante dans cette liste, tu DOIS STRICTEMENT répondre {"ignore": true}.\nNe propose que des concepts apportant une réelle nouveauté ou un angle nettement distinct.`
+    : '';
 
   const maxAttempts = 3;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -111,7 +119,7 @@ export async function extractIdeaWithAI(rawText: string, fallbackTitle?: string)
           model,
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: `Contenu source à analyser et contextualiser en micro-projet pour le Mali :\n\nTitre initial: ${fallbackTitle || ''}\n\n${rawText.slice(0, 8000)}` }
+            { role: 'user', content: `Contenu source à analyser et contextualiser en micro-projet pour le Mali :\n\nTitre initial: ${fallbackTitle || ''}\n\n${rawText.slice(0, 8000)}${deduplicationInstruction}` }
           ],
           temperature
         })
