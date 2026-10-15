@@ -159,117 +159,107 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
           </div>
         </div>
 
-        <!-- BANDEAU D'AVERTISSEMENT / NATURE DE LA FICHE -->
-        <div class="bg-amber-50/90 border-b border-amber-200 px-6 py-3.5 flex items-start sm:items-center gap-3 text-amber-950">
-          <span class="text-lg shrink-0">ℹ️</span>
-          <p class="text-xs leading-relaxed m-0 font-medium">
-            <strong class="font-bold text-amber-900">Initiative d'auto-emploi :</strong> Ceci n'est pas une offre de recrutement salarié. Il s'agit d'une opportunité d'activité entrepreneuriale à démarrer vous-même, avec une méthode de test immédiat.
-          </p>
-        </div>
-
         <!-- CONTENU DÉTAILLÉ DE L'IDÉE -->
-        <div class="p-6 md:p-8 space-y-6">
+        <div class="p-5 md:p-8 space-y-6">
           
-          <!-- EN-TÊTE ACTION IMMÉDIATE (HIGHLIGHT 48H) -->
-          <div class="bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-600/10 border-2 border-orange-400/80 rounded-2xl p-5 shadow-sm">
-            <div class="flex items-center gap-2 text-sm font-black text-orange-900 mb-2">
+          <!-- DÉFI 48H ULTRA-CONCRET (ZÉRO CAPITAL) -->
+          <div class="bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-amber-500/5 border-2 border-orange-400 rounded-2xl p-4 md:p-5 shadow-sm">
+            <div class="flex items-center gap-2 text-xs md:text-sm font-black text-orange-950 uppercase tracking-wide mb-1.5">
               <span class="text-lg">⚡</span>
-              <span>Test de validation en moins de 48h (Zéro dépense)</span>
+              <span>Défi test en 48h (0 FCFA dépensé)</span>
             </div>
-            <p class="text-sm font-semibold text-stone-900 leading-relaxed m-0">
+            <p class="text-sm md:text-base font-bold text-stone-900 leading-snug m-0">
               {idea.premiereAction}
             </p>
-            <div class="mt-3 pt-3 border-t border-orange-200/60 flex items-center justify-between text-[11px] text-stone-600">
-              <span>💡 But : valider l'intérêt réel des clients avant d'engager le moindre sou.</span>
-            </div>
+            <p class="text-[11px] text-stone-600 mt-2 m-0 font-medium">
+              👉 À faire avant de dépenser de l'argent : vérifier si les clients sont vraiment prêts à payer.
+            </p>
           </div>
 
-          <!-- SECTION 1 : LE BESOIN OU FRICTION IDENTIFIÉE -->
-          <div>
-            <h2 class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-2 flex items-center gap-2">
-              <span class="w-1.5 h-3 bg-orange-500 rounded-full"></span>
-              <span>1. Friction ou opportunité locale observée</span>
-            </h2>
-            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/70 text-xs md:text-sm text-stone-700 leading-relaxed">
-              {idea.besoinIdentifie}
-            </div>
-          </div>
-
-          <!-- SECTION 2 : LE CONCEPT ET SOLUTION PROPOSÉE -->
-          <div>
-            <h2 class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-2 flex items-center gap-2">
-              <span class="w-1.5 h-3 bg-orange-500 rounded-full"></span>
-              <span>2. Le concept de micro-activité</span>
-            </h2>
-            <div class="p-4 rounded-xl bg-white border border-stone-200 text-xs md:text-sm text-stone-800 leading-relaxed font-medium">
-              {idea.concept}
-            </div>
-          </div>
-
-          <!-- SECTION 3 : PUBLIC ET CLIENTS CIBLES -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/70">
-              <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
-                👥 Public & Clients cibles
-              </span>
-              <p class="text-xs md:text-sm font-bold text-stone-800 m-0">
-                {idea.publicCible}
+          <!-- EN 3 POINTS SIMPLES -->
+          <div class="space-y-4">
+            <!-- POINT 1 : LE PROBLÈME -->
+            <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/80">
+              <div class="flex items-center gap-2 mb-1 text-xs font-black uppercase text-stone-700 tracking-wider">
+                <span>🎯</span>
+                <span>Le problème constaté</span>
+              </div>
+              <p class="text-xs md:text-sm text-stone-800 font-medium m-0 leading-relaxed">
+                {idea.besoinIdentifie}
               </p>
             </div>
 
-            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200/70">
-              <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider block mb-1">
-                📱 Canaux recommandés
-              </span>
-              <p class="text-xs md:text-sm font-bold text-stone-800 m-0">
-                WhatsApp, Orange Money, Wave & Vente directe
+            <!-- POINT 2 : CE QUE VOUS FAITES -->
+            <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/80">
+              <div class="flex items-center gap-2 mb-1 text-xs font-black uppercase text-stone-700 tracking-wider">
+                <span>🛠️</span>
+                <span>Ce que vous proposez</span>
+              </div>
+              <p class="text-xs md:text-sm text-stone-900 font-bold m-0 leading-relaxed">
+                {idea.concept}
               </p>
+            </div>
+
+            <!-- POINT 3 : CLIENTS ET CANAUX EN 2 BLOCS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
+                <span class="text-[11px] font-black text-stone-600 uppercase tracking-wider block mb-1">
+                  👥 Vos futurs clients
+                </span>
+                <p class="text-xs md:text-sm font-bold text-stone-900 m-0">
+                  {idea.publicCible}
+                </p>
+              </div>
+
+              <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
+                <span class="text-[11px] font-black text-stone-600 uppercase tracking-wider block mb-1">
+                  📱 Moyens simples
+                </span>
+                <p class="text-xs md:text-sm font-bold text-stone-900 m-0">
+                  WhatsApp, Orange Money, Wave & Présentiel
+                </p>
+              </div>
             </div>
           </div>
 
-          <!-- SECTION 4 : COMPÉTENCES CLÉS À MOBILISER -->
+          <!-- COMPÉTENCES UTILES -->
           {idea.competencesCles && idea.competencesCles.length > 0 && (
             <div>
-              <h2 class="text-xs font-extrabold uppercase tracking-wider text-stone-700 mb-2.5 flex items-center gap-2">
-                <span class="w-1.5 h-3 bg-orange-500 rounded-full"></span>
-                <span>Compétences pratiques nécessaires</span>
-              </h2>
-              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-0 list-none text-xs text-stone-700 m-0">
+              <div class="text-[11px] font-black uppercase tracking-wider text-stone-600 mb-2 flex items-center gap-1.5">
+                <span>💪</span>
+                <span>Savoir-faire utiles</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
                 {idea.competencesCles.map((comp) => (
-                  <li class="flex items-center gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-200/60">
-                    <span class="text-orange-500 font-bold">✓</span>
-                    <span class="font-semibold">{comp}</span>
-                  </li>
+                  <span class="inline-flex items-center gap-1 text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200/80 px-3 py-1.5 rounded-xl">
+                    <span class="text-orange-500">✓</span> {comp}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
 
-          <!-- SECTION ACTIONS & PARTAGE -->
-          <div class="pt-6 border-t border-stone-200/80">
+          <!-- BOUTONS D'ACTION DIRECTS -->
+          <div class="pt-4 border-t border-stone-200/80">
             <div class="flex flex-col sm:flex-row gap-3">
-              <!-- PARTAGE WHATSAPP EN 1 CLIC -->
+              <!-- PARTAGE WHATSAPP -->
               <button
                 type="button"
                 onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('💡 Idée de projet pour le Mali : ' + document.title + ' ' + window.location.href), '_blank');`}
-                class="flex-1 py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                class="flex-1 py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
-                <span>Partager cette idée sur WhatsApp</span>
+                <span>Envoyer sur WhatsApp</span>
                 <span>💬</span>
               </button>
 
               <a
                 href="/opportunites"
-                class="py-3.5 px-5 bg-stone-800 hover:bg-stone-900 text-white text-xs font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm no-underline"
+                class="py-3.5 px-5 bg-stone-900 hover:bg-black text-white text-xs font-black rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm no-underline"
               >
                 <span>Trouver un financement / concours</span>
                 <span>🚀</span>
               </a>
             </div>
-
-            <p class="text-[11px] text-stone-500 text-center mt-3">
-              JobAvenir ne garantit aucun revenu. Cette fiche est une étincelle d'initiative pour vous aider à tester votre marché local.
-            </p>
           </div>
 
         </div>

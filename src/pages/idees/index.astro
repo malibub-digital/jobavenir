@@ -219,52 +219,41 @@ const zones = [
                   </div>
                 </div>
 
-                <!-- Corps de la carte -->
-                <div class="p-5 flex-1 flex flex-col justify-between">
+                <!-- Corps de la carte épuré -->
+                <div class="p-4 md:p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <h2 class="text-lg font-bold text-stone-900 group-hover:text-orange-600 transition-colors mb-2 leading-snug">
+                    <h2 class="text-base md:text-lg font-bold text-stone-900 group-hover:text-orange-600 transition-colors mb-2 leading-snug">
                       <a href={`/idees/${idea.slug}`}>
                         {idea.title}
                       </a>
                     </h2>
 
-                    <!-- Concept résumé -->
-                    <p class="text-xs text-stone-600 mb-4 line-clamp-3 leading-relaxed">
+                    <!-- Résumé court (2 lignes max) -->
+                    <p class="text-xs text-stone-600 mb-3.5 line-clamp-2 leading-relaxed">
                       {idea.concept}
                     </p>
 
-                    <!-- Encart Action 48h (Différenciateur clé) -->
-                    <div class="bg-amber-50/80 border border-amber-200/70 rounded-xl p-3 mb-4">
-                      <div class="flex items-center gap-1.5 text-[11px] font-bold text-amber-900 mb-1">
-                        <span>⚡ Action test sous 48h (0 budget) :</span>
+                    <!-- Défi 48h ultra-visuel (0 FCFA) -->
+                    <div class="bg-amber-50/90 border border-amber-300/80 rounded-xl p-3 mb-3">
+                      <div class="flex items-center gap-1.5 text-[11px] font-black text-amber-900 mb-1">
+                        <span>⚡ Défi 48h (0 FCFA) :</span>
                       </div>
-                      <p class="text-xs text-amber-950 font-medium line-clamp-2">
+                      <p class="text-xs text-amber-950 font-semibold line-clamp-2 m-0">
                         {idea.premiereAction}
                       </p>
                     </div>
-
-                    <!-- Compétences requises -->
-                    {idea.competencesCles && idea.competencesCles.length > 0 && (
-                      <div class="flex flex-wrap gap-1.5 mb-4">
-                        {idea.competencesCles.map((comp) => (
-                          <span class="text-[10px] font-medium bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md">
-                            {comp}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <!-- Footer carte avec bouton -->
                   <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
-                    <span class="text-[11px] font-bold text-stone-400">
-                      {idea.publicCible ? `Cible : ${idea.publicCible}` : 'Projet d\'insertion'}
+                    <span class="text-[11px] font-semibold text-stone-500 truncate max-w-[170px]">
+                      👥 {idea.publicCible || 'Tout public'}
                     </span>
                     <a
                       href={`/idees/${idea.slug}`}
-                      class="inline-flex items-center gap-1 text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                      class="inline-flex items-center gap-1 text-xs font-black text-orange-600 hover:text-orange-700 hover:underline shrink-0"
                     >
-                      Détails de l'idée →
+                      Voir le plan →
                     </a>
                   </div>
                 </div>
