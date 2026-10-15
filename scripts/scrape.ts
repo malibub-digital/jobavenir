@@ -596,6 +596,8 @@ export async function runScraper(closePool = false) {
     for (const post of rawPosts) {
       totalProcessed++;
       const rawContent = `${post.title}\n\n${post.content}`;
+      // Hash canonique strict combinant URL et titre
+      const hash = crypto.createHash('sha256').update(post.link + post.title).digest('hex');
       // Garde-fou 1 : Nettoyage de l'URL source (suppression UTM et hash)
       const cleanUrl = post.link.split('?')[0].split('#')[0].replace(/\/+$/, '');
 
