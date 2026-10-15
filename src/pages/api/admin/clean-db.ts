@@ -336,6 +336,46 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    if (action === 'reactivate-jobs') {
+      const { jobIds = [] } = body;
+      if (!Array.isArray(jobIds) || jobIds.length === 0) {
+        return new Response(JSON.stringify({ error: 'Aucun ID d\'offre fourni' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      const idList = jobIds.map(Number).filter(n => !isNaN(n)).join(',');
+      await queryDb(`
+        UPDATE jobs 
+        SET is_active = true, social_status = 'SCHEDULED', updated_at = NOW()
+        WHERE id IN (${idList})
+      `);
+
+      return new Response(JSON.stringify({
+        success: true,
+        reactivatedCount: jobIds.length
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (action === 'get-all-jobs-summary') {
+      const res = await queryDb(`
+        SELECT id, slug, title, company, opportunity_type, contract_type, category, published_date, deadline, is_active
+        FROM jobs
+        ORDER BY id DESC
+      `);
+      return new Response(JSON.stringify({
+        success: true,
+        jobs: res.rows
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     return new Response(JSON.stringify({ error: 'Action inconnue' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }

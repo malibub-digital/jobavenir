@@ -22,30 +22,47 @@ const recentJobs = allJobs
   )
   .slice(0, 6);
 
-const countEmplois = allJobs.filter(
-  (j) => j.data.opportunityType === "JOB",
+// Helper de typologie cohérent avec /opportunites/index.astro
+function getOpportunityInferredType(job: any): string {
+  if (job.isIdea || job.data?.opportunityType === 'IDEA') return 'idee';
+  const oppType = job.data?.opportunityType;
+  const cType = (job.data?.contractType || '').toLowerCase();
+  const cat = (job.data?.category || '').toLowerCase();
+
+  if (cType.includes('idée') || cType.includes('idee')) return 'idee';
+  if (oppType === 'STAGE' || cType.includes('stage') || cType.includes('apprentissage')) return 'stage';
+  if (oppType === 'ANNOUNCEMENT' || cType.includes('annonce') || cType.includes('information') || cType.includes('officielle')) return 'annonce';
+  if (oppType === 'PROJECT_CALL' || cType.includes('projet') || cType.includes('subvention') || cat.includes('projet')) return 'projet';
+  if (oppType === 'TRAINING' || cType.includes('formation') || cat.includes('formation')) return 'formation';
+  return 'emploi';
+}
+
+const activeJobs = allJobs.filter((j) => j.data.isActive !== false);
+
+const countEmplois = activeJobs.filter(
+  (j) => !j.isIdea && getOpportunityInferredType(j) === "emploi",
 ).length;
 
-const countStages = allJobs.filter(
-  (j) => j.data.opportunityType === "STAGE",
+const countStages = activeJobs.filter(
+  (j) => !j.isIdea && getOpportunityInferredType(j) === "stage",
 ).length;
 
-const countFormations = allJobs.filter(
-  (j) => j.data.opportunityType === "TRAINING",
+const countFormations = activeJobs.filter(
+  (j) => !j.isIdea && getOpportunityInferredType(j) === "formation",
 ).length;
 
-const countProjets = allJobs.filter(
-  (j) => j.data.opportunityType === "PROJECT_CALL",
+const countProjets = activeJobs.filter(
+  (j) => !j.isIdea && getOpportunityInferredType(j) === "projet",
 ).length;
 
-const countAnnonces = allJobs.filter(
-  (j) => j.data.opportunityType === "ANNOUNCEMENT",
+const countAnnonces = activeJobs.filter(
+  (j) => !j.isIdea && getOpportunityInferredType(j) === "annonce",
 ).length;
 
-const countIdees = allIdeas.length;
+const countIdees = allIdeas.filter((i) => i.isActive !== false).length;
 
-const latestAnnouncements = allJobs
-  .filter((j) => j.data.opportunityType === "ANNOUNCEMENT")
+const latestAnnouncements = activeJobs
+  .filter((j) => !j.isIdea && getOpportunityInferredType(j) === "annonce")
   .slice(0, 3);
 
 const footerLogos = [
@@ -272,7 +289,7 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
           </h2>
         </div>
         <span class="text-xs text-stone-500 font-medium bg-stone-100 px-3 py-1 rounded-full border border-stone-200/70">
-          {allJobs.length} opportunités actives centralisées
+          {activeJobs.length} opportunités actives centralisées
         </span>
       </div>
 
