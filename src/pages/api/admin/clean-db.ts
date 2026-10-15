@@ -83,6 +83,14 @@ export const GET: APIRoute = async ({ request }) => {
       FROM jobs
     `);
 
+    const statsIdeas = await queryDb(`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE is_active = true) as active,
+        COUNT(*) FILTER (WHERE is_active = false) as inactive
+      FROM ideas
+    `);
+
     // 6. Liste complète des idées actives pour audit de pertinence approfondi
     const allActiveIdeasRes = await queryDb(`
       SELECT 
