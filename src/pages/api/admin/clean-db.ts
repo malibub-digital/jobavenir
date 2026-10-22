@@ -415,6 +415,22 @@ export const POST: APIRoute = async ({ request }) => {
         params.push(title);
         sets.push(`title = $${params.length}`);
       }
+      if (body.concept !== undefined) {
+        params.push(body.concept);
+        sets.push(`concept = $${params.length}`);
+      }
+      if (body.premiereAction !== undefined) {
+        params.push(body.premiereAction);
+        sets.push(`premiere_action = $${params.length}`);
+      }
+      if (body.besoinIdentifie !== undefined) {
+        params.push(body.besoinIdentifie);
+        sets.push(`besoin_identifie = $${params.length}`);
+      }
+      if (body.createdAt !== undefined) {
+        params.push(body.createdAt);
+        sets.push(`created_at = $${params.length}`);
+      }
       if (metadata !== undefined) {
         params.push(JSON.stringify(metadata));
         sets.push(`metadata = $${params.length}::jsonb`);
