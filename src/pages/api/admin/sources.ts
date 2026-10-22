@@ -134,7 +134,7 @@ export const POST: APIRoute = async ({ request }) => {
 
       // Si nouveau ou logo manquant, tentative d'auto-résolution de logo en tâche de fond
       if (!sourceData.logoUrl && sourceData.url.startsWith('http')) {
-        resolveSourceLogo(sourceData.name, sourceData.url)
+        resolveSourceLogo({ id: savedId, name: sourceData.name, url: sourceData.url })
           .then(logoUrl => {
             if (logoUrl) updateSourceLogo(savedId, logoUrl);
           })
@@ -157,7 +157,7 @@ export const POST: APIRoute = async ({ request }) => {
       const src = await getSourceById(id);
       if (!src) throw new Error('Source introuvable');
 
-      const logoUrl = await resolveSourceLogo(src.name, src.url);
+      const logoUrl = await resolveSourceLogo({ id: src.id, name: src.name, url: src.url });
       if (logoUrl) {
         await updateSourceLogo(id, logoUrl);
       }
