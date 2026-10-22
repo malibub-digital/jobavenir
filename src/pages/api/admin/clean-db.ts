@@ -361,6 +361,80 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    if (action === 'deactivate-jobs') {
+      const { jobIds = [] } = body;
+      if (!Array.isArray(jobIds) || jobIds.length === 0) {
+        return new Response(JSON.stringify({ error: 'Aucun ID d\'offre fourni' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      const idList = jobIds.map(Number).filter(n => !isNaN(n)).join(',');
+      await queryDb(`
+        UPDATE jobs 
+        SET is_active = false, social_status = 'ARCHIVED', updated_at = NOW()
+        WHERE id IN (${idList})
+      `);
+
+      return new Response(JSON.stringify({
+        success: true,
+        deactivatedCount: jobIds.length
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (action === 'update-opportunity') {
+      const { target = 'job', id, category, domain, title, metadata } = body;
+      if (!id) {
+        return new Response(JSON.stringify({ error: 'ID requis' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      const table = target === 'idea' ? 'ideas' : 'jobs';
+      const sets: string[] = ['updated_at = NOW()'];
+      const params: any[] = [id];
+
+      if (category !== undefined) {
+        params.push(category);
+        if (target === 'idea') {
+          sets.push(`sector = $${params.length}`);
+        } else {
+          sets.push(`category = $${params.length}`);
+        }
+      }
+      if (domain !== undefined) {
+        params.push(domain);
+        sets.push(`domain = $${params.length}`);
+      }
+      if (title !== undefined) {
+        params.push(title);
+        sets.push(`title = $${params.length}`);
+      }
+      if (metadata !== undefined) {
+        params.push(JSON.stringify(metadata));
+        sets.push(`metadata = $${params.length}::jsonb`);
+      }
+
+      await queryDb(`
+        UPDATE ${table}
+        SET ${sets.join(', ')}
+        WHERE id = $1
+      `, params);
+
+      return new Response(JSON.stringify({
+        success: true,
+        updatedId: id
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     if (action === 'get-all-jobs-summary') {
       const res = await queryDb(`
         SELECT id, slug, title, company, opportunity_type, contract_type, category, published_date, deadline, is_active
