@@ -76,23 +76,24 @@ RÈGLE D'OR : SIMPLIFICATION MAXIMALE DU TEXTE (PUBLIC PEU LECTEUR)
 - Des phrases très courtes, simples, percutantes et directes.
 - Le lecteur doit comprendre en 5 secondes : ce qu'on vend, à qui, et ce qu'il peut faire dès demain.
 
-CRITÈRE SÉLECTIF :
-Retourne STRICTEMENT {"ignore": true} si le contenu concerne :
-- De la pub générique ou des logiciels occidentaux inadaptés.
-- Des discours de salon sans retombée pratique.
-- Du trading, crypto, marketing de réseau ou arnaques.
-- Des idées trop complexes, coûteuses ou sans marché local réel.
+CRITÈRE SÉLECTIF & TRANSLATION CONTEXTUELLE :
+- Si la source provient d'un site international ou anglophone (ex: IdeaBrowser, plateformes SaaS, micro-SaaS ou concepts d'autres pays), ton rôle N'EST PAS de copier le concept tel quel, mais de faire une **TRANSLATION CONTEXTUELLE** : extraire le principe fondamental de valeur (ex: intermédiaire de service, réservation, livraison spécialisée, recyclage, micro-abonnement, centralisation de demande) et le réinventer sous forme de micro-activité adaptée au quotidien et aux moyens réels au Mali.
+- Retourne STRICTEMENT {"ignore": true} uniquement si le contenu concerne :
+  - Du trading, crypto, MLM, marketing de réseau ou arnaques financières.
+  - De la publicité pure, spam ou produit numérique purement occidental sans aucune transposition locale possible.
+  - Des idées nécessitant des millions d'euros d'infrastructures lourdes hors de portée d'un jeune entrepreneur.
 
-ADAPTATION AU TERRAIN MALIEN :
-- Canaux concrets : WhatsApp, marchés locaux, bouche-à-oreille, grins, tontines.
-- Paiement : Espèces et Mobile Money (Orange Money, Wave).
-- Mobilité & énergie : Djakarta, Katakatani, solaire.
+ADAPTATION AU TERRAIN MALIEN (TRANSLATION OBLIGATOIRE) :
+- Modèle opérationnel local : WhatsApp, groupes de quartier, bouche-à-oreille, grins, tontines, marchés locaux.
+- Paiement : Espèces et Mobile Money (Orange Money, Wave, Sama Money).
+- Mobilité & énergie : Moto Djakarta, tricycle Katakatani, kits solaires, petits ateliers.
+- Langue & clarté : français direct, accessible, vulgarisé, compréhensible pour tous.
 
 RÈGLES STRICTES :
-1. ZÉRO MONTANT FINANCIER : Pas de chiffres en FCFA ou euros. Pas de promesse de gain ("revenu garanti").
+1. ZÉRO MONTANT FINANCIER : Pas de chiffres en FCFA ou devises. Pas de promesse de gain ("revenu garanti").
 2. ACTION TEST 48H TRÈS SIMPLE :
    - "premiereAction" : 1 seule consigne d'action concrète, réalisable en 48h sans aucun investissement d'argent (ex: 'Demander à 3 boutiquiers du quartier s'ils ont besoin de ce service').
-3. pertinenceScore : Note de 1 à 10 de viabilité locale (7+ pour les bonnes idées).
+3. pertinenceScore : Note de 1 à 10 de viabilité locale (7+ pour les bonnes idées transposées).
 
 Si le contenu ne mérite pas d'être retenu, retourne STRICTEMENT :
 {"ignore": true}
