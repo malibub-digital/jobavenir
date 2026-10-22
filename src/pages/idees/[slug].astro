@@ -95,16 +95,26 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
   <main class="py-8 md:py-12 bg-stone-100/70 min-h-screen">
     <div class="ml-container max-w-3xl mx-auto px-4">
       
-      <!-- NAVIGATION RETOUR -->
-      <div class="flex items-center justify-between mb-4 text-xs font-bold text-stone-600">
-        <a
-          href="/idees"
-          class="inline-flex items-center gap-1.5 hover:text-orange-600 transition-colors no-underline"
-        >
-          <span>&larr;</span>
-          <span>Toutes les idées de projets</span>
-        </a>
-        <span class="text-stone-400 font-medium">Fiche #{idea.slug.slice(0, 8)}</span>
+      <!-- FIL D'ARIANE (BREADCRUMB) ET RETOUR -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-2 text-xs">
+        <nav aria-label="Fil d'Ariane" class="flex flex-wrap items-center gap-1.5 text-stone-500 font-medium">
+          <a href="/" class="hover:text-orange-600 transition-colors no-underline">Accueil</a>
+          <span class="text-stone-300">/</span>
+          <a href="/idees" class="hover:text-orange-600 transition-colors no-underline">Idées business</a>
+          {idea.sector && (
+            <>
+              <span class="text-stone-300">/</span>
+              <a href={`/idees?secteur=${encodeURIComponent(idea.sector.toLowerCase())}`} class="hover:text-orange-600 transition-colors no-underline">
+                {idea.sector}
+              </a>
+            </>
+          )}
+          <span class="text-stone-300">/</span>
+          <span class="text-stone-900 font-bold truncate max-w-[200px]" aria-current="page">{idea.title}</span>
+        </nav>
+        <span class="text-stone-400 font-medium shrink-0">
+          Fiche #{idea.slug.slice(0, 8)}
+        </span>
       </div>
 
       <!-- PANNEAU D'ADMINISTRATION IN-PAGE -->
