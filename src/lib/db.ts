@@ -677,7 +677,7 @@ export async function getJobBySlug(slug: string, options?: { includeInactive?: b
  */
 export async function archiveExpiredJobs(options?: { olderThanDays?: number }): Promise<number> {
   try {
-    const olderThanDays = options?.olderThanDays ?? 30;
+    const olderThanDays = options?.olderThanDays ?? 180;
     const now = new Date();
     const today = now.toISOString().split('T')[0];
     const thresholdDate = new Date(now.getTime() - olderThanDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
