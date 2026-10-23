@@ -179,7 +179,7 @@ async function getNextBatchSources(batchSize: number): Promise<SourceRow[]> {
        etag, last_modified_header as "lastModifiedHeader"
      FROM sources
      WHERE status_technical = 'ACTIF_200'
-       AND (is_active = 1 OR is_active = true)
+       AND is_active = TRUE
      ORDER BY last_scraped_at ASC NULLS FIRST
      LIMIT $1`,
     [batchSize]
@@ -522,7 +522,7 @@ export async function runScraper(closePool = false) {
             status_technical as "statusTechnical", scraper_type as "scraperType",
             etag, last_modified_header as "lastModifiedHeader"
      FROM sources
-     WHERE status_technical = 'ACTIF_200' AND (is_active = 1 OR is_active = true)`
+     WHERE status_technical = 'ACTIF_200' AND is_active = TRUE`
   );
 
   if (dbSourcesRes.rows.length > 0) {

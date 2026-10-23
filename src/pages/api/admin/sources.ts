@@ -73,7 +73,7 @@ export const GET: APIRoute = async ({ request }) => {
     const statsRes = await queryDb(`
       SELECT 
         COUNT(*) as total,
-        SUM(CASE WHEN is_active = 1 OR is_active = true THEN 1 ELSE 0 END) as active,
+        SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active,
         SUM(CASE WHEN discovery_status = 'AUTO_DISCOVERED' THEN 1 ELSE 0 END) as discovered
       FROM sources
     `);

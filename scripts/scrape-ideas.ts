@@ -368,7 +368,7 @@ export async function runIdeaScraper(closePool = false) {
            frequency, description
     FROM sources
     WHERE status_technical = 'ACTIF_200' 
-      AND (is_active = 1 OR is_active = true)
+      AND is_active = TRUE
       AND (
         category LIKE '%Idées%' 
         OR category LIKE '%Innovation%' 

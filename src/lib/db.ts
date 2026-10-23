@@ -1047,7 +1047,7 @@ export async function getAllSources(options: {
     let pIdx = 1;
 
     if (options.onlyActive) {
-      sql += ` AND (is_active = 1 OR is_active = true)`;
+      sql += ` AND is_active = TRUE`;
     }
     if (options.category) {
       sql += ` AND category = $${pIdx++}`;
