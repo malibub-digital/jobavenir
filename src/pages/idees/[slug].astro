@@ -19,7 +19,7 @@ if (!idea) {
   return Astro.redirect("/idees");
 }
 
-const bannerBgImage = getCategoryImage(idea.sector, idea.slug);
+const bannerBgImage = idea.metadata?.heroImage || getCategoryImage(idea.sector, idea.slug);
 
 let ogImagePath = `/images/og/${idea.slug}.webp`;
 const localOgFile = path.resolve(process.cwd(), "public", ogImagePath.replace(/^\//, ""));
@@ -123,6 +123,9 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
         slug={idea.slug}
         isActive={idea.isActive ?? true}
         title={idea.title}
+        excerpt={idea.concept}
+        heroImage={idea.metadata?.heroImage || null}
+        howToApply={idea.premiereAction}
         socialPublishAt={idea.socialPublishAt}
         socialStatus={idea.socialStatus}
         socialWhatsapp={idea.socialWhatsapp}

@@ -637,6 +637,7 @@ export async function getJobBySlug(slug: string, options?: { includeInactive?: b
       isIdea: false,
       data: {
         title: j.title,
+        heroImage: metadata.heroImage || null,
         company: j.company,
         location: j.location,
         contractType: j.contractType,

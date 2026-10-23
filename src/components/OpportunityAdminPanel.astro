@@ -5,6 +5,10 @@ interface Props {
   slug: string;
   isActive: boolean;
   title: string;
+  excerpt?: string;
+  heroImage?: string | null;
+  requirements?: string[];
+  howToApply?: string;
   socialPublishAt?: string | null;
   socialStatus?: string;
   socialWhatsapp?: string;
@@ -17,6 +21,10 @@ const {
   slug,
   isActive = true,
   title,
+  excerpt = '',
+  heroImage = null,
+  requirements = [],
+  howToApply = '',
   socialPublishAt = null,
   socialStatus = 'SCHEDULED',
   socialWhatsapp = '',
@@ -30,7 +38,6 @@ if (socialPublishAt) {
   try {
     const d = new Date(socialPublishAt);
     if (!isNaN(d.getTime())) {
-      // Ajustement au format local ou ISO tronqué
       const offset = d.getTimezoneOffset() * 60000;
       const localTime = new Date(d.getTime() - offset);
       formattedDate = localTime.toISOString().slice(0, 16);
@@ -41,24 +48,28 @@ if (socialPublishAt) {
 }
 ---
 
-<!-- Panneau Admin In-Page (Masqué par défaut avec hidden, rendu visible via script si admin authentifié) -->
+<!-- 
+  Panneau Admin In-Page 
+  Condition stricte : Visible UNIQUEMENT si l'administrateur est authentifié ET que le mode Édition est actif !
+  La classe 'hidden' est conservée par défaut, et retirée dynamiquement par le script quand body.cms-mode-editing est présent.
+-->
 <div
   id="opportunity-admin-root"
-  class="hidden border border-amber-300 bg-amber-50/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 mb-6 shadow-sm text-stone-900 transition-all duration-200"
+  class="hidden border-2 border-amber-400 bg-amber-50/95 backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-8 shadow-lg text-stone-900 transition-all duration-200"
   data-type={type}
   data-slug={slug}
   data-title={title}
   data-active={isActive ? 'true' : 'false'}
 >
   <!-- Barre d'en-tête admin -->
-  <div class="flex flex-wrap items-center justify-between gap-3">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-amber-200 pb-3">
     <div class="flex items-center gap-2.5">
-      <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-200/80 text-amber-900 text-sm font-bold shadow-xs">
-        🛡️
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-amber-200 text-amber-950 text-sm font-bold shadow-xs">
+        ✏️
       </span>
       <div>
         <div class="flex items-center gap-2">
-          <span class="text-xs font-black uppercase tracking-wider text-amber-900/80">Administration</span>
+          <span class="text-xs font-black uppercase tracking-wider text-amber-950">Mode Édition & Modération</span>
           <span
             id="admin-status-badge"
             class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs ${
@@ -97,8 +108,8 @@ if (socialPublishAt) {
         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-stone-700 hover:bg-stone-50 border border-stone-200 hover:border-stone-300 shadow-xs transition-all cursor-pointer"
         aria-expanded="false"
       >
-        <span>⚙️</span>
-        <span>Diffusion réseaux sociaux</span>
+        <span>📱</span>
+        <span>Réseaux sociaux</span>
         <svg id="admin-social-chevron" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
         </svg>
@@ -109,7 +120,7 @@ if (socialPublishAt) {
   <!-- Toast / Message de notification dynamique -->
   <div
     id="admin-notification"
-    class="hidden mt-3 p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all"
+    class="hidden mt-3 p-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all"
     role="alert"
   >
     <div class="flex items-center gap-2">
@@ -119,8 +130,168 @@ if (socialPublishAt) {
     <button type="button" id="admin-notification-close" class="text-stone-400 hover:text-stone-600 text-sm">✕</button>
   </div>
 
-  <!-- Section dépliable intégrée dans la page -->
-  <div id="social-settings-panel" class="hidden mt-4 pt-4 border-t border-amber-200/80">
+  <!-- FORMULAIRE D'ÉDITION DIRECTE DE L'ANNONCE -->
+  <form id="opportunity-edit-form" class="mt-4 space-y-4">
+    <!-- TITRE DE L'ANNONCE + BOUTON IA REFORMULATION -->
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label for="edit-title-input" class="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-stone-800">
+          <span>🏷️ Titre de l'opportunité</span>
+        </label>
+        <button
+          type="button"
+          id="ai-rewrite-title-btn"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 transition-all cursor-pointer shadow-2xs"
+          title="Générer une proposition de reformulation professionnelle via IA"
+        >
+          <span>✨</span>
+          <span id="ai-rewrite-title-label">Reformuler avec l'IA</span>
+        </button>
+      </div>
+      <input
+        type="text"
+        id="edit-title-input"
+        name="title"
+        value={title}
+        required
+        class="w-full text-sm font-bold bg-white border border-stone-300 rounded-xl px-3.5 py-2.5 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-2xs"
+      />
+    </div>
+
+    <!-- SÉLECTION DE L'IMAGE D'ILLUSTRATION AFFECTÉE -->
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label class="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-stone-800">
+          <span>🖼️ Image d'illustration de la bannière</span>
+        </label>
+        <span class="text-[11px] text-stone-500">Choisir dans la photothèque</span>
+      </div>
+      
+      <!-- Prévisualisation et Sélecteur -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white p-3 rounded-xl border border-stone-200 shadow-2xs">
+        <div class="relative w-24 h-16 rounded-lg overflow-hidden bg-stone-900 border border-stone-300 shrink-0 shadow-2xs">
+          <img
+            id="edit-image-preview"
+            src={heroImage || "/images/categories/default.webp"}
+            alt="Aperçu sélection"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="flex-1 space-y-1.5 w-full">
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="edit-image-input"
+              name="heroImage"
+              value={heroImage || ""}
+              placeholder="/images/categories/..."
+              class="flex-1 text-xs font-mono bg-stone-50 border border-stone-300 rounded-lg px-2.5 py-2 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            <button
+              type="button"
+              id="edit-image-picker-toggle"
+              class="px-3 py-2 text-xs font-bold rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 transition-all cursor-pointer shrink-0"
+            >
+              Parcourir...
+            </button>
+            <button
+              type="button"
+              id="edit-image-reset-btn"
+              class="px-2.5 py-2 text-xs font-bold rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-all cursor-pointer shrink-0"
+              title="Réinitialiser sur l'image thématique automatique par défaut"
+            >
+              ✕ Auto
+            </button>
+          </div>
+          <p class="text-[11px] text-stone-500 m-0">Si laissé vide, l'image est automatiquement choisie selon la catégorie.</p>
+        </div>
+      </div>
+
+      <!-- Galerie déroulante d'images suggérées -->
+      <div id="image-picker-modal" class="hidden mt-3 p-3 bg-stone-100 border border-stone-300 rounded-xl space-y-2">
+        <div class="flex items-center justify-between text-xs font-bold text-stone-700">
+          <span>Banque d'images disponibles (cliquez pour sélectionner) :</span>
+          <button type="button" id="image-picker-close" class="text-stone-400 hover:text-stone-600 font-bold">✕ Fermer</button>
+        </div>
+        <div id="image-picker-grid" class="grid grid-cols-3 sm:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1">
+          <!-- Injecté dynamiquement en JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENU / RÉSUMÉ / EXCERPT + REFORMULATION IA -->
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label for="edit-excerpt-input" class="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-stone-800">
+          <span>📝 Résumé et accroche de l'annonce</span>
+        </label>
+        <button
+          type="button"
+          id="ai-rewrite-excerpt-btn"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 transition-all cursor-pointer shadow-2xs"
+          title="Reformuler ce résumé avec l'IA pour le rendre plus percutant"
+        >
+          <span>✨</span>
+          <span id="ai-rewrite-excerpt-label">Reformuler le résumé</span>
+        </button>
+      </div>
+      <textarea
+        id="edit-excerpt-input"
+        name="excerpt"
+        rows="3"
+        class="w-full text-xs font-sans bg-white border border-stone-300 rounded-xl p-3 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all leading-relaxed shadow-2xs resize-y"
+      >{excerpt}</textarea>
+    </div>
+
+    <!-- CRITÈRES ET CONDITIONS / COMMENT CANDIDATER -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {type === 'job' && (
+        <div>
+          <label for="edit-requirements-input" class="block text-xs font-black uppercase tracking-wider text-stone-800 mb-1.5">
+            📋 Critères & profil requis (1 par ligne)
+          </label>
+          <textarea
+            id="edit-requirements-input"
+            name="requirements"
+            rows="3"
+            class="w-full text-xs font-sans bg-white border border-stone-300 rounded-xl p-2.5 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-2xs resize-y"
+          >{requirements.join('\n')}</textarea>
+        </div>
+      )}
+
+      <div class={type === 'idea' ? 'md:col-span-2' : ''}>
+        <label for="edit-how-to-apply-input" class="block text-xs font-black uppercase tracking-wider text-stone-800 mb-1.5">
+          {type === 'idea' ? '⚡ Première action concrète (Défi 48h)' : '🎯 Modalités de candidature / instructions'}
+        </label>
+        <textarea
+          id="edit-how-to-apply-input"
+          name="howToApply"
+          rows="3"
+          class="w-full text-xs font-sans bg-white border border-stone-300 rounded-xl p-2.5 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-2xs resize-y"
+        >{howToApply}</textarea>
+      </div>
+    </div>
+
+    <!-- BOUTON PRINCIPAL D'ENREGISTREMENT DU CONTENU -->
+    <div class="pt-2 flex items-center justify-between gap-3">
+      <span class="text-xs text-stone-500 italic">Les modifications sont sauvegardées immédiatement en base de données.</span>
+      <button
+        type="submit"
+        id="admin-save-content-btn"
+        class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-black shadow-md hover:shadow-lg transition-all cursor-pointer"
+      >
+        <span>💾</span>
+        <span id="admin-save-content-text">Enregistrer les modifications</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- SECTION DÉPLIABLE RÉSEAUX SOCIAUX -->
+  <div id="social-settings-panel" class="hidden mt-6 pt-5 border-t border-amber-300/80">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-xs font-black uppercase tracking-wider text-amber-950">📡 Paramètres de diffusion automatisée</span>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <!-- Horodatage planifié -->
       <div>
@@ -157,7 +328,7 @@ if (socialPublishAt) {
     <!-- 3 zones de texte avec label, icône et bouton Copier -->
     <div class="space-y-4">
       <!-- Zone WhatsApp -->
-      <div class="bg-white/80 rounded-xl border border-stone-200 p-3 shadow-xs">
+      <div class="bg-white/90 rounded-xl border border-stone-200 p-3 shadow-xs">
         <div class="flex items-center justify-between mb-1.5">
           <label for="admin-social-whatsapp" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-800">
             <span class="text-sm">📱</span>
@@ -181,7 +352,7 @@ if (socialPublishAt) {
       </div>
 
       <!-- Zone Telegram -->
-      <div class="bg-white/80 rounded-xl border border-stone-200 p-3 shadow-xs">
+      <div class="bg-white/90 rounded-xl border border-stone-200 p-3 shadow-xs">
         <div class="flex items-center justify-between mb-1.5">
           <label for="admin-social-telegram" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-800">
             <span class="text-sm">✈️</span>
@@ -205,7 +376,7 @@ if (socialPublishAt) {
       </div>
 
       <!-- Zone TikTok -->
-      <div class="bg-white/80 rounded-xl border border-stone-200 p-3 shadow-xs">
+      <div class="bg-white/90 rounded-xl border border-stone-200 p-3 shadow-xs">
         <div class="flex items-center justify-between mb-1.5">
           <label for="admin-social-tiktok" class="inline-flex items-center gap-1.5 text-xs font-bold text-stone-800">
             <span class="text-sm">🎵</span>
@@ -243,10 +414,10 @@ if (socialPublishAt) {
       <button
         type="button"
         id="admin-save-social-btn"
-        class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold shadow-sm transition-all cursor-pointer"
+        class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-black shadow-sm transition-all cursor-pointer"
       >
         <span>💾</span>
-        <span>Enregistrer les modifications</span>
+        <span>Enregistrer les textes sociaux</span>
       </button>
     </div>
   </div>
@@ -259,18 +430,33 @@ if (socialPublishAt) {
     const root = document.getElementById('opportunity-admin-root');
     if (!root) return;
 
-    // Masqué par défaut, affiché uniquement si connecté admin
-    const token = getAdminCookieToken();
-    if (!token || token.length === 0) {
-      root.classList.add('hidden');
-      return;
+    // Règle 1 : Ne s'afficher QUE si l'administrateur est authentifié ET que le mode Édition est actif
+    function updateVisibility() {
+      const token = getAdminCookieToken();
+      const isAuthenticated = Boolean(token && token.length > 0);
+      const isEditing = document.body.classList.contains('cms-mode-editing');
+
+      if (isAuthenticated && isEditing) {
+        root.classList.remove('hidden');
+      } else {
+        root.classList.add('hidden');
+      }
     }
-    root.classList.remove('hidden');
+
+    // Écouter le basculement du mode édition depuis l'AdminToolbar
+    document.addEventListener('cms:editing-toggled', () => {
+      updateVisibility();
+    });
+
+    // Vérification initiale
+    updateVisibility();
 
     const type = root.getAttribute('data-type') || 'job';
     const slug = root.getAttribute('data-slug') || '';
-    const title = root.getAttribute('data-title') || '';
+    let title = root.getAttribute('data-title') || '';
     let isActive = root.getAttribute('data-active') === 'true';
+
+    const token = getAdminCookieToken();
 
     const statusBadge = document.getElementById('admin-status-badge');
     const statusDot = document.getElementById('admin-status-dot');
@@ -282,6 +468,27 @@ if (socialPublishAt) {
     const toggleSocialBtn = document.getElementById('admin-toggle-social-btn');
     const socialChevron = document.getElementById('admin-social-chevron');
     const socialPanel = document.getElementById('social-settings-panel');
+
+    const editForm = document.getElementById('opportunity-edit-form') as HTMLFormElement | null;
+    const titleInput = document.getElementById('edit-title-input') as HTMLInputElement | null;
+    const excerptInput = document.getElementById('edit-excerpt-input') as HTMLTextAreaElement | null;
+    const imageInput = document.getElementById('edit-image-input') as HTMLInputElement | null;
+    const imagePreview = document.getElementById('edit-image-preview') as HTMLImageElement | null;
+    const requirementsInput = document.getElementById('edit-requirements-input') as HTMLTextAreaElement | null;
+    const howToApplyInput = document.getElementById('edit-how-to-apply-input') as HTMLTextAreaElement | null;
+    const saveContentBtn = document.getElementById('admin-save-content-btn');
+    const saveContentText = document.getElementById('admin-save-content-text');
+
+    const imagePickerToggle = document.getElementById('edit-image-picker-toggle');
+    const imagePickerModal = document.getElementById('image-picker-modal');
+    const imagePickerGrid = document.getElementById('image-picker-grid');
+    const imagePickerClose = document.getElementById('image-picker-close');
+    const imageResetBtn = document.getElementById('edit-image-reset-btn');
+
+    const aiTitleBtn = document.getElementById('ai-rewrite-title-btn');
+    const aiTitleLabel = document.getElementById('ai-rewrite-title-label');
+    const aiExcerptBtn = document.getElementById('ai-rewrite-excerpt-btn');
+    const aiExcerptLabel = document.getElementById('ai-rewrite-excerpt-label');
 
     const publishAtInput = document.getElementById('admin-social-publish-at') as HTMLInputElement | null;
     const statusSelect = document.getElementById('admin-social-status') as HTMLSelectElement | null;
@@ -308,7 +515,7 @@ if (socialPublishAt) {
         notificationIcon.textContent = isError ? '❌' : '✅';
       }
 
-      notification.className = `mt-3 p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
+      notification.className = `mt-3 p-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
         isError ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
       }`;
       notification.classList.remove('hidden');
@@ -351,7 +558,7 @@ if (socialPublishAt) {
       }
     }
 
-    // Bascule 1-clic direct
+    // Bascule 1-clic direct publication
     togglePublishBtn?.addEventListener('click', async () => {
       const targetState = !isActive;
       togglePublishBtn.setAttribute('disabled', 'true');
@@ -388,6 +595,197 @@ if (socialPublishAt) {
         if (toggleBtnText) toggleBtnText.textContent = originalText;
       } finally {
         togglePublishBtn.removeAttribute('disabled');
+      }
+    });
+
+    // Déplier / replier le sélecteur d'image
+    imagePickerToggle?.addEventListener('click', async () => {
+      const isHidden = imagePickerModal?.classList.contains('hidden');
+      if (isHidden) {
+        imagePickerModal?.classList.remove('hidden');
+        if (imagePickerGrid && imagePickerGrid.children.length === 0) {
+          imagePickerGrid.innerHTML = '<span class="text-xs text-stone-400 p-2">Chargement des visuels...</span>';
+          try {
+            const res = await fetch('/api/admin/images', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const imgData = await res.json();
+            if (imgData.images && imgData.images.length > 0) {
+              imagePickerGrid.innerHTML = '';
+              imgData.images.forEach((imgSrc: string) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'group relative aspect-video rounded-lg overflow-hidden border border-stone-300 hover:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-2xs';
+                btn.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />`;
+                btn.addEventListener('click', () => {
+                  if (imageInput) imageInput.value = imgSrc;
+                  if (imagePreview) imagePreview.src = imgSrc;
+                  // Mettre à jour en direct la bannière de la page
+                  const banner = document.querySelector('img[alt="' + title + '"]') as HTMLImageElement | null;
+                  if (banner) banner.src = imgSrc;
+                  imagePickerModal?.classList.add('hidden');
+                });
+                imagePickerGrid.appendChild(btn);
+              });
+            } else {
+              imagePickerGrid.innerHTML = '<span class="text-xs text-stone-500">Aucune image trouvée</span>';
+            }
+          } catch (e) {
+            imagePickerGrid.innerHTML = '<span class="text-xs text-rose-500">Erreur de chargement</span>';
+          }
+        }
+      } else {
+        imagePickerModal?.classList.add('hidden');
+      }
+    });
+
+    imagePickerClose?.addEventListener('click', () => {
+      imagePickerModal?.classList.add('hidden');
+    });
+
+    imageResetBtn?.addEventListener('click', () => {
+      if (imageInput) imageInput.value = '';
+      if (imagePreview) imagePreview.src = '/images/categories/default.webp';
+      showNotification('Image réinitialisée sur la détection automatique.');
+    });
+
+    // Synchronisation saisie URL image avec aperçu
+    imageInput?.addEventListener('input', () => {
+      const val = imageInput.value.trim();
+      if (imagePreview) {
+        imagePreview.src = val || '/images/categories/default.webp';
+      }
+    });
+
+    // IA Reformulation du Titre
+    aiTitleBtn?.addEventListener('click', async () => {
+      const currentTitle = titleInput?.value.trim() || title;
+      if (!currentTitle) return;
+
+      aiTitleBtn.setAttribute('disabled', 'true');
+      if (aiTitleLabel) aiTitleLabel.textContent = 'Reformulation...';
+
+      try {
+        const res = await fetch('/api/admin/rewrite', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            field: 'title',
+            text: currentTitle,
+            context: `${type === 'idea' ? 'Idée de création d\'entreprise' : 'Recrutement / Opportunité'} au Mali`
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || 'Échec de la reformulation');
+
+        if (titleInput && data.rewritten) {
+          titleInput.value = data.rewritten;
+          showNotification('Titre reformulé avec succès via l\'IA !');
+        }
+      } catch (err: any) {
+        showNotification(err.message || 'Erreur IA', true);
+      } finally {
+        aiTitleBtn.removeAttribute('disabled');
+        if (aiTitleLabel) aiTitleLabel.textContent = 'Reformuler avec l\'IA';
+      }
+    });
+
+    // IA Reformulation du Résumé
+    aiExcerptBtn?.addEventListener('click', async () => {
+      const currentExcerpt = excerptInput?.value.trim() || '';
+      if (!currentExcerpt) return;
+
+      aiExcerptBtn.setAttribute('disabled', 'true');
+      if (aiExcerptLabel) aiExcerptLabel.textContent = 'Reformulation...';
+
+      try {
+        const res = await fetch('/api/admin/rewrite', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            field: 'excerpt',
+            text: currentExcerpt,
+            context: `Opportunité: ${titleInput?.value || title}`
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || 'Échec de la reformulation');
+
+        if (excerptInput && data.rewritten) {
+          excerptInput.value = data.rewritten;
+          showNotification('Résumé reformulé avec succès via l\'IA !');
+        }
+      } catch (err: any) {
+        showNotification(err.message || 'Erreur IA', true);
+      } finally {
+        aiExcerptBtn.removeAttribute('disabled');
+        if (aiExcerptLabel) aiExcerptLabel.textContent = 'Reformuler le résumé';
+      }
+    });
+
+    // Soumission du formulaire de contenu (Titre, Image, Résumé, Instructions)
+    editForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      saveContentBtn?.setAttribute('disabled', 'true');
+      if (saveContentText) saveContentText.textContent = 'Enregistrement...';
+
+      try {
+        const newTitle = titleInput?.value.trim() || '';
+        const newExcerpt = excerptInput?.value.trim() || '';
+        const newImage = imageInput?.value.trim() || null;
+        const newHowToApply = howToApplyInput?.value.trim() || '';
+        const newReqs = requirementsInput?.value.trim() || '';
+
+        const res = await fetch('/api/admin/opportunity', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            type,
+            slug,
+            title: newTitle,
+            excerpt: newExcerpt,
+            heroImage: newImage,
+            howToApply: newHowToApply,
+            requirements: newReqs
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          throw new Error(data.error || 'Erreur lors de la sauvegarde du contenu');
+        }
+
+        // Mettre à jour les éléments de la page en direct
+        title = newTitle;
+        root.setAttribute('data-title', newTitle);
+
+        // Mettre à jour le H1 de la page
+        const h1 = document.querySelector('h1');
+        if (h1) h1.textContent = newTitle;
+
+        // Mettre à jour la bannière
+        if (newImage) {
+          const banner = document.querySelector('.relative.min-h-\\[220px\\] img') as HTMLImageElement | null;
+          if (banner) banner.src = newImage;
+        }
+
+        showNotification('Annonce mise à jour avec succès !');
+      } catch (err: any) {
+        showNotification(err.message || 'Erreur lors de la sauvegarde', true);
+      } finally {
+        saveContentBtn?.removeAttribute('disabled');
+        if (saveContentText) saveContentText.textContent = 'Enregistrer les modifications';
       }
     });
 
@@ -428,7 +826,7 @@ if (socialPublishAt) {
       });
     });
 
-    // Régénérer les textes par défaut localement
+    // Régénérer les textes réseaux sociaux par défaut localement
     regenerateBtn?.addEventListener('click', () => {
       const isIdea = type === 'idea';
       const baseUrl = 'https://job.malihub.digital';
@@ -438,9 +836,11 @@ if (socialPublishAt) {
       const contract = isIdea ? "Projet d'entreprise" : "Opportunité";
       const deadlineStr = "Candidatures ouvertes";
 
-      const whatsapp = `📢 *${title.trim()}*\n🏢 ${org} • 📍 ${loc} • 📄 ${contract}\n\n👉 Voir tous les détails et postuler :\n${targetUrl}`;
-      const telegram = `🚀 *${title.trim()}*\n\n🏢 *Organisme :* ${org}\n📍 *Lieu :* ${loc}\n⏳ *Date limite :* ${deadlineStr}\n\n🔗 *Consulter l'annonce complète :*\n${targetUrl}\n\n#EmploiMali #MaliJobs #Recrutement #Bamako #JobAvenir`;
-      const tiktok = `🎬 Hook : "Une nouvelle opportunité vient d'ouvrir au Mali !"\n📌 Poste / Projet : ${title.trim()}\n🏢 Organisme : ${org}\n📍 Lieu : ${loc}\n💡 Date limite : ${deadlineStr}\n👉 Lien complet dans la bio ou sur JobAvenir Mali !\n\n#Mali #Bamako #JobAvenir #EmploiMali #Opportunites`;
+      const currTitle = titleInput?.value.trim() || title;
+
+      const whatsapp = `📢 *${currTitle.trim()}*\n🏢 ${org} • 📍 ${loc} • 📄 ${contract}\n\n👉 Voir tous les détails et postuler :\n${targetUrl}`;
+      const telegram = `🚀 *${currTitle.trim()}*\n\n🏢 *Organisme :* ${org}\n📍 *Lieu :* ${loc}\n⏳ *Date limite :* ${deadlineStr}\n\n🔗 *Consulter l'annonce complète :*\n${targetUrl}\n\n#EmploiMali #MaliJobs #Recrutement #Bamako #JobAvenir`;
+      const tiktok = `🎬 Hook : "Une nouvelle opportunité vient d'ouvrir au Mali !"\n📌 Poste / Projet : ${currTitle.trim()}\n🏢 Organisme : ${org}\n📍 Lieu : ${loc}\n💡 Date limite : ${deadlineStr}\n👉 Lien complet dans la bio ou sur JobAvenir Mali !\n\n#Mali #Bamako #JobAvenir #EmploiMali #Opportunites`;
 
       if (whatsappTextarea) whatsappTextarea.value = whatsapp;
       if (telegramTextarea) telegramTextarea.value = telegram;
@@ -456,7 +856,7 @@ if (socialPublishAt) {
       showNotification('Textes par défaut générés avec succès !');
     });
 
-    // Enregistrer les modifications
+    // Enregistrer les modifications réseaux sociaux
     saveSocialBtn?.addEventListener('click', async () => {
       saveSocialBtn.setAttribute('disabled', 'true');
       const originalText = saveSocialBtn.innerHTML;

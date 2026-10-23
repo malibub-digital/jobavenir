@@ -54,18 +54,28 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const row = res.rows[0];
+  const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata || '{}') : (row.metadata || {});
+
   return new Response(JSON.stringify({
     success: true,
     data: {
       id: row.id,
       slug: row.slug,
       title: row.title,
+      excerpt: row.excerpt || row.concept || '',
+      heroImage: metadata.heroImage || null,
+      requirements: typeof row.requirements === 'string' ? JSON.parse(row.requirements || '[]') : (row.requirements || []),
+      howToApply: row.how_to_apply || row.premiere_action || '',
+      company: row.company || '',
+      location: row.location || row.zone_cible || '',
+      category: row.category || row.sector || '',
       isActive: Boolean(row.is_active),
       socialPublishAt: row.social_publish_at || calculateDefaultSocialPublishAt(),
       socialStatus: row.social_status || 'SCHEDULED',
       socialWhatsapp: row.social_whatsapp || '',
       socialTelegram: row.social_telegram || '',
-      socialTiktok: row.social_tiktok || ''
+      socialTiktok: row.social_tiktok || '',
+      metadata
     }
   }), {
     status: 200,
@@ -83,7 +93,22 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const body = await request.json();
-    const { type = 'job', slug, action, isActive, socialPublishAt, socialStatus, socialWhatsapp, socialTelegram, socialTiktok } = body;
+    const { 
+      type = 'job', 
+      slug, 
+      action, 
+      isActive, 
+      title, 
+      excerpt, 
+      heroImage, 
+      requirements, 
+      howToApply,
+      socialPublishAt, 
+      socialStatus, 
+      socialWhatsapp, 
+      socialTelegram, 
+      socialTiktok 
+    } = body;
 
     if (!slug) {
       return new Response(JSON.stringify({ error: 'Slug requis' }), {
@@ -108,28 +133,111 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Mise à jour complète des paramètres
+    // Récupérer la ligne existante pour mettre à jour son json metadata
+    const existingRes = await queryDb(`SELECT metadata FROM ${table} WHERE slug = $1`, [slug]);
+    let currentMetadata: Record<string, any> = {};
+    if (existingRes.rows.length > 0) {
+      const rawMeta = existingRes.rows[0].metadata;
+      currentMetadata = typeof rawMeta === 'string' ? JSON.parse(rawMeta || '{}') : (rawMeta || {});
+    }
+
+    // Si une image heroImage est fournie, la sauvegarder dans metadata
+    if (heroImage !== undefined) {
+      if (heroImage) {
+        currentMetadata.heroImage = heroImage;
+      } else {
+        delete currentMetadata.heroImage;
+      }
+    }
+
+    // Construction dynamique de la requête UPDATE
+    const sets: string[] = ['updated_at = NOW()'];
+    const params: any[] = [];
+
+    if (isActive !== undefined) {
+      params.push(Boolean(isActive));
+      sets.push(`is_active = $${params.length}`);
+    }
+    if (socialPublishAt !== undefined) {
+      params.push(socialPublishAt || null);
+      sets.push(`social_publish_at = $${params.length}`);
+    }
+    if (socialStatus !== undefined) {
+      params.push(socialStatus || 'SCHEDULED');
+      sets.push(`social_status = $${params.length}`);
+    }
+    if (socialWhatsapp !== undefined) {
+      params.push(socialWhatsapp || '');
+      sets.push(`social_whatsapp = $${params.length}`);
+    }
+    if (socialTelegram !== undefined) {
+      params.push(socialTelegram || '');
+      sets.push(`social_telegram = $${params.length}`);
+    }
+    if (socialTiktok !== undefined) {
+      params.push(socialTiktok || '');
+      sets.push(`social_tiktok = $${params.length}`);
+    }
+
+    // Champs de contenu éditables
+    if (title !== undefined && title.trim().length > 0) {
+      params.push(title.trim());
+      sets.push(`title = $${params.length}`);
+    }
+
+    if (type === 'idea') {
+      if (excerpt !== undefined) {
+        params.push(excerpt.trim());
+        sets.push(`concept = $${params.length}`);
+      }
+      if (howToApply !== undefined) {
+        params.push(howToApply.trim());
+        sets.push(`premiere_action = $${params.length}`);
+      }
+    } else {
+      if (excerpt !== undefined) {
+        params.push(excerpt.trim());
+        sets.push(`excerpt = $${params.length}`);
+      }
+      if (howToApply !== undefined) {
+        params.push(howToApply.trim());
+        sets.push(`how_to_apply = $${params.length}`);
+      }
+      if (requirements !== undefined) {
+        const reqArray = Array.isArray(requirements) 
+          ? requirements 
+          : typeof requirements === 'string' 
+            ? requirements.split('\n').map((s: string) => s.trim()).filter((s: string) => s.length > 0)
+            : [];
+        params.push(JSON.stringify(reqArray));
+        sets.push(`requirements = $${params.length}`);
+      }
+    }
+
+    // Metadata JSON
+    params.push(JSON.stringify(currentMetadata));
+    sets.push(`metadata = $${params.length}`);
+
+    // Paramètre WHERE slug = $N
+    params.push(slug);
+    const slugParamIndex = params.length;
+
     await queryDb(`
       UPDATE ${table} SET
-        is_active = $1,
-        social_publish_at = $2,
-        social_status = $3,
-        social_whatsapp = $4,
-        social_telegram = $5,
-        social_tiktok = $6,
-        updated_at = NOW()
-      WHERE slug = $7
-    `, [
-      Boolean(isActive),
-      socialPublishAt || null,
-      socialStatus || 'SCHEDULED',
-      socialWhatsapp || '',
-      socialTelegram || '',
-      socialTiktok || '',
-      slug
-    ]);
+        ${sets.join(', ')}
+      WHERE slug = $${slugParamIndex}
+    `, params);
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: 'Opportunité mise à jour avec succès',
+      data: {
+        title,
+        excerpt,
+        heroImage: currentMetadata.heroImage || null,
+        howToApply
+      }
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
