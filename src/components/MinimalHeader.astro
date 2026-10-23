@@ -217,9 +217,21 @@ const navLinks = [
 <script>
   import { getAdminCookieToken, clearAdminCookieToken } from '@malihub/sites-core/utils/auth.js';
 
+  function getMaliConnectUser() {
+    if (typeof document === 'undefined') return null;
+    const match = document.cookie.match(/(?:^|; )mali_connect_user=([^;]*)/);
+    if (!match) return null;
+    try {
+      return JSON.parse(decodeURIComponent(match[1]));
+    } catch {
+      return null;
+    }
+  }
+
   function updateHeaderAuth() {
-    const token = getAdminCookieToken();
-    const isLoggedIn = !!token && token.length > 0;
+    const adminToken = getAdminCookieToken();
+    const maliUser = getMaliConnectUser();
+    const isLoggedIn = (!!adminToken && adminToken.length > 0) || !!maliUser;
 
     const desktopLogin = document.getElementById("header-auth-login");
     const desktopAdminPortal = document.getElementById("header-admin-portal");
@@ -227,6 +239,12 @@ const navLinks = [
 
     if (isLoggedIn) {
       desktopLogin?.classList.add("hidden");
+      if (maliUser && desktopLogout) {
+        const textSpan = desktopLogout.querySelector("span");
+        if (textSpan) {
+          textSpan.textContent = maliUser.name ? `${maliUser.name.split(' ')[0]} (Déconnexion)` : 'Déconnexion';
+        }
+      }
       desktopAdminPortal?.classList.remove("hidden");
       desktopLogout?.classList.remove("hidden");
     } else {
@@ -241,12 +259,8 @@ const navLinks = [
 
     function handleLogout() {
       clearAdminCookieToken();
-      updateHeaderAuth();
-      if (window.location.pathname === "/admin") {
-        window.location.href = "/";
-      } else {
-        window.location.reload();
-      }
+      document.cookie = "mali_connect_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+      window.location.href = "/api/auth/logout";
     }
 
     desktopLogout?.addEventListener("click", handleLogout);

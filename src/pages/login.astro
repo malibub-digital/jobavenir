@@ -60,16 +60,18 @@ const hashedSecret = await hashSha256(rawSecret);
               Identifiant citoyen unique pour accéder à l'ensemble des services
               publics de l'État.
             </p>
-            <button
-              type="button"
-              disabled
-              class="w-full py-2.5 px-3 bg-[var(--ml-color-river-700)] opacity-60 text-white font-semibold rounded-xl text-xs flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 cursor-not-allowed text-left"
+            <a
+              href="/api/auth/login"
+              class="w-full py-2.5 px-4 bg-[var(--ml-color-river-700)] hover:bg-[var(--ml-color-river-800)] text-white font-semibold rounded-xl text-xs flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 shadow-sm transition-all text-left no-underline group cursor-pointer"
             >
-              <span>Se connecter avec Mali Connect</span>
-              <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded shrink-0"
-                >Bientôt disponible</span
+              <span class="flex items-center gap-2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <span>Se connecter avec Mali Connect</span>
+              </span>
+              <span class="text-[10px] bg-white/20 group-hover:bg-white/30 px-2 py-0.5 rounded shrink-0 transition-colors"
+                >OIDC / Passkey</span
               >
-            </button>
+            </a>
           </div>
 
           <div
