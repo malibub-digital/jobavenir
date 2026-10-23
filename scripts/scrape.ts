@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { extractJobWithAI, ExtractedJob } from '../src/lib/ai-extractor';
+import { extractJobWithAI, extractJobsBatchWithAI, ExtractedJob } from '../src/lib/ai-extractor';
 import { generateJobOgImage } from '../src/lib/og-generator';
 import { pool, initDatabaseSchema, isSqlite, archiveExpiredJobs } from '../src/lib/db';
 import { generateSocialTexts, calculateDefaultSocialPublishAt } from '../src/lib/social-generator';
@@ -609,15 +609,14 @@ export async function runScraper(closePool = false) {
     const rawPosts = scrapeRes.posts;
     console.log(`[Scraper] ${rawPosts.length} publications récupérées. Vérification pré-LLM...`);
 
+    // 1. Filtrage pré-LLM (détection des déjà connus en base)
+    const candidates: Array<{ post: typeof rawPosts[0]; hash: string }> = [];
+
     for (const post of rawPosts) {
       totalProcessed++;
-      const rawContent = `${post.title}\n\n${post.content}`;
-      // Hash canonique strict combinant URL et titre
       const hash = crypto.createHash('sha256').update(post.link + post.title).digest('hex');
-      // Garde-fou 1 : Nettoyage de l'URL source (suppression UTM et hash)
       const cleanUrl = post.link.split('?')[0].split('#')[0].replace(/\/+$/, '');
 
-      // Garde-fou 2 : Vérification pré-LLM en base de données (0 token consommé si déjà connu)
       if (hasDb) {
         const existing = await pool.query(
           'SELECT id FROM jobs WHERE content_hash = $1 OR original_url = $2 OR original_url LIKE $3 LIMIT 1',
@@ -630,12 +629,32 @@ export async function runScraper(closePool = false) {
         }
       }
 
-      console.log(`   ✨ Nouvelle annonce détectée : "${post.title.slice(0, 60)}..."`);
-      console.log('      -> Envoi au LLM pour structuration...');
-      const extracted = await extractJobWithAI(rawContent, post.title);
+      candidates.push({ post, hash });
+    }
+
+    if (candidates.length === 0) {
+      continue;
+    }
+
+    console.log(`   ✨ ${candidates.length} nouvelle(s) annonce(s) à analyser pour ${source.name}.`);
+    console.log(`      -> Envoi groupé au LLM (${candidates.length} annonce(s) en 1 seul appel)...`);
+
+    // 2. Appel groupé (batch) au LLM
+    const batchInput = candidates.map((c, idx) => ({
+      id: idx,
+      title: c.post.title,
+      content: `${c.post.title}\n\n${c.post.content}`
+    }));
+
+    const batchResults = await extractJobsBatchWithAI(batchInput);
+
+    // 3. Traitement des résultats
+    for (let idx = 0; idx < candidates.length; idx++) {
+      const { post, hash } = candidates[idx];
+      const extracted = batchResults.get(idx);
 
       if (!extracted) {
-        console.log('      ⏩ Annonce ignorée (non retenue par le filtre de pertinence).');
+        console.log(`   🛡️ Annonce "${post.title.slice(0, 45)}..." écartée par l'IA (pas d'opportunité actionnable).`);
         continue;
       }
 
