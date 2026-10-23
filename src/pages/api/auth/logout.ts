@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-
 export const prerender = false;
+
+import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ cookies, redirect }) => {
   // Supprimer les cookies de session

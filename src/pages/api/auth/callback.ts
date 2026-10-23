@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-
 export const prerender = false;
+
+import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ request, redirect, cookies }) => {
   const url = new URL(request.url);
