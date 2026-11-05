@@ -2,14 +2,14 @@
   "mentionsLegales": {
     "title": "Mentions Légales",
     "editorTitle": "Éditeur du site",
-    "editorText": "Ce site institutionnel est édité par le Ministère de la Communication, de l'Économie Numérique et de la Modernisation de l'Administration de la République du Mali.",
-    "hostingTitle": "Hébergement",
-    "hostingText": "Le site est hébergé sur les infrastructures sécurisées de la Réseau National de l'État (AGETIC), Bamako, République du Mali."
+    "editorText": "La plateforme Mali Job (malijob.ml) est éditée sous l'autorité et le mandat de l'Agence Pour la Promotion de l'Emploi des Jeunes (APEJ), Établissement Public à caractère Administratif (EPA), en synergie avec les Espaces Orientation Jeunesse (EOJ) et le programme PartiCIP.",
+    "hostingTitle": "Hébergement & Infrastructure",
+    "hostingText": "La plateforme est hébergée sur des infrastructures cloud souveraines et sécurisées supervisées pour les services d'intérêt public de la République du Mali."
   },
   "accessibilite": {
     "title": "Accessibilité Numérique",
     "status": "Partiellement Conforme",
-    "statementText": "Le gouvernement du Mali s'engage à rendre ses sites internet accessibles conformément au Design System Mali (DSML) et aux normes RGAA v4.1.",
-    "contactText": "Si vous rencontrez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou une fonctionnalité, vous pouvez contacter le responsable de la publication."
+    "statementText": "Mali Job s'engage à rendre ses services et la consultation des offres d'emploi accessibles à l'ensemble des citoyens, conformément au Design System Mali (DSML) et aux normes internationales d'accessibilité numérique (RGAA / WCAG).",
+    "contactText": "Si vous rencontrez un défaut d'accessibilité vous empêchant d'accéder à une offre, un formulaire ou une opportunité, contactez notre équipe technique à l'adresse contact@malijob.ml."
   }
 }

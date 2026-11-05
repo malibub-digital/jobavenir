@@ -6,8 +6,8 @@
   "logoUrl": "/images/logo-mali.svg",
   "contact": {
     "email": "contact@malijob.ml",
-    "phone": "+223 20 22 00 00",
-    "address": "Hamdallaye ACI 2000, Bamako, République du Mali",
+    "phone": "+223 20 29 64 55",
+    "address": "Hamdallaye ACI 2000, Avenue du Mali, Bamako, République du Mali",
     "hours": "Du Lundi au Vendredi de 8h00 à 16h00"
   },
   "socialLinks": [
@@ -117,6 +117,31 @@
     "ctaHref": ""
   },
   "header": "RÉPUBLIQUE DU MALI — Mali Job",
-  "faq": [],
+  "faq": [
+    {
+      "question": "Qu'est-ce que Mali Job et comment fonctionne la plateforme ?",
+      "answer": "Mali Job est le portail unifié national des opportunités au Mali (emplois, stages, formations professionnelles, appels à projets et idées entrepreneuriales). Il est placé sous l'égide de l'APEJ (mandataire et commanditaire), en partenariat avec les Espaces d'Orientation Jeunesse (EOJ) et le programme PartiCIP. Il agrège et vérifie quotidiennement les offres d'emploi publiques et privées à travers tout le Mali."
+    },
+    {
+      "question": "Qui peut postuler aux offres et aux programmes de stages ?",
+      "answer": "La plateforme est ouverte à tous les citoyens maliens, jeunes diplômés, demandeurs d'emploi et professionnels, âgés de 15 ans et plus, à Bamako, dans toutes les régions du Mali ainsi que dans la diaspora."
+    },
+    {
+      "question": "L'accès à Mali Job et la candidature aux offres sont-ils gratuits ?",
+      "answer": "Oui, l'accès à la plateforme, la consultation de toutes les offres d'emploi, de stage ou de formation et l'accès aux fiches d'orientation sont 100% gratuits et sans aucun frais intermédiaire."
+    },
+    {
+      "question": "Comment puis-je bénéficier des stages de qualification professionnelle de l'APEJ ?",
+      "answer": "L'APEJ organise des campagnes annuelles de stages de qualification professionnelle. Vous pouvez suivre les annonces officielles publiées sur Mali Job, préparer votre dossier (CV, diplômes, pièce d'identité) et vous inscrire en ligne ou auprès des antennes régionales de l'APEJ."
+    },
+    {
+      "question": "Quel est le rôle des Espaces Orientation Jeunesse (EOJ) ?",
+      "answer": "Les EOJ accompagnent gratuitement les jeunes dans la définition de leur projet professionnel : bilan de compétences, conseils personnalisés d'orientation vers les filières porteuses, ateliers CV et préparation aux entretiens d'embauche."
+    },
+    {
+      "question": "Comment recruteur ou entreprise peut-il diffuser une opportunité sur Mali Job ?",
+      "answer": "Les employeurs, institutions, ONG et entreprises privées peuvent transmettre leurs avis de recrutement et appels à projets via notre formulaire de contact ou à contact@malijob.ml afin d'être diffusés auprès de notre communauté de talents."
+    }
+  ],
   "meta": {}
 }

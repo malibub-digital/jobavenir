@@ -68,9 +68,9 @@ const cardBgStyles = {
   standard: 'bg-white border border-[var(--ml-color-neutral-200)] hover:border-[var(--ml-color-green-300)] shadow-sm hover:shadow-md'
 };
 
-const badgeStyles = {
-  Consulat: 'bg-[var(--ml-color-green-600)] text-white font-bold',
+const badgeStyles: Record<string, string> = {
   Emploi: 'bg-[var(--ml-color-indigo-600)] text-white font-bold',
+  Orientation: 'bg-orange-600 text-white font-bold',
   Communiqué: 'bg-[var(--ml-color-gold-400)] text-[var(--ml-color-bogolan-nuit)] font-bold',
   Innovation: 'bg-[var(--ml-color-green-100)] text-[var(--ml-color-green-800)] font-bold'
 };
@@ -109,9 +109,9 @@ const badgeStyles = {
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-xs font-bold text-[var(--ml-color-neutral-600)] mr-2 uppercase tracking-wider">Filtrer par :</span>
           <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-[var(--ml-color-green-700)] text-white border-none cursor-pointer shadow-sm">Tous</button>
-          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Consulat</button>
           <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Emploi & APEJ</button>
-          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Communiqués</button>
+          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Orientation & EOJ</button>
+          <button class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-[var(--ml-color-neutral-700)] border border-[var(--ml-color-neutral-200)] hover:bg-[var(--ml-color-green-50)] cursor-pointer">Innovation</button>
         </div>
 
         <CollectionAddButton collectionPath="actualites" collectionType="content" label="Publier un article" />

@@ -1,27 +1,21 @@
 {
   "header": {
-    "badge": "Démonstration d'Actualités Officielles",
+    "badge": "Actualités Officielles & Opportunités",
     "title": "Actualités & Communiqués",
-    "subtitle": "Suivez en direct l'actualité des services publics, annonces consulaires, opportunités d'emploi et avis aux usagers."
+    "subtitle": "Suivez en continu l'actualité de l'emploi, les programmes de stages de l'APEJ, les événements des EOJ et les opportunités professionnelles au Mali."
   },
   "items": [
     {
-      "slug": "permanence-ete"
+      "slug": "guichet-apej"
     },
     {
-      "slug": "guichet-apej"
+      "slug": "programme-stages-apej"
     },
     {
       "slug": "digitalisation-formulaires"
     },
     {
-      "slug": "retrait-cartes"
-    },
-    {
-      "slug": "test-1"
-    },
-    {
-      "slug": "test"
+      "slug": "eoj-orientation-insertion"
     }
   ]
 }
