@@ -1,11 +1,11 @@
 {
-  "title": "Job Avenir Mali",
+  "title": "Mali Job",
   "tagline": "Emploi, stage, formation, projet : trouvez votre voie",
-  "description": "JobAvenir Mali centralise l'ensemble des opportunités au Mali : offres d'emploi, stages, formations et appels à projets pour les jeunes et professionnels.",
+  "description": "Mali Job centralise l'ensemble des opportunités au Mali : offres d'emploi, stages, formations et appels à projets pour les jeunes et professionnels.",
   "institution": "RÉPUBLIQUE DU MALI",
   "logoUrl": "/images/logo-mali.svg",
   "contact": {
-    "email": "contact@jobavenir.ml",
+    "email": "contact@malijob.ml",
     "phone": "+223 20 22 00 00",
     "address": "Hamdallaye ACI 2000, Bamako, République du Mali",
     "hours": "Du Lundi au Vendredi de 8h00 à 16h00"
@@ -13,11 +13,11 @@
   "socialLinks": [
     {
       "platform": "Facebook",
-      "url": "https://facebook.com/jobavenirmali"
+      "url": "https://facebook.com/malijobmali"
     },
     {
       "platform": "Twitter",
-      "url": "https://twitter.com/jobavenir_ml"
+      "url": "https://twitter.com/malijob_ml"
     }
   ],
   "navigation": {
@@ -78,7 +78,7 @@
       "colTitle": "Institution et services",
       "links": [
         {
-          "label": "Présentation de JobAvenir",
+          "label": "Présentation de Mali Job",
           "href": "/a-propos"
         },
         {
@@ -116,7 +116,7 @@
     "ctaLabel": "",
     "ctaHref": ""
   },
-  "header": "RÉPUBLIQUE DU MALI — JobAvenir Mali",
+  "header": "RÉPUBLIQUE DU MALI — Mali Job",
   "faq": [],
   "meta": {}
 }
