@@ -38,13 +38,15 @@ const navLinks = [
           <div class="brand-title" data-cms-bind="siteConfig.institution">
             {siteConfig.institution || "RÉPUBLIQUE DU MALI"}
           </div>
-          <div class="site-title" data-cms-bind="siteConfig.title">
-            {siteConfig.title || "Mali Job"}
-          </div>
-          <div class="ml-tricolor-bar" aria-hidden="true">
-            <div class="green"></div>
-            <div class="yellow"></div>
-            <div class="red"></div>
+          <div class="site-title-wrapper">
+            <div class="site-title" data-cms-bind="siteConfig.title">
+              {siteConfig.title || "Mali Job"}
+            </div>
+            <div class="ml-tricolor-bar" aria-hidden="true">
+              <div class="green"></div>
+              <div class="yellow"></div>
+              <div class="red"></div>
+            </div>
           </div>
         </div>
       </a>
