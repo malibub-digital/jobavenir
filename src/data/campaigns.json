@@ -1,0 +1,180 @@
+{
+  "campaigns": [
+    {
+      "slug": "innovation-2026",
+      "secretToken": "candidature-video-bamako-7k9",
+      "status": "ACTIVE",
+      "edition": "Édition Lancement National",
+      "badge": "🚀 Grand Concours d'Innovation Mali Job",
+      "title": "Propulsez votre projet d'innovation au Mali",
+      "highlightTitle": "3 × 100 000 FCFA + 10 Projets mis en lumière",
+      "subtitle": "Avant l'ouverture publique de nos milliers d'offres d'emploi, de stages et de formations vérifiées, Mali Job récompense les porteurs de projets et créateurs d'activités qui font bouger le Mali.",
+      "sector": "Tous secteurs d'activité",
+      "prizes": {
+        "grandPrizeCount": 3,
+        "grandPrizeAmount": "100 000 FCFA",
+        "grandPrizeTotal": "300 000 FCFA",
+        "grandPrizeDescription": "3 projets lauréats reçoivent chacun une dotation directe de 100 000 FCFA pour accélérer leur développement, ainsi qu'une mise en avant en une du portail officiel Mali Job.",
+        "laureateCount": 10,
+        "laureateTitle": "10 Lauréats « Vitrine Officielle & Levée de Fonds »",
+        "laureateDescription": "Les 10 projets les plus prometteurs auront la chance de voir leur projet entièrement rédigé par notre équipe éditoriale et publié sur une page officielle dédiée sur Mali Job. Un lien crédible et professionnel pour communiquer sur vos réseaux, convaincre des partenaires et lever des fonds.",
+        "modelArticleUrl": "/actualites/modele-laureat-innovation",
+        "modelArticleLabel": "Voir un exemple de page Lauréat officielle"
+      },
+      "community": {
+        "ctaHeadline": "Comment participer et recevoir nos opportunités ?",
+        "ctaSubheadline": "Une seule étape : rejoignez gratuitement notre communauté officielle sur WhatsApp ou Telegram.",
+        "whatsappGroupUrl": "https://chat.whatsapp.com/VOTRE_LIEN_GROUPE_WHATSAPP",
+        "telegramGroupUrl": "https://t.me/malijob_officiel",
+        "benefits": [
+          "🔑 Accéder au lien secret et aux consignes pour déposer votre vidéo au Concours d'Innovation",
+          "💼 Recevoir en avant-première les offres d'emploi et stages qualifiants validés au Mali",
+          "📚 Être alerté des formations professionnelles, bourses et appels à projets financés",
+          "💡 Découvrir chaque semaine des idées business concrètes et l'actualité économique locale"
+        ]
+      },
+      "submission": {
+        "deadline": "30 Novembre 2026 à 23h59",
+        "maxDurationMinutes": 3,
+        "juryWhatsappNumber": "+22370000000",
+        "juryWhatsappDisplay": "+223 70 00 00 00",
+        "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Je suis membre du groupe communautaire et je vous envoie ma vidéo de participation au Concours d'Innovation.",
+        "juryTelegramUsername": "malijob_jury",
+        "juryTelegramUrl": "https://t.me/malijob_jury",
+        "introText": "Pas besoin de long dossier administratif ni de caméra professionnelle : filmez-vous simplement avec votre téléphone (au calme, en moins de 3 minutes) et présentez votre projet avec authenticité.",
+        "videoQuestions": [
+          {
+            "step": 1,
+            "title": "L'équipe & votre parcours",
+            "duration": "~30 sec",
+            "prompt": "Qui êtes-vous ? Présentez-vous simplement (votre nom, votre ville ou région au Mali) ainsi que les membres de votre équipe et vos savoir-faire complémentaires."
+          },
+          {
+            "step": 2,
+            "title": "Le projet & le problème résolu",
+            "duration": "~1 min",
+            "prompt": "Quelle est votre innovation ou votre activité ? Expliquez quel besoin concret vous résolvez au Mali, à quels clients vous vous adressez, et où vous en êtes aujourd'hui (idée testée, prototype, premiers clients). Si possible, montrez votre produit, atelier ou terrain à l'écran !"
+          },
+          {
+            "step": 3,
+            "title": "Le financement (les 100 000 FCFA & au-delà)",
+            "duration": "~45 sec",
+            "prompt": "À quoi serviront concrètement les 100 000 FCFA si vous remportez l'un des 3 Grands Prix ? Précisez aussi quel montant global ou quel type de partenariat vous recherchez sur votre page Lauréat pour passer à l'échelle."
+          },
+          {
+            "step": 4,
+            "title": "Le futur & votre vision",
+            "duration": "~30 sec",
+            "prompt": "Quelle est votre ambition pour les 6 à 12 prochains mois ? Quel impact souhaitez-vous créer dans votre commune ou au niveau national ?"
+          }
+        ],
+        "tips": [
+          "Filmez avec votre téléphone à la lumière du jour et dans un endroit calme pour qu'on vous entende bien.",
+          "La vidéo ne doit pas dépasser 3 minutes au total.",
+          "Indiquez dans votre message d'accompagnement : votre Nom & Prénom, le Nom du projet, votre Ville et votre numéro de téléphone."
+        ]
+      },
+      "sponsoring": {
+        "badge": "Appel aux Partenaires & Mécènes",
+        "title": "Vous souhaitez sponsoriser l'innovation et l'entrepreneuriat au Mali ?",
+        "description": "Entreprises privées, banques, ONG, fondations et membres de la diaspora : associez votre image à l'émergence des talents maliens en co-finançant nos prochaines dotations thématiques (Agriculture, Énergie Solaire, Artisanat, Numérique).",
+        "highlights": [
+          "100% des dotations reversées directement aux porteurs de projets lauréats",
+          "Visibilité officielle sur le portail Mali Job, les fiches lauréats et notre communauté WhatsApp / Telegram",
+          "Possibilité de créer un Prix portant le nom de votre organisation sur une filière cible"
+        ],
+        "contactUrl": "/contact?sujet=sponsor",
+        "contactEmail": "partenariats@malijob.ml",
+        "contactPhone": "+223 20 29 64 55"
+      }
+    },
+    {
+      "slug": "innovation-agricole",
+      "secretToken": "candidature-agri-sikasso-4m2",
+      "status": "UPCOMING",
+      "edition": "Édition Spéciale Filières Agricoles & Pastorales",
+      "badge": "🌾 Prochainement — Challenge Agri-Innovation Mali",
+      "title": "Innovations pour l'Agriculture, l'Élevage et la Transformation Locale",
+      "highlightTitle": "Micro-financements & Vitrine Nationale Agro-Business",
+      "subtitle": "Une campagne dédiée aux jeunes entrepreneurs ruraux, coopératives maraîchères, projets d'irrigation, d'élevage et de transformation agroalimentaire au Mali.",
+      "sector": "Agriculture & Élevage",
+      "prizes": {
+        "grandPrizeCount": 3,
+        "grandPrizeAmount": "100 000 FCFA",
+        "grandPrizeTotal": "300 000 FCFA",
+        "grandPrizeDescription": "3 projets agricoles ou agro-alimentaires reçoivent chacun un coup de pouce financier direct de 100 000 FCFA et un accompagnement en visibilité.",
+        "laureateCount": 10,
+        "laureateTitle": "10 Lauréats « Vitrine Agri-Innovation »",
+        "laureateDescription": "Les 10 meilleurs projets agricoles bénéficient d'un article complet publié sur Mali Job pour attirer acheteurs, équipements et investisseurs du secteur rural.",
+        "modelArticleUrl": "/actualites/modele-laureat-innovation",
+        "modelArticleLabel": "Voir le modèle de page Lauréat Agricole"
+      },
+      "community": {
+        "ctaHeadline": "Pré-inscrivez-vous en rejoignant la communauté Mali Job",
+        "ctaSubheadline": "Les instructions d'ouverture du Challenge Agricole seront publiées en exclusivité dans nos groupes WhatsApp et Telegram.",
+        "whatsappGroupUrl": "https://chat.whatsapp.com/VOTRE_LIEN_GROUPE_WHATSAPP",
+        "telegramGroupUrl": "https://t.me/malijob_officiel",
+        "benefits": [
+          "🌾 Être averti dès l'ouverture des candidatures du Challenge Innovation Agricole",
+          "💼 Recevoir chaque semaine les offres d'emploi, stages et appels à projets du secteur rural et national",
+          "📚 Accéder aux formations techniques et opportunités de subventions agricoles",
+          "💡 Découvrir des idées de micro-projets agricoles rentables et l'actualité des filières"
+        ]
+      },
+      "submission": {
+        "deadline": "Ouverture prochaine",
+        "maxDurationMinutes": 3,
+        "juryWhatsappNumber": "+22370000000",
+        "juryWhatsappDisplay": "+223 70 00 00 00",
+        "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Voici ma vidéo pour le Challenge Innovation Agricole.",
+        "juryTelegramUsername": "malijob_jury",
+        "juryTelegramUrl": "https://t.me/malijob_jury",
+        "introText": "Filmez votre exploitation, votre atelier de transformation ou votre équipement en moins de 3 minutes avec votre téléphone.",
+        "videoQuestions": [
+          {
+            "step": 1,
+            "title": "L'équipe & votre localité",
+            "duration": "~30 sec",
+            "prompt": "Présentez-vous, votre équipe ou coopérative, ainsi que votre localité (commune, cercle, région)."
+          },
+          {
+            "step": 2,
+            "title": "Votre projet agricole ou d'élevage",
+            "duration": "~1 min",
+            "prompt": "Montrez votre culture, élevage ou produit transformé et expliquez ce que votre méthode apporte de nouveau."
+          },
+          {
+            "step": 3,
+            "title": "Le besoin de financement",
+            "duration": "~45 sec",
+            "prompt": "Qu'allez-vous financer en priorité avec la dotation (semences, pompe solaire, emballages, outillage) et quels partenaires cherchez-vous ?"
+          },
+          {
+            "step": 4,
+            "title": "Le futur de votre production",
+            "duration": "~30 sec",
+            "prompt": "Quelle quantité ou quel marché visez-vous lors de la prochaine campagne agricole ?"
+          }
+        ],
+        "tips": [
+          "Filmez directement sur votre parcelle, ferme ou atelier à la lumière du jour.",
+          "Durée maximale : 3 minutes.",
+          "Précisez votre nom, votre localité et votre téléphone dans le message."
+        ]
+      },
+      "sponsoring": {
+        "badge": "Partenaires Filières Agricoles",
+        "title": "Soutenez l'innovation agricole et la souveraineté alimentaire au Mali",
+        "description": "Fournisseurs d'intrants, équipements solaires, institutions de microfinance et programmes de développement rural : parrainez cette édition agricole.",
+        "highlights": [
+          "Soutien direct aux jeunes producteurs et transformateurs locaux",
+          "Mise en avant de votre structure auprès de milliers de jeunes actifs et porteurs de projets",
+          "Participation possible au comité de sélection des lauréats"
+        ],
+        "contactUrl": "/contact?sujet=sponsor",
+        "contactEmail": "partenariats@malijob.ml",
+        "contactPhone": "+223 20 29 64 55"
+      }
+    }
+  ]
+}

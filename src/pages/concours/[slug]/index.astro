@@ -1,0 +1,68 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MinimalHeader from "../../../components/MinimalHeader.astro";
+import Footer from "@malihub/sites-core/components/Footer.astro";
+import CampaignLanding from "../../../components/CampaignLanding.astro";
+import siteConfig from "../../../../site.config.json";
+import campaignsData from "../../../data/campaigns.json";
+
+const { slug } = Astro.params;
+const allCampaigns = campaignsData.campaigns || [];
+const campaign = allCampaigns.find((c) => c.slug === slug);
+
+if (!campaign) {
+  return Astro.redirect(`/concours/${(siteConfig as any).activeCampaignSlug || "innovation-2026"}`);
+}
+
+const footerLogos = [
+  { src: "/images/logo-apej.svg", alt: "APEJ Mali - Agence Pour la Promotion de l'Emploi des Jeunes" },
+  { src: "/images/logo-eoj.svg", alt: "EOJ Mali - Espace d'Orientation Jeunesse" },
+  { src: "/images/logo-particip.png", alt: "PartiCIP - Partenaire d'accompagnement & insertion" },
+];
+
+const siteUrl = Astro.site?.origin || (siteConfig as any).siteUrl || "https://job.malihub.digital";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const ogImageUrl = `${siteUrl}/images/categories/default.webp`;
+const pageTitle = `${campaign.title} — ${campaign.highlightTitle} | ${siteConfig.title}`;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={campaign.subtitle}
+  emergencyNotice={siteConfig.emergencyNotice}
+>
+  <Fragment slot="head">
+    <meta property="og:site_name" content="Mali Job" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={campaign.subtitle} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:locale" content="fr_FR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={campaign.subtitle} />
+    <meta name="twitter:image" content={ogImageUrl} />
+  </Fragment>
+
+  <MinimalHeader slot="header" />
+
+  <CampaignLanding
+    campaign={campaign}
+    isHomePrelaunch={false}
+    allCampaigns={allCampaigns}
+  />
+
+  <Footer
+    slot="footer"
+    institution={siteConfig.institution}
+    partnerLogos={footerLogos}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>

@@ -13,13 +13,24 @@ const normalizePath = (path: string) =>
 
 const cleanCurrentPath = normalizePath(currentPath);
 
-const navLinks = [
-  { label: 'Accueil', href: '/' },
-  { label: 'Opportunités', href: '/opportunites' },
-  { label: 'Idées business', href: '/idees' },
-  { label: 'Actualités', href: '/actualites' },
-  { label: 'Contact', href: '/contact' }
-];
+const isPrelaunch = (siteConfig as any).siteMode === 'PRELAUNCH';
+const activeCampaignHref = `/concours/${(siteConfig as any).activeCampaignSlug || 'innovation-2026'}`;
+
+const navLinks = isPrelaunch
+  ? [
+      { label: 'Accueil', href: '/' },
+      { label: 'Concours Innovation', href: activeCampaignHref },
+      { label: 'Devenir Sponsor', href: '/contact?sujet=sponsor' },
+      { label: 'À propos', href: '/a-propos' }
+    ]
+  : [
+      { label: 'Accueil', href: '/' },
+      { label: 'Opportunités', href: '/opportunites' },
+      { label: 'Idées business', href: '/idees' },
+      { label: 'Concours Innovation', href: activeCampaignHref },
+      { label: 'Actualités', href: '/actualites' },
+      { label: 'Contact', href: '/contact' }
+    ];
 ---
 
 <header class="ml-header ml-header-sticky ml-header-shrinkable" id="site-header">

@@ -3,11 +3,19 @@ export const prerender = false;
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MinimalHeader from "../components/MinimalHeader.astro";
+import CampaignLanding from "../components/CampaignLanding.astro";
 import Footer from "@malihub/sites-core/components/Footer.astro";
 import siteConfig from "../../site.config.json";
 import homeData from "../data/pages/home.json";
+import campaignsData from "../data/campaigns.json";
 import { getUnifiedJobs, getAllDbIdeas } from "../lib/db";
 import { getCategoryImage } from "../lib/image-bank";
+
+const isPrelaunch = (siteConfig as any).siteMode === "PRELAUNCH";
+const allCampaigns = campaignsData.campaigns || [];
+const activeCampaign =
+  allCampaigns.find((c) => c.slug === (siteConfig as any).activeCampaignSlug) ||
+  allCampaigns[0];
 
 const allJobs = await getUnifiedJobs();
 const allIdeas = await getAllDbIdeas();
@@ -102,7 +110,37 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
 
   <MinimalHeader slot="header" />
 
-  <!-- HERO PRINCIPAL AVEC RECHERCHE INTÉGRÉE & DESIGN PERCUTANT (SECTION 1 : AMBRE DOUX & CHALEUREUX) -->
+  {isPrelaunch && activeCampaign ? (
+    <CampaignLanding
+      campaign={activeCampaign}
+      isHomePrelaunch={true}
+      allCampaigns={allCampaigns}
+    />
+  ) : (
+    <>
+      {activeCampaign && (
+        <div class="bg-stone-900 text-white py-2.5 px-4 border-b border-amber-500/30">
+          <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 text-center sm:text-left">
+              <span class="px-2 py-0.5 rounded-full bg-amber-500 text-stone-950 font-black uppercase text-[10px]">
+                {activeCampaign.badge}
+              </span>
+              <span class="font-semibold text-stone-200">
+                {activeCampaign.title} ({activeCampaign.highlightTitle})
+              </span>
+            </div>
+            <a
+              href={`/concours/${activeCampaign.slug}`}
+              class="text-amber-300 hover:text-amber-200 font-extrabold no-underline shrink-0 inline-flex items-center gap-1"
+            >
+              <span>Participer au concours</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
+        </div>
+      )}
+
+      <!-- HERO PRINCIPAL AVEC RECHERCHE INTÉGRÉE & DESIGN PERCUTANT (SECTION 1 : AMBRE DOUX & CHALEUREUX) -->
   <section
     class="ml-hero bg-gradient-to-b from-amber-50/90 via-orange-50/30 to-amber-50/20 text-stone-900 pt-7 pb-44 sm:py-14 lg:py-16 px-3 sm:px-4 relative overflow-hidden border-b border-stone-200/70 min-h-[520px] sm:min-h-[440px] lg:min-h-[460px] sm:flex sm:items-center sm:justify-center"
   >
@@ -922,6 +960,8 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
       </div>
     </div>
   </section>
+    </>
+  )}
 
   <Footer
     slot="footer"

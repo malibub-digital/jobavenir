@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MinimalHeader from "../../components/MinimalHeader.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
@@ -8,34 +10,28 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
-export function getStaticPaths() {
-  const contentDir = path.join(process.cwd(), 'src', 'content', 'actualites');
-  if (fs.existsSync(contentDir)) {
-    const files = fs.readdirSync(contentDir).filter((f) => f.endsWith('.md'));
-    return files.map((file) => ({
-      params: { slug: file.replace(/\.md$/, '') }
-    }));
-  }
-  return [
-    { params: { slug: 'permanence-ete' } },
-    { params: { slug: 'guichet-apej' } },
-    { params: { slug: 'retrait-cartes' } },
-    { params: { slug: 'digitalisation-formulaires' } },
-  ];
-}
-
 const { slug } = Astro.params;
-const targetSlug = slug || 'permanence-ete';
+const targetSlug = slug || 'guichet-apej';
 const filePath = path.join(process.cwd(), 'src', 'content', 'actualites', `${targetSlug}.md`);
 
-let article = {
+let article: Record<string, any> = {
   title: 'Article introuvable',
   date: '',
   category: 'Général',
   author: 'Service Communication',
   image: '',
   excerpt: '',
-  content: '<p>Contenu indisponible.</p>'
+  content: '<p>Contenu indisponible.</p>',
+  isPlaceholderModel: false,
+  laureateBadge: '',
+  projectName: '',
+  projectOwner: '',
+  projectLocation: '',
+  projectSector: '',
+  projectStage: '',
+  grantAwarded: '',
+  fundingGoal: '',
+  contactRole: ''
 };
 
 if (fs.existsSync(filePath)) {
@@ -48,24 +44,49 @@ if (fs.existsSync(filePath)) {
     author: parsed.data.author || 'Service Communication',
     image: parsed.data.image || '',
     excerpt: parsed.data.excerpt || '',
-    content: parsed.content || ''
+    content: parsed.content || '',
+    isPlaceholderModel: Boolean(parsed.data.isPlaceholderModel),
+    laureateBadge: parsed.data.laureateBadge || '',
+    projectName: parsed.data.projectName || '',
+    projectOwner: parsed.data.projectOwner || '',
+    projectLocation: parsed.data.projectLocation || '',
+    projectSector: parsed.data.projectSector || '',
+    projectStage: parsed.data.projectStage || '',
+    grantAwarded: parsed.data.grantAwarded || '',
+    fundingGoal: parsed.data.fundingGoal || '',
+    contactRole: parsed.data.contactRole || ''
   };
 }
 
+const isLaureateArticle = Boolean(article.isPlaceholderModel || article.laureateBadge || article.projectOwner);
+const activeCampaignUrl = `/concours/${(siteConfig as any).activeCampaignSlug || 'innovation-2026'}`;
+
+const footerLogos = [
+  { src: "/images/logo-apej.svg", alt: "APEJ Mali - Agence Pour la Promotion de l'Emploi des Jeunes" },
+  { src: "/images/logo-eoj.svg", alt: "EOJ Mali - Espace d'Orientation Jeunesse" },
+  { src: "/images/logo-particip.png", alt: "PartiCIP - Partenaire d'accompagnement & insertion" },
+];
+
 const cmsBase = `src/content/actualites/${targetSlug}.md`;
-const siteUrl = Astro.site?.origin || siteConfig.siteUrl || "https://job.malihub.digital";
+const siteUrl = Astro.site?.origin || (siteConfig as any).siteUrl || "https://job.malihub.digital";
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const rawImage = article.image || '/images/categories/default.webp';
 const ogImageUrl = rawImage.startsWith('http') ? rawImage : `${siteUrl}${rawImage}`;
 const pageDescription = article.excerpt || article.title;
+const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`${article.title} — Découvrez ce projet sur Mali Job : ${canonicalUrl}`)}`;
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalUrl)}`;
+const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalUrl)}`;
 ---
 
 <BaseLayout title={`${article.title} — ${siteConfig.title}`} description={pageDescription}>
   <Fragment slot="head">
-    <meta property="og:site_name" content="JobAvenir Mali" />
+    {article.isPlaceholderModel && (
+      <meta name="robots" content="noindex, nofollow" />
+    )}
+    <meta property="og:site_name" content="Mali Job" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={`${article.title} | JobAvenir Mali`} />
+    <meta property="og:title" content={`${article.title} | Mali Job`} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:secure_url" content={ogImageUrl} />
@@ -73,50 +94,214 @@ const pageDescription = article.excerpt || article.title;
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalUrl} />
-    <meta name="twitter:title" content={`${article.title} | JobAvenir Mali`} />
+    <meta name="twitter:title" content={`${article.title} | Mali Job`} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
   </Fragment>
 
   <MinimalHeader slot="header" />
 
-  <main id="main-content" class="py-12 bg-[var(--ml-color-bogolan-kaolin)]/40 min-h-screen">
+  {article.isPlaceholderModel && (
+    <div class="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 text-white py-3.5 px-4 shadow-md border-b border-amber-300/40">
+      <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold">
+          <span class="px-2.5 py-0.5 rounded-full bg-stone-950 text-amber-300 text-[11px] font-black uppercase tracking-wider shrink-0">
+            ✨ Modèle d'exemple
+          </span>
+          <span>
+            Voici à quoi ressemblera <strong>votre page officielle sur Mali Job</strong> si votre projet fait partie des 10 lauréats sélectionnés !
+          </span>
+        </div>
+        <a
+          href={activeCampaignUrl}
+          class="px-4 py-1.5 rounded-xl bg-white text-stone-900 hover:bg-amber-50 text-xs font-black no-underline shrink-0 shadow-xs transition-all"
+        >
+          Participer au concours &rarr;
+        </a>
+      </div>
+    </div>
+  )}
+
+  <main id="main-content" class="py-10 sm:py-12 bg-stone-50 min-h-screen">
     <div class="ml-container max-w-4xl mx-auto px-4">
-      <nav class="text-xs text-[var(--ml-color-neutral-500)] mb-6 flex gap-2">
-        <a href="/" class="hover:underline text-[var(--ml-color-neutral-600)]">Accueil</a>
+      <nav class="text-xs text-stone-500 mb-6 flex flex-wrap items-center gap-2">
+        <a href="/" class="hover:underline text-stone-600">Accueil</a>
         <span>/</span>
-        <a href="/actualites" class="hover:underline text-[var(--ml-color-neutral-600)]">Actualités</a>
+        <a href={activeCampaignUrl} class="hover:underline text-orange-700 font-semibold">Concours d'Innovation</a>
         <span>/</span>
-        <span class="text-[var(--ml-color-neutral-800)] font-semibold truncate max-w-xs" data-cms-bind={`${cmsBase}::title`}>{article.title}</span>
+        <span class="text-stone-800 font-semibold truncate max-w-xs" data-cms-bind={`${cmsBase}::title`}>{article.title}</span>
       </nav>
 
-      <article class="bg-white border border-[var(--ml-color-neutral-200)] rounded-3xl overflow-hidden shadow-sm p-6 md:p-10">
-        <div class="flex items-center gap-3 text-xs text-[var(--ml-color-neutral-500)] mb-4">
-          <span class="bg-[var(--ml-color-green-100)] text-[var(--ml-color-green-800)] font-bold px-3 py-1 rounded-full" data-cms-bind={`${cmsBase}::category`}>{article.category}</span>
+      <article class="bg-white border border-stone-200 rounded-3xl overflow-hidden shadow-sm p-6 md:p-10">
+        <div class="flex flex-wrap items-center gap-2.5 text-xs text-stone-500 mb-4">
+          {article.laureateBadge ? (
+            <span class="bg-amber-100 text-amber-950 border border-amber-300 font-black px-3.5 py-1 rounded-full">
+              {article.laureateBadge}
+            </span>
+          ) : (
+            <span class="bg-emerald-100 text-emerald-900 font-bold px-3 py-1 rounded-full" data-cms-bind={`${cmsBase}::category`}>
+              {article.category}
+            </span>
+          )}
+          {article.projectSector && (
+            <span class="bg-orange-50 text-orange-800 border border-orange-200 font-bold px-3 py-1 rounded-full">
+              {article.projectSector}
+            </span>
+          )}
           <time data-cms-bind={`${cmsBase}::date`}>{article.date}</time>
           <span>•</span>
           <span data-cms-bind={`${cmsBase}::author`}>Par {article.author}</span>
         </div>
 
-        <h1 class="text-2xl md:text-4xl font-black text-[var(--ml-color-neutral-900)] font-title mb-6 leading-snug" data-cms-bind={`${cmsBase}::title`}>
+        <h1 class="text-2xl md:text-4xl font-black text-stone-900 font-title mb-6 leading-snug" data-cms-bind={`${cmsBase}::title`}>
           {article.title}
         </h1>
 
-        <div class="mb-8 rounded-2xl overflow-hidden max-h-[400px]">
+        <div class="mb-8 rounded-2xl overflow-hidden max-h-[400px] relative border border-stone-200/80">
           <CmsImageField
             bind={`${cmsBase}::image`}
             src={article.image || '/images/actualites/hero.png'}
             alt={article.title}
             imgClass="w-full h-72 md:h-96 object-cover rounded-2xl"
           />
+          {article.isPlaceholderModel && (
+            <div class="absolute bottom-3 right-3 bg-stone-950/85 backdrop-blur-md text-amber-300 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-amber-400/40">
+              📸 Votre photo d'équipe ou de produit sera mise à l'honneur ici
+            </div>
+          )}
         </div>
 
-        <div class="prose max-w-none whitespace-pre-line leading-relaxed text-[var(--ml-color-neutral-800)]" set:html={article.content} data-cms-bind={`${cmsBase}::content`} data-cms-type="markdown" />
+        {/* CARTE FICHE SYNTHÉTIQUE LAURÉAT (POUR INVESTISSEURS & PARTENAIRES) */}
+        {isLaureateArticle && (
+          <div class="mb-8 rounded-2xl bg-gradient-to-br from-amber-50/90 via-white to-orange-50/50 border-2 border-amber-300/80 p-5 sm:p-6 shadow-xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-amber-200/80">
+              <div>
+                <span class="text-[11px] font-black uppercase tracking-wider text-orange-700 block">
+                  Fiche Officielle Porteur de Projet — Mali Job
+                </span>
+                <h2 class="text-lg font-black text-stone-900 font-title m-0">
+                  {article.projectName || article.title}
+                </h2>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-extrabold self-start sm:self-auto">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                Projet vérifié par l'équipe Mali Job
+              </span>
+            </div>
 
-        <div class="mt-10 pt-6 border-t border-[var(--ml-color-neutral-200)] flex justify-between items-center">
-          <a href="/actualites" class="text-xs font-bold text-[var(--ml-color-green-700)] hover:text-[var(--ml-color-green-800)] inline-flex items-center gap-2 no-underline">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+              {article.projectOwner && (
+                <div class="bg-white/90 p-3.5 rounded-xl border border-stone-200/80">
+                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5">👥 Équipe & Porteurs</div>
+                  <div class="font-bold text-stone-900">{article.projectOwner}</div>
+                </div>
+              )}
+              {article.projectLocation && (
+                <div class="bg-white/90 p-3.5 rounded-xl border border-stone-200/80">
+                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5">📍 Localisation</div>
+                  <div class="font-bold text-stone-900">{article.projectLocation}</div>
+                </div>
+              )}
+              {article.projectStage && (
+                <div class="bg-white/90 p-3.5 rounded-xl border border-stone-200/80">
+                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5">🚀 Stade d'avancement</div>
+                  <div class="font-bold text-stone-900">{article.projectStage}</div>
+                </div>
+              )}
+              {article.fundingGoal && (
+                <div class="bg-orange-50/90 p-3.5 rounded-xl border border-orange-300/80">
+                  <div class="text-[11px] font-black uppercase text-orange-800 mb-0.5">💰 Besoin de financement / Partenariat</div>
+                  <div class="font-black text-stone-950">{article.fundingGoal}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div class="prose max-w-none leading-relaxed text-stone-800" set:html={article.content} data-cms-bind={`${cmsBase}::content`} data-cms-type="markdown" />
+
+        {/* BLOC DE MISE EN RELATION & PARTAGE POUR LEVER DES FONDS */}
+        {isLaureateArticle && (
+          <div class="mt-10 rounded-2xl bg-stone-900 text-white p-6 sm:p-8 border border-stone-800 relative overflow-hidden">
+            <div class="relative z-10">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-bold mb-3">
+                <span>🤝 Soutenir ce projet, devenir client ou investir</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black font-title text-white mb-2">
+                Ce projet vous intéresse ? Entrez directement en contact avec son auteur !
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-300 leading-relaxed mb-6 max-w-2xl">
+                {article.isPlaceholderModel
+                  ? "Sur la vraie page de chaque lauréat, ce bloc permet aux investisseurs, ONG, banques, clients et partenaires de contacter directement le porteur du projet par WhatsApp ou email pour le financer ou commander ses produits."
+                  : "Mali Job facilite la mise en relation directe et sans intermédiaire entre les porteurs d'initiatives locales et les partenaires financiers ou commerciaux."}
+              </p>
+
+              <div class="flex flex-wrap items-center gap-3 mb-6">
+                <a
+                  href={article.isPlaceholderModel ? activeCampaignUrl : "/contact?sujet=laureat"}
+                  class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs sm:text-sm no-underline transition-all shadow-md inline-flex items-center gap-2"
+                >
+                  <span>{article.isPlaceholderModel ? "🚀 Tenter ma chance pour avoir ma propre page Lauréat" : "📩 Contacter le porteur du projet"}</span>
+                </a>
+                <a
+                  href="/contact?sujet=sponsor"
+                  class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm no-underline border border-white/15 transition-all"
+                >
+                  Devenir sponsor d'un prix d'innovation
+                </a>
+              </div>
+
+              {/* BARRE DE PARTAGE DU LIEN OFFICIEL */}
+              <div class="pt-5 border-t border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span class="text-xs font-bold text-stone-400">
+                  📲 Partager cette page officielle pour donner de la visibilité au projet :
+                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <a
+                    href={whatsappShareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold no-underline transition-colors"
+                  >
+                    WhatsApp
+                  </a>
+                  <a
+                    href={facebookShareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold no-underline transition-colors"
+                  >
+                    Facebook
+                  </a>
+                  <a
+                    href={linkedinShareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="px-3 py-1.5 rounded-lg bg-sky-700 hover:bg-sky-600 text-white text-xs font-bold no-underline transition-colors"
+                  >
+                    LinkedIn
+                  </a>
+                  <button
+                    type="button"
+                    id="copy-laureate-url-btn"
+                    data-url={canonicalUrl}
+                    class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold border border-stone-700 cursor-pointer transition-colors"
+                  >
+                    🔗 Copier le lien
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div class="mt-8 pt-6 border-t border-stone-200 flex flex-wrap justify-between items-center gap-3">
+          <a href={activeCampaignUrl} class="text-xs font-extrabold text-orange-600 hover:text-orange-700 inline-flex items-center gap-2 no-underline">
             <span>&larr;</span>
-            <span>Retour à toutes les actualités</span>
+            <span>Retour à la campagne Concours d'Innovation</span>
+          </a>
+          <a href="/actualites" class="text-xs font-semibold text-stone-500 hover:text-stone-800 no-underline">
+            Voir toutes les actualités &rarr;
           </a>
         </div>
       </article>
@@ -126,7 +311,27 @@ const pageDescription = article.excerpt || article.title;
   <Footer
     slot="footer"
     institution={siteConfig.institution}
+    partnerLogos={footerLogos}
     contact={siteConfig.contact}
     footerLinks={siteConfig.footerLinks}
   />
 </BaseLayout>
+
+<script>
+  const copyBtn = document.getElementById('copy-laureate-url-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const url = copyBtn.getAttribute('data-url') || window.location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✅ Lien copié !';
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+        }, 2500);
+      } catch {
+        // Fallback silencieux
+      }
+    });
+  }
+</script>
