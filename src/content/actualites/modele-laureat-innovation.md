@@ -3,8 +3,8 @@ title: "[Exemple] SolaFroid Mali : Chambres froides solaires pour conserver les 
 date: "Novembre 2026"
 category: "Innovation"
 author: "Rédaction Mali Job"
-excerpt: "Exemple de page officielle offerte aux lauréats du Concours : découvrez comment votre projet et votre recherche de financement seront présentés."
-image: "/images/categories/agriculture_elevage/01.webp"
+excerpt: "Exemple de page officielle offerte aux lauréats du Concours : découvrez comment votre projet et votre recherche de financement seront présentés sur Mali Job."
+image: "/images/og-modele-laureat.jpg"
 cardVariant: "featured"
 featured: true
 isPlaceholderModel: true
