@@ -103,12 +103,30 @@ const iconsShowcase = [
 
       <!-- Quick Nav Jump Anchor Bar -->
       <div class="flex flex-wrap gap-2 mb-12 bg-white p-3 rounded-2xl border border-[var(--ml-color-neutral-200)] shadow-sm">
-        <a href="#palettes" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🎨 Palettes Chromatiques</a>
-        <a href="#boutons" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🔘 Boutons & Actions</a>
-        <a href="#badges" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🏷️ Badges & Statuts</a>
-        <a href="#icones" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">✨ Iconographie DSML</a>
-        <a href="#formulaires" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">📝 Formulaires Administratifs</a>
-        <a href="#motifs" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors">🏛️ Motifs Traditionnels</a>
+        <a href="#palettes" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors inline-flex items-center gap-1.5">
+          <i class="ml-icon-brush-3-line ml-icon--xs"></i>
+          <span>Palettes Chromatiques</span>
+        </a>
+        <a href="#boutons" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors inline-flex items-center gap-1.5">
+          <i class="ml-icon-checkbox-circle-line ml-icon--xs"></i>
+          <span>Boutons & Actions</span>
+        </a>
+        <a href="#badges" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors inline-flex items-center gap-1.5">
+          <i class="ml-icon-bookmark-line ml-icon--xs"></i>
+          <span>Badges & Statuts</span>
+        </a>
+        <a href="#icones" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors inline-flex items-center gap-1.5">
+          <i class="ml-icon-award-line ml-icon--xs"></i>
+          <span>Iconographie DSML</span>
+        </a>
+        <a href="#formulaires" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors inline-flex items-center gap-1.5">
+          <i class="ml-icon-file-list-3-line ml-icon--xs"></i>
+          <span>Formulaires Administratifs</span>
+        </a>
+        <a href="#motifs" class="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--ml-color-river-50)] text-[var(--ml-color-river-800)] hover:bg-[var(--ml-color-river-100)] no-underline transition-colors inline-flex items-center gap-1.5">
+          <i class="ml-icon-building-line ml-icon--xs"></i>
+          <span>Motifs Traditionnels</span>
+        </a>
       </div>
 
       <!-- SECTION 1: PALETTES DE COULEURS -->
@@ -310,7 +328,7 @@ const iconsShowcase = [
     </div>
   </main>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     contact={siteConfig.contact}

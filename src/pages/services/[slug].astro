@@ -200,7 +200,7 @@ const sidemenuItems = [
         <!-- Pièces à fournir -->
         <div class="mb-10 bg-[var(--ml-color-neutral-50)] p-6 rounded-2xl border border-[var(--ml-color-neutral-200)]">
           <h2 class="text-lg font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-4 flex items-center gap-2">
-            <span>📋</span>
+            <i class="ml-icon-file-list-3-line ml-icon--sm text-amber-700"></i>
             <span>Pièces à fournir & conditions requises</span>
           </h2>
           <ul class="space-y-2.5 text-sm text-[var(--ml-color-neutral-700)] list-disc pl-5 m-0">
@@ -213,7 +213,7 @@ const sidemenuItems = [
         <!-- Étapes de la procédure -->
         <div class="mb-10">
           <h2 class="text-lg font-extrabold text-[var(--ml-color-neutral-900)] font-title mb-5 flex items-center gap-2">
-            <span>🚀</span>
+            <i class="ml-icon-arrow-right-circle-line ml-icon--sm text-amber-700"></i>
             <span>Procédure & Étapes à suivre</span>
           </h2>
           <div class="space-y-4">
@@ -251,7 +251,7 @@ const sidemenuItems = [
     </div>
   </main>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     contact={siteConfig.contact}

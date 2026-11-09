@@ -42,7 +42,8 @@ const footerLogos = [
       <div class="bg-white p-8 md:p-10 border border-stone-200 rounded-3xl shadow-sm space-y-8">
         <section>
           <h2 class="text-xl font-black text-stone-900 font-title mb-3 flex items-center gap-2">
-            <span>🎯</span> Notre Mission
+            <i class="ml-icon-award-line ml-icon--sm text-amber-700"></i>
+            <span>Notre Mission</span>
           </h2>
           <p class="text-sm text-stone-700 leading-relaxed">
             Centraliser, fiabiliser et démocratiser l'accès à l'information sur le marché de l'emploi malien. Mali Job agrège quotidiennement les opportunités vérifiées : emplois (CDI, CDD), stages professionnels, programmes de formation certifiante, appels à projets et subventions, ainsi que des fiches d'idées entrepreneuriales concrètes adaptées aux réalités économiques locales.
@@ -52,17 +53,23 @@ const footerLogos = [
         <!-- Les 3 Piliers -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-stone-100">
           <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80">
-            <div class="text-2xl mb-2">⚡</div>
+            <div class="mb-2 text-amber-700">
+              <i class="ml-icon-flashlight-line ml-icon--md"></i>
+            </div>
             <h3 class="text-sm font-bold text-stone-900 mb-1">Accessibilité Frugale</h3>
             <p class="text-xs text-stone-600 leading-relaxed">Interface ultra-légère conçue pour consommer un minimum de données mobiles (DSML).</p>
           </div>
           <div class="p-4 rounded-2xl bg-orange-50/60 border border-orange-200/80">
-            <div class="text-2xl mb-2">🔍</div>
+            <div class="mb-2 text-orange-700">
+              <i class="ml-icon-search-line ml-icon--md"></i>
+            </div>
             <h3 class="text-sm font-bold text-stone-900 mb-1">Veille Exhaustive</h3>
             <p class="text-xs text-stone-600 leading-relaxed">Surveillance continue des sources officielles, parapubliques, ONG et secteur privé.</p>
           </div>
           <div class="p-4 rounded-2xl bg-sky-50/60 border border-sky-200/80">
-            <div class="text-2xl mb-2">🤝</div>
+            <div class="mb-2 text-sky-700">
+              <i class="ml-icon-team-line ml-icon--md"></i>
+            </div>
             <h3 class="text-sm font-bold text-stone-900 mb-1">Orientation Active</h3>
             <p class="text-xs text-stone-600 leading-relaxed">Passerelle directe vers les structures d'orientation et de mentorat sur le terrain.</p>
           </div>
@@ -71,7 +78,8 @@ const footerLogos = [
         <!-- Écosystème Partenaire -->
         <section id="partenaires" class="pt-6 border-t border-stone-100 scroll-mt-20">
           <h2 class="text-xl font-black text-stone-900 font-title mb-2 flex items-center gap-2">
-            <span>🏛️</span> Écosystème & Partenaires Institutionnels
+            <i class="ml-icon-building-line ml-icon--sm text-stone-700"></i>
+            <span>Écosystème & Partenaires Institutionnels</span>
           </h2>
           <p class="text-xs text-stone-600 mb-6">
             Mali Job repose sur une alliance tripartite pour maximiser l'impact auprès de la jeunesse malienne :
@@ -145,7 +153,7 @@ const footerLogos = [
     </div>
   </main>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     partnerLogos={footerLogos}

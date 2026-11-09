@@ -26,9 +26,9 @@ const hashedSecret = await hashSha256(rawSecret);
       >
         <div class="text-center mb-6">
           <div
-            class="w-12 h-12 rounded-full bg-[var(--ml-color-river-100)] text-[var(--ml-color-river-700)] flex items-center justify-center mx-auto mb-3 text-xl font-bold"
+            class="w-12 h-12 rounded-full bg-[var(--ml-color-river-100)] text-[var(--ml-color-river-700)] flex items-center justify-center mx-auto mb-3 font-bold"
           >
-            🔒
+            <i class="ml-icon-lock-fill ml-icon--md"></i>
           </div>
           <h1
             class="text-xl font-bold text-[var(--ml-color-neutral-900)] font-title"
@@ -111,7 +111,8 @@ const hashedSecret = await hashSha256(rawSecret);
               class="p-3.5 text-xs font-semibold text-[var(--ml-color-neutral-700)] cursor-pointer flex items-center justify-between hover:bg-[var(--ml-color-neutral-100)] transition-colors select-none"
             >
               <span class="flex items-center gap-2">
-                ⚙️ <span>Accès Administration</span>
+                <i class="ml-icon-settings-5-line ml-icon--xs text-stone-500"></i>
+                <span>Accès Administration</span>
               </span>
               <span
                 class="text-[10px] text-[var(--ml-color-neutral-400)] group-open:rotate-180 transition-transform"
@@ -164,7 +165,7 @@ const hashedSecret = await hashSha256(rawSecret);
     </div>
   </div>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     contact={siteConfig.contact}

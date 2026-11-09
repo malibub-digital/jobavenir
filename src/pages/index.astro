@@ -235,12 +235,12 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
                 class="w-full py-2.5 px-2.5 text-xs sm:text-sm font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 rounded-xl border border-stone-200/80 focus:outline-none cursor-pointer"
               >
                 <option value="tous">Toutes les voies</option>
-                <option value="emploi">💼 Emplois</option>
-                <option value="stage">🎓 Stages</option>
-                <option value="formation">📚 Formations</option>
-                <option value="projet">🚀 Projets</option>
-                <option value="idee">💡 Idées business</option>
-                <option value="annonce">📢 Annonces</option>
+                <option value="emploi">Emplois</option>
+                <option value="stage">Stages</option>
+                <option value="formation">Formations</option>
+                <option value="projet">Projets</option>
+                <option value="idee">Idées business</option>
+                <option value="annonce">Annonces</option>
               </select>
             </div>
 
@@ -276,33 +276,38 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
           </span>
           <a
             href="/opportunites?region=bamako"
-            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60"
+            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60 inline-flex items-center gap-1"
           >
-            📍 Bamako
+            <i class="ml-icon-map-pin-2-line ml-icon--xs text-orange-600"></i>
+            <span>Bamako</span>
           </a>
           <a
             href="/opportunites?region=segou"
-            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60"
+            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60 inline-flex items-center gap-1"
           >
-            📍 Ségou
+            <i class="ml-icon-map-pin-2-line ml-icon--xs text-orange-600"></i>
+            <span>Ségou</span>
           </a>
           <a
             href="/opportunites?secteur=informatique"
-            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60"
+            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60 inline-flex items-center gap-1"
           >
-            💻 Tech
+            <i class="ml-icon-macbook-line ml-icon--xs text-stone-500"></i>
+            <span>Tech</span>
           </a>
           <a
             href="/opportunites?secteur=finance"
-            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60"
+            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60 inline-flex items-center gap-1"
           >
-            📊 Finance
+            <i class="ml-icon-bank-card-line ml-icon--xs text-stone-500"></i>
+            <span>Finance</span>
           </a>
           <a
             href="/opportunites?secteur=agriculture"
-            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60"
+            class="px-2.5 py-1 rounded-full bg-stone-100 hover:bg-orange-50 hover:text-orange-700 text-stone-700 font-medium transition-colors no-underline text-[11px] border border-stone-200/60 inline-flex items-center gap-1"
           >
-            🌾 Agriculture
+            <i class="ml-icon-seedling-line ml-icon--xs text-emerald-600"></i>
+            <span>Agriculture</span>
           </a>
         </div>
       </div>
@@ -558,9 +563,9 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/60 group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0 text-sm"
+                class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/60 group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0"
               >
-                💡
+                <i class="ml-icon-lightbulb-line ml-icon--sm"></i>
               </div>
               <div>
                 <div class="text-sm font-bold text-stone-800 group-hover:text-emerald-700 transition-colors flex items-center gap-1.5">
@@ -682,7 +687,7 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
 
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                       <span
-                        class={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                        class={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                           job.data.opportunityType === "ANNOUNCEMENT"
                             ? "bg-slate-100 text-slate-800 border-slate-300"
                             : job.data.opportunityType === "PROJECT_CALL"
@@ -694,18 +699,34 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
                                   : "bg-amber-100 text-amber-950 border-amber-300"
                         }`}
                       >
-                        {job.data.opportunityType === "ANNOUNCEMENT"
-                          ? "📢 Annonce"
-                          : job.data.opportunityType === "PROJECT_CALL"
-                            ? "🚀 Projet"
-                            : job.data.opportunityType === "STAGE"
-                              ? "🎓 Stage"
-                              : job.data.opportunityType === "TRAINING"
-                                ? "📚 Formation"
-                                : "💼 Emploi"}
+                        <i
+                          class={`ml-icon--xs ${
+                            job.data.opportunityType === "ANNOUNCEMENT"
+                              ? "ml-icon-notification-3-line"
+                              : job.data.opportunityType === "PROJECT_CALL"
+                                ? "ml-icon-award-line"
+                                : job.data.opportunityType === "STAGE"
+                                  ? "ml-icon-school-line"
+                                  : job.data.opportunityType === "TRAINING"
+                                    ? "ml-icon-book-2-line"
+                                    : "ml-icon-briefcase-line"
+                          }`}
+                        ></i>
+                        <span>
+                          {job.data.opportunityType === "ANNOUNCEMENT"
+                            ? "Annonce"
+                            : job.data.opportunityType === "PROJECT_CALL"
+                              ? "Projet"
+                              : job.data.opportunityType === "STAGE"
+                                ? "Stage"
+                                : job.data.opportunityType === "TRAINING"
+                                  ? "Formation"
+                                  : "Emploi"}
+                        </span>
                       </span>
-                      <span class="text-[11px] text-stone-600 font-semibold bg-stone-200/60 px-2 py-0.5 rounded-md">
-                        📍 {job.data.location}
+                      <span class="inline-flex items-center gap-1 text-[11px] text-stone-600 font-semibold bg-stone-200/60 px-2 py-0.5 rounded-md">
+                        <i class="ml-icon-map-pin-2-line ml-icon--xs text-stone-500"></i>
+                        <span>{job.data.location}</span>
                       </span>
                     </div>
 
@@ -775,7 +796,8 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
         <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-extrabold mb-2 border border-amber-300/60">
-              <span>⚡ Alternative : Créez votre propre activité</span>
+              <i class="ml-icon-flashlight-line ml-icon--xs text-amber-700"></i>
+              <span>Alternative : Créez votre propre activité</span>
             </div>
             <h2 class="text-2xl md:text-3xl font-black text-stone-900 font-title m-0">
               Idées de micro-projets à tester
@@ -814,8 +836,9 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                   <div class="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                    <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-amber-500 text-stone-950 shadow-sm border border-amber-300">
-                      💡 Idée à lancer
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[10px] font-black bg-amber-500 text-stone-950 shadow-sm border border-amber-300">
+                      <i class="ml-icon-lightbulb-fill ml-icon--xs"></i>
+                      <span>Idée à lancer</span>
                     </span>
                     <div class="flex items-center gap-1.5">
                       <span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-white/95 text-stone-900 shadow-sm">
@@ -826,8 +849,9 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
                       </span>
                     </div>
                   </div>
-                  <span class="absolute bottom-2.5 left-3 text-[11px] font-semibold text-white/90">
-                    📍 {idea.zoneCible}
+                  <span class="absolute bottom-2.5 left-3 text-[11px] font-semibold text-white/90 inline-flex items-center gap-1">
+                    <i class="ml-icon-map-pin-2-fill ml-icon--xs text-orange-300"></i>
+                    <span>{idea.zoneCible}</span>
                   </span>
                 </div>
 
@@ -842,8 +866,11 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
                       {idea.concept}
                     </p>
 
-                    <div class="bg-amber-50 rounded-xl p-2.5 border border-amber-200/70 mb-3 text-[11px] text-amber-950 font-medium">
-                      <span class="font-bold text-amber-900">⚡ Test sous 48h :</span> {idea.premiereAction}
+                    <div class="bg-amber-50 rounded-xl p-2.5 border border-amber-200/70 mb-3 text-[11px] text-amber-950 font-medium flex items-center gap-1.5">
+                      <i class="ml-icon-flashlight-line ml-icon--xs text-amber-700 shrink-0"></i>
+                      <div>
+                        <span class="font-bold text-amber-900">Test sous 48h :</span> {idea.premiereAction}
+                      </div>
                     </div>
                   </div>
 
@@ -963,7 +990,7 @@ const defaultOgImage = `${siteUrl}/images/categories/default.webp`;
     </>
   )}
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     partnerLogos={footerLogos}

@@ -192,25 +192,37 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
               {article.projectOwner && (
                 <div class="bg-white/90 p-3.5 rounded-xl border border-stone-200/80">
-                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5">👥 Équipe & Porteurs</div>
+                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5 flex items-center gap-1">
+                    <i class="ml-icon-team-line ml-icon--xs"></i>
+                    <span>Équipe & Porteurs</span>
+                  </div>
                   <div class="font-bold text-stone-900">{article.projectOwner}</div>
                 </div>
               )}
               {article.projectLocation && (
                 <div class="bg-white/90 p-3.5 rounded-xl border border-stone-200/80">
-                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5">📍 Localisation</div>
+                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5 flex items-center gap-1">
+                    <i class="ml-icon-map-pin-2-line ml-icon--xs"></i>
+                    <span>Localisation</span>
+                  </div>
                   <div class="font-bold text-stone-900">{article.projectLocation}</div>
                 </div>
               )}
               {article.projectStage && (
                 <div class="bg-white/90 p-3.5 rounded-xl border border-stone-200/80">
-                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5">🚀 Stade d'avancement</div>
+                  <div class="text-[11px] font-bold uppercase text-stone-400 mb-0.5 flex items-center gap-1">
+                    <i class="ml-icon-award-line ml-icon--xs"></i>
+                    <span>Stade d'avancement</span>
+                  </div>
                   <div class="font-bold text-stone-900">{article.projectStage}</div>
                 </div>
               )}
               {article.fundingGoal && (
                 <div class="bg-orange-50/90 p-3.5 rounded-xl border border-orange-300/80">
-                  <div class="text-[11px] font-black uppercase text-orange-800 mb-0.5">💰 Besoin de financement / Partenariat</div>
+                  <div class="text-[11px] font-black uppercase text-orange-800 mb-0.5 flex items-center gap-1">
+                    <i class="ml-icon-coin-line ml-icon--xs"></i>
+                    <span>Besoin de financement / Partenariat</span>
+                  </div>
                   <div class="font-black text-stone-950">{article.fundingGoal}</div>
                 </div>
               )}
@@ -225,7 +237,8 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
           <div class="mt-10 rounded-2xl bg-stone-900 text-white p-6 sm:p-8 border border-stone-800 relative overflow-hidden">
             <div class="relative z-10">
               <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-bold mb-3">
-                <span>🤝 Soutenir ce projet, devenir client ou investir</span>
+                <i class="ml-icon-team-line ml-icon--xs"></i>
+                <span>Soutenir ce projet, devenir client ou investir</span>
               </div>
               <h3 class="text-xl sm:text-2xl font-black font-title text-white mb-2">
                 Ce projet vous intéresse ? Entrez directement en contact avec son auteur !
@@ -241,7 +254,8 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
                   href={article.isPlaceholderModel ? activeCampaignUrl : "/contact?sujet=laureat"}
                   class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs sm:text-sm no-underline transition-all shadow-md inline-flex items-center gap-2"
                 >
-                  <span>{article.isPlaceholderModel ? "🚀 Tenter ma chance pour avoir ma propre page Lauréat" : "📩 Contacter le porteur du projet"}</span>
+                  <i class={article.isPlaceholderModel ? "ml-icon-trophy-line ml-icon--xs" : "ml-icon-mail-line ml-icon--xs"}></i>
+                  <span>{article.isPlaceholderModel ? "Tenter ma chance pour avoir ma propre page Lauréat" : "Contacter le porteur du projet"}</span>
                 </a>
                 <a
                   href="/contact?sujet=sponsor"
@@ -253,8 +267,9 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
 
               {/* BARRE DE PARTAGE DU LIEN OFFICIEL */}
               <div class="pt-5 border-t border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <span class="text-xs font-bold text-stone-400">
-                  📲 Partager cette page officielle pour donner de la visibilité au projet :
+                <span class="text-xs font-bold text-stone-400 flex items-center gap-1.5">
+                  <i class="ml-icon-share-line ml-icon--xs"></i>
+                  <span>Partager cette page officielle pour donner de la visibilité au projet :</span>
                 </span>
                 <div class="flex flex-wrap items-center gap-2">
                   <a
@@ -285,9 +300,10 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
                     type="button"
                     id="copy-laureate-url-btn"
                     data-url={canonicalUrl}
-                    class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold border border-stone-700 cursor-pointer transition-colors"
+                    class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold border border-stone-700 cursor-pointer transition-colors inline-flex items-center gap-1"
                   >
-                    🔗 Copier le lien
+                    <i class="ml-icon-attachment-line ml-icon--xs"></i>
+                    <span>Copier le lien</span>
                   </button>
                 </div>
               </div>
@@ -308,7 +324,7 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
     </div>
   </main>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     partnerLogos={footerLogos}
@@ -324,10 +340,10 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
       const url = copyBtn.getAttribute('data-url') || window.location.href;
       try {
         await navigator.clipboard.writeText(url);
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = '✅ Lien copié !';
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="ml-icon-checkbox-circle-fill ml-icon--xs text-emerald-400"></i> Lien copié !';
         setTimeout(() => {
-          copyBtn.textContent = originalText;
+          copyBtn.innerHTML = originalHtml;
         }, 2500);
       } catch {
         // Fallback silencieux

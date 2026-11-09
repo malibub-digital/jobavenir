@@ -315,9 +315,10 @@ const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'im
             </div>
             <div>
               <span class="text-stone-400 block text-[11px] mb-0.5">Lieu</span>
-              <strong class="text-stone-900 font-semibold"
-                >📍 {job.data.location}</strong
-              >
+              <strong class="text-stone-900 font-semibold inline-flex items-center gap-1">
+                <i class="ml-icon-map-pin-2-line ml-icon--xs text-stone-500"></i>
+                <span>{job.data.location}</span>
+              </strong>
             </div>
             {
               job.data.salary && (
@@ -337,8 +338,9 @@ const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'im
                   <span class="text-stone-400 block text-[11px] mb-0.5">
                     Date limite
                   </span>
-                  <strong class="text-orange-600 font-bold">
-                    📅 {job.data.deadline}
+                  <strong class="text-orange-600 font-bold inline-flex items-center gap-1">
+                    <i class="ml-icon-calendar-event-line ml-icon--xs"></i>
+                    <span>{job.data.deadline}</span>
                   </strong>
                 </div>
               )
@@ -448,7 +450,7 @@ const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'im
     </div>
   </main>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     contact={siteConfig.contact}

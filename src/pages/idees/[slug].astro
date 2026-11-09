@@ -147,8 +147,9 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
 
           <!-- BADGES EN-TÊTE -->
           <div class="relative z-10 flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 rounded-lg text-xs font-black bg-amber-400 text-stone-950 shadow-sm border border-amber-300">
-              💡 Idée à lancer
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-amber-400 text-stone-950 shadow-sm border border-amber-300">
+              <i class="ml-icon-lightbulb-fill ml-icon--xs"></i>
+              <span>Idée à lancer</span>
             </span>
             <span class="px-3 py-1 rounded-lg text-xs font-black bg-white/95 text-stone-900 shadow-sm backdrop-blur-sm">
               {idea.sector}
@@ -156,8 +157,9 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
             <span class={`px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm ${levelColor}`}>
               Investissement : {idea.demarrageLevel}
             </span>
-            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-black/50 text-white backdrop-blur-sm">
-              📍 {idea.zoneCible}
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-black/50 text-white backdrop-blur-sm">
+              <i class="ml-icon-map-pin-2-fill ml-icon--xs text-orange-300"></i>
+              <span>{idea.zoneCible}</span>
             </span>
           </div>
 
@@ -178,14 +180,15 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
           <!-- DÉFI 48H ULTRA-CONCRET (ZÉRO CAPITAL) -->
           <div class="bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-amber-500/5 border-2 border-orange-400 rounded-2xl p-4 md:p-5 shadow-sm">
             <div class="flex items-center gap-2 text-xs md:text-sm font-black text-orange-950 uppercase tracking-wide mb-1.5">
-              <span class="text-lg">⚡</span>
+              <i class="ml-icon-flashlight-line ml-icon--sm text-amber-700"></i>
               <span>Défi test en 48h (0 FCFA dépensé)</span>
             </div>
             <p class="text-sm md:text-base font-bold text-stone-900 leading-snug m-0">
               {idea.premiereAction}
             </p>
-            <p class="text-[11px] text-stone-600 mt-2 m-0 font-medium">
-              👉 À faire avant de dépenser de l'argent : vérifier si les clients sont vraiment prêts à payer.
+            <p class="text-[11px] text-stone-600 mt-2 m-0 font-medium flex items-center gap-1">
+              <i class="ml-icon-arrow-right-line ml-icon--xs text-orange-600"></i>
+              <span>À faire avant de dépenser de l'argent : vérifier si les clients sont vraiment prêts à payer.</span>
             </p>
           </div>
 
@@ -194,7 +197,7 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
             <!-- POINT 1 : LE PROBLÈME -->
             <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/80">
               <div class="flex items-center gap-2 mb-1 text-xs font-black uppercase text-stone-700 tracking-wider">
-                <span>🎯</span>
+                <i class="ml-icon-alert-line ml-icon--xs text-amber-700"></i>
                 <span>Le problème constaté</span>
               </div>
               <p class="text-xs md:text-sm text-stone-800 font-medium m-0 leading-relaxed">
@@ -205,7 +208,7 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
             <!-- POINT 2 : CE QUE VOUS FAITES -->
             <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/80">
               <div class="flex items-center gap-2 mb-1 text-xs font-black uppercase text-stone-700 tracking-wider">
-                <span>🛠️</span>
+                <i class="ml-icon-tools-line ml-icon--xs text-orange-600"></i>
                 <span>Ce que vous proposez</span>
               </div>
               <p class="text-xs md:text-sm text-stone-900 font-bold m-0 leading-relaxed">
@@ -216,8 +219,9 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
             <!-- POINT 3 : CLIENTS ET CANAUX EN 2 BLOCS -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
-                <span class="text-[11px] font-black text-stone-600 uppercase tracking-wider block mb-1">
-                  👥 Vos futurs clients
+                <span class="text-[11px] font-black text-stone-600 uppercase tracking-wider block mb-1 flex items-center gap-1.5">
+                  <i class="ml-icon-team-line ml-icon--xs text-stone-500"></i>
+                  <span>Vos futurs clients</span>
                 </span>
                 <p class="text-xs md:text-sm font-bold text-stone-900 m-0">
                   {idea.publicCible}
@@ -225,8 +229,9 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
               </div>
 
               <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
-                <span class="text-[11px] font-black text-stone-600 uppercase tracking-wider block mb-1">
-                  📱 Moyens simples
+                <span class="text-[11px] font-black text-stone-600 uppercase tracking-wider block mb-1 flex items-center gap-1.5">
+                  <i class="ml-icon-cellphone-line ml-icon--xs text-stone-500"></i>
+                  <span>Moyens simples</span>
                 </span>
                 <p class="text-xs md:text-sm font-bold text-stone-900 m-0">
                   WhatsApp, Orange Money, Wave & Présentiel
@@ -239,13 +244,14 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
           {idea.competencesCles && idea.competencesCles.length > 0 && (
             <div>
               <div class="text-[11px] font-black uppercase tracking-wider text-stone-600 mb-2 flex items-center gap-1.5">
-                <span>💪</span>
+                <i class="ml-icon-award-line ml-icon--xs text-orange-600"></i>
                 <span>Savoir-faire utiles</span>
               </div>
               <div class="flex flex-wrap gap-2">
                 {idea.competencesCles.map((comp) => (
                   <span class="inline-flex items-center gap-1 text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200/80 px-3 py-1.5 rounded-xl">
-                    <span class="text-orange-500">✓</span> {comp}
+                    <i class="ml-icon-check-line ml-icon--xs text-orange-600"></i>
+                    <span>{comp}</span>
                   </span>
                 ))}
               </div>
@@ -258,11 +264,11 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
               <!-- PARTAGE WHATSAPP -->
               <button
                 type="button"
-                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('💡 Idée de projet pour le Mali : ' + document.title + ' ' + window.location.href), '_blank');`}
+                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('Idée de projet pour le Mali : ' + document.title + ' ' + window.location.href), '_blank');`}
                 class="flex-1 py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
+                <i class="ml-icon-whatsapp-line ml-icon--sm"></i>
                 <span>Envoyer sur WhatsApp</span>
-                <span>💬</span>
               </button>
 
               <a
@@ -270,7 +276,7 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
                 class="py-3.5 px-5 bg-stone-900 hover:bg-black text-white text-xs font-black rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm no-underline"
               >
                 <span>Trouver un financement / concours</span>
-                <span>🚀</span>
+                <i class="ml-icon-award-line ml-icon--xs"></i>
               </a>
             </div>
           </div>
@@ -294,7 +300,7 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
     </div>
   </main>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     contact={siteConfig.contact}

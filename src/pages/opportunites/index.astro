@@ -28,13 +28,13 @@ const queryType = Astro.url.searchParams.get('type')?.toLowerCase() || 'tous';
 const querySector = Astro.url.searchParams.get('secteur') || 'tous';
 
 const filterCategories = [
-  { id: 'tous', label: 'Toutes les opportunités' },
-  { id: 'emploi', label: '💼 Emplois' },
-  { id: 'stage', label: '🎓 Stages & Immersion' },
-  { id: 'formation', label: '📚 Formations Métiers' },
-  { id: 'projet', label: '🚀 Projets & Subventions' },
-  { id: 'idee', label: '💡 Idées business' },
-  { id: 'annonce', label: '📢 Annonces & Veille' }
+  { id: 'tous', label: 'Toutes les opportunités', icon: 'ml-icon-award-line' },
+  { id: 'emploi', label: 'Emplois', icon: 'ml-icon-briefcase-line' },
+  { id: 'stage', label: 'Stages & Immersion', icon: 'ml-icon-school-line' },
+  { id: 'formation', label: 'Formations Métiers', icon: 'ml-icon-book-2-line' },
+  { id: 'projet', label: 'Projets & Subventions', icon: 'ml-icon-award-line' },
+  { id: 'idee', label: 'Idées business', icon: 'ml-icon-lightbulb-line' },
+  { id: 'annonce', label: 'Annonces & Veille', icon: 'ml-icon-notification-3-line' }
 ];
 
 // Liste des secteurs consolidés
@@ -104,7 +104,9 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
       <!-- BANDEAU DE CONTRÔLE ADMIN (Visible côté client uniquement si admin connecté) -->
       <div id="admin-listing-controls" class="hidden mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2">
-          <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-amber-200 text-amber-900 font-bold">🛡️</span>
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-amber-200 text-amber-900 font-bold">
+            <i class="ml-icon-shield-fill ml-icon--xs"></i>
+          </span>
           <span class="font-bold text-amber-950 uppercase tracking-wider text-[11px]">Mode Administration</span>
           <span class="text-stone-500 font-medium hidden sm:inline">| Visibilité des opportunités :</span>
         </div>
@@ -134,8 +136,9 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
             href="/admin"
             class="ml-2 px-3 py-1 rounded-lg font-bold border border-amber-300 bg-amber-100/80 text-amber-900 hover:bg-amber-200 transition-colors inline-flex items-center gap-1.5 shadow-xs"
           >
-            <span>🌐 Gérer les Sources</span>
-            <span>→</span>
+            <i class="ml-icon-global-line ml-icon--xs"></i>
+            <span>Gérer les Sources</span>
+            <span>&rarr;</span>
           </a>
         </div>
       </div>
@@ -228,13 +231,14 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
                   <button
                     type="button"
                     data-filter={cat.id}
-                    class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
+                    class={`filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 inline-flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-[var(--ml-color-mandingue-orange)] text-white border-[var(--ml-color-mandingue-orange)] shadow-sm'
                         : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
                     }`}
                   >
-                    {cat.label}
+                    {cat.icon && <i class={`${cat.icon} ml-icon--xs`}></i>}
+                    <span>{cat.label}</span>
                   </button>
                 );
               })}
@@ -265,8 +269,8 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
 
       <!-- LISTE DES OFFRES -->
       <div id="no-results" class="hidden py-16 px-4 text-center max-w-md mx-auto bg-white rounded-2xl border border-stone-200 shadow-sm my-6">
-        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center mx-auto mb-3 text-xl font-bold">
-          🔍
+        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center mx-auto mb-3 font-bold">
+          <i class="ml-icon-search-line ml-icon--md"></i>
         </div>
         <p class="text-base font-bold text-stone-800 mb-1">
           Aucune opportunité ne correspond à vos critères.
@@ -316,8 +320,20 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
 
             // Libellé de badge de type
             let badgeText = job.data.contractType;
-            if (inferredType === 'idee') badgeText = '💡 Idée à lancer';
-            else if (inferredType === 'projet') badgeText = 'Appel à projets';
+            let badgeIcon = 'ml-icon-briefcase-line';
+            if (inferredType === 'idee') {
+              badgeText = 'Idée à lancer';
+              badgeIcon = 'ml-icon-lightbulb-line';
+            } else if (inferredType === 'projet') {
+              badgeText = 'Appel à projets';
+              badgeIcon = 'ml-icon-award-line';
+            } else if (inferredType === 'stage') {
+              badgeIcon = 'ml-icon-school-line';
+            } else if (inferredType === 'formation') {
+              badgeIcon = 'ml-icon-book-2-line';
+            } else if (inferredType === 'annonce') {
+              badgeIcon = 'ml-icon-notification-3-line';
+            }
             else if (inferredType === 'formation') badgeText = 'Formation certifiante';
             else if (inferredType === 'annonce') badgeText = 'Veille & Info';
             else if (inferredType === 'stage' && (cType === 'autre' || !cType)) badgeText = 'Stage';
@@ -367,11 +383,12 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
                     
                     <!-- Badges d'état et catégorie -->
                     <div class="flex flex-wrap items-center gap-2">
-                      <span class={`admin-inactive-badge px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300 ${isInactive ? '' : 'hidden'}`}>
-                        🔴 Dépublié / Masqué
+                      <span class={`admin-inactive-badge inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300 ${isInactive ? '' : 'hidden'}`}>
+                        <i class="ml-icon-close-circle-line ml-icon--xs text-rose-600"></i>
+                        <span>Dépublié / Masqué</span>
                       </span>
 
-                      <span class={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
+                      <span class={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
                         inferredType === 'idee'
                           ? 'bg-amber-100 text-amber-950 border-amber-300 font-black'
                           : inferredType === 'stage' 
@@ -384,7 +401,8 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
                           ? 'bg-slate-100 text-slate-800 border-slate-300'
                           : 'bg-blue-50 text-blue-900 border-blue-200'
                       }`}>
-                        {badgeText}
+                        <i class={`${badgeIcon} ml-icon--xs`}></i>
+                        <span>{badgeText}</span>
                       </span>
 
                       <span class="text-[11px] font-semibold text-stone-600 bg-stone-100 px-2.5 py-0.5 rounded-md border border-stone-200/70">
@@ -392,12 +410,13 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
                       </span>
 
                       {job.data.salary && (
-                        <span class={`text-[11px] font-bold px-2.5 py-0.5 rounded-md border ${
+                        <span class={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-md border ${
                           inferredType === 'idee'
                             ? 'bg-emerald-50 text-emerald-800 border-emerald-200/80'
                             : 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
                         }`}>
-                          {inferredType === 'idee' ? `⚡ ${job.data.salary}` : job.data.salary}
+                          {inferredType === 'idee' && <i class="ml-icon-flashlight-line ml-icon--xs text-emerald-600"></i>}
+                          <span>{job.data.salary}</span>
                         </span>
                       )}
 
@@ -448,12 +467,20 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
                             loading="lazy"
                           />
                         ) : (
-                          <span>🏢</span>
+                          <i class="ml-icon-building-line ml-icon--xs text-stone-400"></i>
                         )}
                         <strong>{job.data.company}</strong>
                       </span>
-                      <span>📍 {job.data.location}</span>
-                      {job.data.deadline && <span class="text-orange-600 font-bold">📅 Date limite : {job.data.deadline}</span>}
+                      <span class="inline-flex items-center gap-1">
+                        <i class="ml-icon-map-pin-2-line ml-icon--xs text-stone-400"></i>
+                        <span>{job.data.location}</span>
+                      </span>
+                      {job.data.deadline && (
+                        <span class="text-orange-600 font-bold inline-flex items-center gap-1">
+                          <i class="ml-icon-calendar-event-line ml-icon--xs"></i>
+                          <span>Date limite : {job.data.deadline}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -481,7 +508,9 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
                         data-type={job.isIdea ? "idea" : "job"}
                         title={isInactive ? "Republier l'opportunité pour la rendre visible au public" : "Dépublier l'opportunité pour la masquer au public"}
                       >
-                        <span class="admin-toggle-icon">{isInactive ? '✅' : '🚫'}</span>
+                        <span class="admin-toggle-icon">
+                          <i class={isInactive ? "ml-icon-check-line" : "ml-icon-close-line"}></i>
+                        </span>
                         <span class="admin-toggle-text">{isInactive ? 'Republier' : 'Dépublier'}</span>
                       </button>
                     </div>
@@ -831,14 +860,14 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
 
             if (targetActive) {
               card.classList.remove('inactive-job', 'opacity-65', 'bg-stone-50/80', 'border-dashed', 'border-rose-300');
-              if (iconSpan) iconSpan.textContent = '🚫';
+              if (iconSpan) iconSpan.innerHTML = '<i class="ml-icon-close-line"></i>';
               if (textSpan) textSpan.textContent = 'Dépublier';
               btn.className = 'admin-toggle-btn px-2.5 py-1 text-xs font-bold rounded-lg transition-colors cursor-pointer border flex items-center gap-1.5 shadow-xs bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100';
               btn.setAttribute('title', "Dépublier l'opportunité pour la masquer au public");
               if (badge) badge.classList.add('hidden');
             } else {
               card.classList.add('inactive-job', 'opacity-65', 'bg-stone-50/80', 'border-dashed', 'border-rose-300');
-              if (iconSpan) iconSpan.textContent = '✅';
+              if (iconSpan) iconSpan.innerHTML = '<i class="ml-icon-check-line"></i>';
               if (textSpan) textSpan.textContent = 'Republier';
               btn.className = 'admin-toggle-btn px-2.5 py-1 text-xs font-bold rounded-lg transition-colors cursor-pointer border flex items-center gap-1.5 shadow-xs bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100';
               btn.setAttribute('title', "Republier l'opportunité pour la rendre visible au public");
@@ -965,7 +994,7 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
     }
   </script>
 
-  <Footer
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
     slot="footer"
     institution={siteConfig.institution}
     contact={siteConfig.contact}
