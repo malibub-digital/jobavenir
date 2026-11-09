@@ -11,6 +11,15 @@ import { getJobBySlug } from "../../lib/db";
 import { getCategoryImage } from "../../lib/image-bank";
 import { getCompanyOrSourceLogo } from "../../lib/source-logo-fetcher";
 import OpportunityAdminPanel from "../../components/OpportunityAdminPanel.astro";
+import { isUserAdmin } from "../../lib/auth-check";
+
+const isPrelaunch = (siteConfig as any).siteMode === "PRELAUNCH";
+const isAdmin = isUserAdmin(Astro.request, Astro.cookies);
+
+// En phase de pré-lancement, le détail des opportunités est réservé aux administrateurs
+if (isPrelaunch && !isAdmin) {
+  return Astro.redirect("/");
+}
 
 const { slug } = Astro.params;
 const job = slug ? await getJobBySlug(slug) : null;

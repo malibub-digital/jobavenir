@@ -10,10 +10,15 @@ import campaignsData from "../../../data/campaigns.json";
 
 const { slug } = Astro.params;
 const allCampaigns = campaignsData.campaigns || [];
-const campaign = allCampaigns.find((c) => c.slug === slug);
+let campaign = allCampaigns.find((c) => c.slug === slug);
+
+// Rétrocompatibilité : si l'URL demandée est 'innovation-2026', on fait correspondre avec 'innovation-2026-c1'
+if (!campaign && (slug === "innovation-2026" || slug === "innovation-2026-c1")) {
+  campaign = allCampaigns.find((c) => c.slug === "innovation-2026-c1" || c.slug === (siteConfig as any).activeCampaignSlug);
+}
 
 if (!campaign) {
-  return Astro.redirect(`/concours/${(siteConfig as any).activeCampaignSlug || "innovation-2026"}`);
+  return Astro.redirect(`/concours/${(siteConfig as any).activeCampaignSlug || "innovation-2026-c1"}`);
 }
 
 const footerLogos = [

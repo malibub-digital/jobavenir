@@ -8,6 +8,15 @@ import siteConfig from '../../../site.config.json';
 import { getUnifiedJobs } from '../../lib/db';
 import { getCategoryImage } from '../../lib/image-bank';
 import { getCompanyOrSourceLogo } from '../../lib/source-logo-fetcher';
+import { isUserAdmin } from '../../lib/auth-check';
+
+const isPrelaunch = (siteConfig as any).siteMode === 'PRELAUNCH';
+const isAdmin = isUserAdmin(Astro.request, Astro.cookies);
+
+// En phase de pré-lancement, les pages d'opportunités sont réservées aux administrateurs
+if (isPrelaunch && !isAdmin) {
+  return Astro.redirect('/');
+}
 
 const allJobs = await getUnifiedJobs({ includeInactive: true });
 

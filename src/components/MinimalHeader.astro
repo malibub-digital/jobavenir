@@ -14,7 +14,7 @@ const normalizePath = (path: string) =>
 const cleanCurrentPath = normalizePath(currentPath);
 
 const isPrelaunch = (siteConfig as any).siteMode === 'PRELAUNCH';
-const activeCampaignHref = `/concours/${(siteConfig as any).activeCampaignSlug || 'innovation-2026'}`;
+const activeCampaignHref = `/concours/${(siteConfig as any).activeCampaignSlug || 'innovation-2026-c1'}`;
 
 const navLinks = isPrelaunch
   ? [

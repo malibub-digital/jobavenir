@@ -12,6 +12,11 @@ import { getUnifiedJobs, getAllDbIdeas } from "../lib/db";
 import { getCategoryImage } from "../lib/image-bank";
 
 const isPrelaunch = (siteConfig as any).siteMode === "PRELAUNCH";
+const activeCampaignSlug = (siteConfig as any).activeCampaignSlug || "innovation-2026-c1";
+
+if (isPrelaunch) {
+  return Astro.redirect(`/concours/${activeCampaignSlug}`, 307);
+}
 const allCampaigns = campaignsData.campaigns || [];
 const activeCampaign =
   allCampaigns.find((c) => c.slug === (siteConfig as any).activeCampaignSlug) ||

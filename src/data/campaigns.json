@@ -1,7 +1,7 @@
 {
   "campaigns": [
     {
-      "slug": "innovation-2026",
+      "slug": "innovation-2026-c1",
       "secretToken": "candidature-video-bamako-7k9",
       "status": "ACTIVE",
       "edition": "Édition Lancement National",
@@ -41,37 +41,37 @@
         "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Je suis membre du groupe communautaire et je vous envoie ma vidéo de participation au Concours d'Innovation.",
         "juryTelegramUsername": "malijob_jury",
         "juryTelegramUrl": "https://t.me/malijob_jury",
-        "introText": "Pas besoin de long dossier administratif ni de caméra professionnelle : filmez-vous simplement avec votre téléphone (au calme, en moins de 3 minutes) et présentez votre projet avec authenticité.",
+        "introText": "Filmez-vous simplement avec votre téléphone en moins de 3 minutes. Pas besoin de matériel professionnel ni de dossier écrit !",
         "videoQuestions": [
           {
             "step": 1,
-            "title": "L'équipe & votre parcours",
-            "duration": "~30 sec",
-            "prompt": "Qui êtes-vous ? Présentez-vous simplement (votre nom, votre ville ou région au Mali) ainsi que les membres de votre équipe et vos savoir-faire complémentaires."
+            "title": "Vous & l'équipe",
+            "duration": "30 sec",
+            "prompt": "Qui êtes-vous ? Votre nom, votre ville et votre équipe."
           },
           {
             "step": 2,
-            "title": "Le projet & le problème résolu",
-            "duration": "~1 min",
-            "prompt": "Quelle est votre innovation ou votre activité ? Expliquez quel besoin concret vous résolvez au Mali, à quels clients vous vous adressez, et où vous en êtes aujourd'hui (idée testée, prototype, premiers clients). Si possible, montrez votre produit, atelier ou terrain à l'écran !"
+            "title": "Votre projet",
+            "duration": "1 min",
+            "prompt": "Quel problème résolvez-vous ? Montrez votre produit, atelier ou terrain à la caméra !"
           },
           {
             "step": 3,
-            "title": "Le financement (les 100 000 FCFA & au-delà)",
-            "duration": "~45 sec",
-            "prompt": "À quoi serviront concrètement les 100 000 FCFA si vous remportez l'un des 3 Grands Prix ? Précisez aussi quel montant global ou quel type de partenariat vous recherchez sur votre page Lauréat pour passer à l'échelle."
+            "title": "Les 100 000 FCFA",
+            "duration": "45 sec",
+            "prompt": "À quoi servira concrètement l'argent pour faire grandir votre activité ?"
           },
           {
             "step": 4,
-            "title": "Le futur & votre vision",
-            "duration": "~30 sec",
-            "prompt": "Quelle est votre ambition pour les 6 à 12 prochains mois ? Quel impact souhaitez-vous créer dans votre commune ou au niveau national ?"
+            "title": "Votre vision",
+            "duration": "30 sec",
+            "prompt": "Où voyez-vous votre projet d'ici 6 mois à 1 an ?"
           }
         ],
         "tips": [
-          "Filmez avec votre téléphone à la lumière du jour et dans un endroit calme pour qu'on vous entende bien.",
-          "La vidéo ne doit pas dépasser 3 minutes au total.",
-          "Indiquez dans votre message d'accompagnement : votre Nom & Prénom, le Nom du projet, votre Ville et votre numéro de téléphone."
+          "Endroit bien éclairé et sans bruit pour qu'on vous entende bien.",
+          "Durée max : 3 minutes chrono.",
+          "Indiquez un numéro de téléphone joignable pour vous recontacter si vous êtes sélectionné."
         ]
       },
       "sponsoring": {

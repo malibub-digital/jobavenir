@@ -7,3 +7,4 @@ dist
 .dev/
 src/data/sources_cache.csv
 *.db
+*.sqlite
