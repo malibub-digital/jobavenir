@@ -126,6 +126,46 @@ async function testAdminApi() {
     }
     console.log('✅ Full settings update successfully applied to DB');
 
+    console.log('--- 7. Testing GET search & POST create ---');
+    const searchReq = new Request(`http://localhost:4321/api/admin/opportunity?q=Entreprise%20Test&limit=5`, {
+      headers: { authorization: `Bearer ${expectedToken}` }
+    });
+    const searchRes = await GET({ request: searchReq } as any);
+    const searchData = await searchRes.json();
+    if (!searchData.success || !Array.isArray(searchData.items) || searchData.count < 1) {
+      throw new Error(`Search failed: ${JSON.stringify(searchData)}`);
+    }
+    console.log('✅ GET search returned', searchData.count, 'item(s)');
+
+    const createReq = new Request('http://localhost:4321/api/admin/opportunity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${expectedToken}`
+      },
+      body: JSON.stringify({
+        action: 'create',
+        type: 'job',
+        title: 'Offre Créée via Hermes (H/F)',
+        company: 'Hermes Test Corp',
+        location: 'Bamako, Mali',
+        contractType: 'CDI',
+        category: 'Informatique & Tech',
+        deadline: '2026-12-31',
+        excerpt: 'Résumé court',
+        description: 'Description complète de l offre',
+        howToApply: 'Postuler par email',
+        requirements: ['Critère 1', 'Critère 2']
+      })
+    });
+    const createRes = await POST({ request: createReq } as any);
+    const createData = await createRes.json();
+    if (createRes.status !== 201 || !createData.success || !createData.slug) {
+      throw new Error(`Create failed: ${JSON.stringify(createData)}`);
+    }
+    console.log('✅ POST action=create created slug:', createData.slug);
+    await queryDb('DELETE FROM jobs WHERE slug = $1', [createData.slug]);
+
   } finally {
     // Nettoyage
     await queryDb('DELETE FROM jobs WHERE slug = $1', [testSlug]);
