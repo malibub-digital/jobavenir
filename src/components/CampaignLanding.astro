@@ -161,7 +161,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="bg-white/80 p-3 rounded-xl border border-emerald-200/60 flex items-center gap-3">
             <img
-              src={`https://chart.googleapis.com/chart?chs=80x80&cht=qr&chl=${encodeURIComponent(campaign.community.whatsappGroupUrl)}&choe=UTF-8&chld=H|0`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(campaign.community.whatsappGroupUrl)}`}
               alt="QR Code WhatsApp"
               class="w-16 h-16 rounded-lg shrink-0"
               width="80"
@@ -175,7 +175,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
           </div>
           <div class="bg-white/80 p-3 rounded-xl border border-sky-200/60 flex items-center gap-3">
             <img
-              src={`https://chart.googleapis.com/chart?chs=80x80&cht=qr&chl=${encodeURIComponent(campaign.community.telegramGroupUrl)}&choe=UTF-8&chld=H|0`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(campaign.community.telegramGroupUrl)}`}
               alt="QR Code Telegram"
               class="w-16 h-16 rounded-lg shrink-0"
               width="80"
