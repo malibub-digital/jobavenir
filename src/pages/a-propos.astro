@@ -17,195 +17,239 @@ const footerLogos = [
 >
   <MinimalHeader slot="header" showBackHome={true} />
 
-  <main id="main-content" class="py-12 bg-stone-50 min-h-screen">
-    <div class="ml-container max-w-4xl mx-auto px-4">
-      <nav class="text-xs text-stone-500 mb-6 flex gap-2">
-        <a href="/" class="hover:underline text-stone-600">Accueil</a>
-        <span>/</span>
-        <span class="text-stone-800 font-semibold">À propos</span>
-      </nav>
-
-      <!-- Titre & Chapeau -->
-      <div class="mb-10">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/60 mb-3">
-          Dispositif National pour l'Emploi
-        </span>
-        <h1 class="text-3xl md:text-4xl font-black text-stone-900 font-title">
-          À propos de Mali Job
-        </h1>
-        <p class="text-base text-stone-600 mt-3 leading-relaxed">
-          Mali Job (<strong>malijob.ml</strong>) est le guichet numérique unifié des débouchés professionnels, de l'insertion et de l'entrepreneuriat au Mali.
-        </p>
+  <main id="main-content" class="min-h-screen">
+    <!-- HERO SECTION -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900/90 text-white py-16 md:py-24">
+      <!-- Decorative elements -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-amber-500/5 blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-orange-500/5 blur-3xl"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-amber-400/3 blur-3xl"></div>
       </div>
 
-      <!-- Corps du contenu -->
-      <div class="bg-white p-8 md:p-10 border border-stone-200 rounded-3xl shadow-sm space-y-8">
-        <section>
-          <h2 class="text-xl font-black text-stone-900 font-title mb-3 flex items-center gap-2">
-            <i class="ml-icon-award-line ml-icon--sm text-amber-700"></i>
-            <span>Notre Mission</span>
-          </h2>
-          <p class="text-sm text-stone-700 leading-relaxed">
-            Centraliser, fiabiliser et démocratiser l'accès à l'information sur le marché de l'emploi malien. Mali Job agrège quotidiennement les opportunités vérifiées : emplois (CDI, CDD), stages professionnels, programmes de formation certifiante, appels à projets et subventions, ainsi que des fiches d'idées entrepreneuriales concrètes adaptées aux réalités économiques locales.
+      <div class="relative z-10 ml-container max-w-5xl mx-auto px-4">
+        <nav class="text-xs text-amber-200/70 mb-8 flex gap-2 items-center">
+          <a href="/" class="hover:text-white transition-colors">Accueil</a>
+          <span class="text-amber-300/40">/</span>
+          <span class="text-amber-200 font-semibold">À propos</span>
+        </nav>
+
+        <div class="max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-400/15 text-amber-300 border border-amber-400/30 mb-5 shadow-sm backdrop-blur-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Dispositif National pour l'Emploi
+          </div>
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-black font-title tracking-tight leading-[1.08] mb-4">
+            À propos de <br /><span class="text-amber-400">Mali Job</span>
+          </h1>
+          <p class="text-base sm:text-lg text-stone-300 leading-relaxed max-w-2xl">
+            Mali Job (<strong class="text-white">malijob.ml</strong>) est le guichet numérique unifié des débouchés professionnels, de l'insertion et de l'entrepreneuriat au Mali.
           </p>
-        </section>
-
-        <!-- Cadre officiel du dispositif (Note APEJ) -->
-        <section class="pt-6 border-t border-stone-100">
-          <div class="bg-stone-50/80 p-6 md:p-8 rounded-2xl border border-stone-200">
-            <div class="flex items-center gap-2 mb-4">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-stone-900 text-amber-300 border border-stone-800">
-                Document officiel
-              </span>
-              <span class="text-xs text-stone-400">Bamako, le 6 novembre 2026</span>
+          <!-- Quick stats -->
+          <div class="grid grid-cols-3 gap-4 sm:gap-6 mt-8 pt-8 border-t border-white/10 max-w-lg">
+            <div>
+              <div class="text-2xl sm:text-3xl font-black text-amber-400">+100</div>
+              <div class="text-[11px] text-stone-400 font-semibold uppercase tracking-wider mt-0.5">Opportunités / mois</div>
             </div>
-            <h2 class="text-lg font-black text-stone-900 font-title mb-1">Mali Job, une plateforme publique au service des opportunités</h2>
-            <p class="text-xs text-stone-500 mb-5 italic">Avec l'appui institutionnel du Programme PartiCIP – Swisscontact / C2D</p>
+            <div>
+              <div class="text-2xl sm:text-3xl font-black text-amber-400">4</div>
+              <div class="text-[11px] text-stone-400 font-semibold uppercase tracking-wider mt-0.5">Types d'offres</div>
+            </div>
+            <div>
+              <div class="text-2xl sm:text-3xl font-black text-amber-400">100%</div>
+              <div class="text-[11px] text-stone-400 font-semibold uppercase tracking-wider mt-0.5">Gratuit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <p class="text-sm text-stone-700 leading-relaxed mb-4">
-              L'Agence pour la Promotion de l'Emploi des Jeunes (APEJ), avec l'appui institutionnel du Programme PartiCIP, un projet de la DDC, mis en œuvre par Swisscontact/C2D, met en place <strong>Mali Job</strong>, une plateforme publique destinée à centraliser et diffuser les opportunités d'emploi, de stage, de formation et d'entrepreneuriat au Mali. Accessible via <strong>malijob.ml</strong>, cette initiative vise à améliorer l'accès des jeunes à une information fiable, actualisée et facilement accessible, tout en renforçant la visibilité des opportunités portées par les différents acteurs de l'écosystème de l'emploi et de la formation.
+    <!-- CONTENU PRINCIPAL -->
+    <section class="py-12 md:py-16 bg-stone-50">
+      <div class="ml-container max-w-4xl mx-auto px-4 space-y-10 md:space-y-12">
+
+        <!-- NOTRE MISSION -->
+        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-stone-200/80">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg shrink-0 shadow-sm">🎯</div>
+            <div>
+              <h2 class="text-xl font-black text-stone-900 font-title m-0">Notre Mission</h2>
+              <p class="text-xs text-stone-400 m-0">Ce qui nous anime au quotidien</p>
+            </div>
+          </div>
+          <div class="relative pl-5 border-l-2 border-amber-400/50">
+            <p class="text-sm text-stone-700 leading-relaxed">
+              Centraliser, fiabiliser et démocratiser l'accès à l'information sur le marché de l'emploi malien. Mali Job agrège quotidiennement les opportunités vérifiées : <strong>emplois</strong> (CDI, CDD), <strong>stages</strong> professionnels, programmes de <strong>formation</strong> certifiante, appels à <strong>projets</strong> et subventions, ainsi que des fiches d'<strong>idées entrepreneuriales</strong> concrètes adaptées aux réalités économiques locales.
+            </p>
+          </div>
+        </div>
+
+        <!-- CADRE OFFICIEL DU DISPOSITIF -->
+        <div class="relative">
+          <!-- Decorative connector -->
+          <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-400/30 via-orange-400/20 to-transparent hidden md:block"></div>
+
+          <div class="bg-gradient-to-br from-stone-900 to-stone-800 p-8 md:p-10 rounded-3xl shadow-lg border border-stone-700/80">
+            <!-- Header badge -->
+            <div class="flex flex-wrap items-center gap-3 mb-5">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                Document officiel — APEJ
+              </span>
+              <span class="text-xs text-stone-500">Bamako, le 6 novembre 2026</span>
+            </div>
+
+            <h2 class="text-xl md:text-2xl font-black text-white font-title leading-tight mb-2">
+              Mali Job, une plateforme publique<br class="hidden sm:block" />
+              <span class="text-amber-400">au service des opportunités</span>
+            </h2>
+            <p class="text-xs text-stone-500 mb-6 italic">Avec l'appui institutionnel du Programme PartiCIP – Swisscontact / C2D</p>
+
+            <p class="text-sm text-stone-300 leading-relaxed mb-6">
+              L'Agence pour la Promotion de l'Emploi des Jeunes (APEJ), avec l'appui institutionnel du Programme PartiCIP, un projet de la DDC, mis en œuvre par Swisscontact/C2D, met en place <strong class="text-white">Mali Job</strong>, une plateforme publique destinée à centraliser et diffuser les opportunités d'emploi, de stage, de formation et d'entrepreneuriat au Mali. Accessible via <strong class="text-white">malijob.ml</strong>, cette initiative vise à améliorer l'accès des jeunes à une information fiable, actualisée et facilement accessible, tout en renforçant la visibilité des opportunités portées par les différents acteurs de l'écosystème de l'emploi et de la formation.
             </p>
 
-            <div class="space-y-3 mb-4">
-              <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-amber-200/60">
-                <span class="text-base shrink-0 mt-0.5">📢</span>
-                <div>
-                  <h4 class="text-xs font-bold text-stone-900">Valorisation des investissements</h4>
-                  <p class="text-xs text-stone-600 leading-relaxed">Mali Job améliore la visibilité des opportunités financées, touche davantage de bénéficiaires et démontre l'impact des financements mobilisés pour l'emploi des jeunes.</p>
-                </div>
+            <!-- 4 piliers en grille -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+              <div class="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                <span class="text-lg block mb-2">📢</span>
+                <h4 class="text-sm font-bold text-white mb-1">Valorisation des investissements</h4>
+                <p class="text-xs text-stone-400 leading-relaxed">Mali Job améliore la visibilité des opportunités financées, touche davantage de bénéficiaires et démontre l'impact des financements mobilisés.</p>
               </div>
-              <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-sky-200/60">
-                <span class="text-base shrink-0 mt-0.5">💼</span>
-                <div>
-                  <h4 class="text-xs font-bold text-stone-900">Canal supplémentaire pour les entreprises</h4>
-                  <p class="text-xs text-stone-600 leading-relaxed">Un canal pour promouvoir recrutements, stages et alternances, rapprochant les entreprises des talents dont elles ont besoin.</p>
-                </div>
+              <div class="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                <span class="text-lg block mb-2">💼</span>
+                <h4 class="text-sm font-bold text-white mb-1">Canal pour les entreprises</h4>
+                <p class="text-xs text-stone-400 leading-relaxed">Un canal pour promouvoir recrutements, stages et alternances, rapprochant les entreprises des talents.</p>
               </div>
-              <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-emerald-200/60">
-                <span class="text-base shrink-0 mt-0.5">🔗</span>
-                <div>
-                  <h4 class="text-xs font-bold text-stone-900">Complémentarité & préservation du trafic source</h4>
-                  <p class="text-xs text-stone-600 leading-relaxed">Les opportunités renvoient vers leur source officielle. La plateforme amplifie la portée des annonces sans se substituer aux canaux existants.</p>
-                </div>
+              <div class="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                <span class="text-lg block mb-2">🔗</span>
+                <h4 class="text-sm font-bold text-white mb-1">Complémentarité & trafic source</h4>
+                <p class="text-xs text-stone-400 leading-relaxed">Les opportunités renvoient vers leur source officielle. La plateforme amplifie sans se substituer.</p>
               </div>
-              <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-stone-200">
-                <span class="text-base shrink-0 mt-0.5">🆓</span>
-                <div>
-                  <h4 class="text-xs font-bold text-stone-900">Gratuit, neutre et non commercial</h4>
-                  <p class="text-xs text-stone-600 leading-relaxed">Aucune contribution financière n'est demandée des structures partenaires. Un outil collectif au service de tous les acteurs de l'emploi et de la formation.</p>
-                </div>
+              <div class="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                <span class="text-lg block mb-2">🆓</span>
+                <h4 class="text-sm font-bold text-white mb-1">Gratuit, neutre et non commercial</h4>
+                <p class="text-xs text-stone-400 leading-relaxed">Aucune contribution financière demandée. Un outil collectif au service de tous.</p>
               </div>
             </div>
 
-            <div class="bg-orange-50/80 p-4 rounded-xl border border-orange-200/60 text-center">
-              <p class="text-sm font-bold text-stone-800">
-                « Mali Job : une plateforme unique pour rendre les opportunités plus visibles, les investissements plus efficaces et les jeunes mieux connectés aux perspectives d'avenir. »
+            <!-- Citation -->
+            <div class="bg-amber-400/10 p-5 rounded-2xl border border-amber-400/20 text-center">
+              <p class="text-sm md:text-base font-bold text-amber-200 leading-relaxed">
+                « Mali Job : une plateforme unique pour rendre les opportunités plus visibles,<br class="hidden sm:block" />
+                les investissements plus efficaces et les jeunes mieux connectés aux perspectives d'avenir. »
               </p>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Les 3 Piliers -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-stone-100">
-          <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80">
-            <div class="mb-2 text-amber-700">
-              <i class="ml-icon-flashlight-line ml-icon--md"></i>
-            </div>
-            <h3 class="text-sm font-bold text-stone-900 mb-1">Accessibilité Frugale</h3>
-            <p class="text-xs text-stone-600 leading-relaxed">Interface ultra-légère conçue pour consommer un minimum de données mobiles (DSML).</p>
+        <!-- LES 3 PILIERS -->
+        <div class="text-center max-w-lg mx-auto mb-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-3">
+            Notre approche
+          </span>
+          <h2 class="text-2xl font-black text-stone-900 font-title m-0">Les 3 piliers de Mali Job</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="group bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform shadow-sm">🔦</div>
+            <h3 class="text-base font-black text-stone-900 font-title mb-2">Accessibilité Frugale</h3>
+            <p class="text-sm text-stone-600 leading-relaxed">Interface ultra-légère conçue pour consommer un minimum de données mobiles (DSML).</p>
           </div>
-          <div class="p-4 rounded-2xl bg-orange-50/60 border border-orange-200/80">
-            <div class="mb-2 text-orange-700">
-              <i class="ml-icon-search-line ml-icon--md"></i>
-            </div>
-            <h3 class="text-sm font-bold text-stone-900 mb-1">Veille Exhaustive</h3>
-            <p class="text-xs text-stone-600 leading-relaxed">Surveillance continue des sources officielles, parapubliques, ONG et secteur privé.</p>
+          <div class="group bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform shadow-sm">🔍</div>
+            <h3 class="text-base font-black text-stone-900 font-title mb-2">Veille Exhaustive</h3>
+            <p class="text-sm text-stone-600 leading-relaxed">Surveillance continue des sources officielles, parapubliques, ONG et secteur privé.</p>
           </div>
-          <div class="p-4 rounded-2xl bg-sky-50/60 border border-sky-200/80">
-            <div class="mb-2 text-sky-700">
-              <i class="ml-icon-team-line ml-icon--md"></i>
-            </div>
-            <h3 class="text-sm font-bold text-stone-900 mb-1">Orientation Active</h3>
-            <p class="text-xs text-stone-600 leading-relaxed">Passerelle directe vers les structures d'orientation et de mentorat sur le terrain.</p>
+          <div class="group bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform shadow-sm">👥</div>
+            <h3 class="text-base font-black text-stone-900 font-title mb-2">Orientation Active</h3>
+            <p class="text-sm text-stone-600 leading-relaxed">Passerelle directe vers les structures d'orientation et de mentorat sur le terrain.</p>
           </div>
-        </section>
+        </div>
 
-        <!-- Écosystème Partenaire -->
-        <section id="partenaires" class="pt-6 border-t border-stone-100 scroll-mt-20">
-          <h2 class="text-xl font-black text-stone-900 font-title mb-2 flex items-center gap-2">
-            <i class="ml-icon-building-line ml-icon--sm text-stone-700"></i>
-            <span>Écosystème & Partenaires Institutionnels</span>
-          </h2>
-          <p class="text-xs text-stone-600 mb-6">
-            Mali Job repose sur une alliance tripartite pour maximiser l'impact auprès de la jeunesse malienne :
-          </p>
+        <!-- ÉCOSYSTÈME PARTENAIRE -->
+        <div id="partenaires" class="scroll-mt-20">
+          <div class="text-center max-w-lg mx-auto mb-8">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-stone-900 text-amber-300 border border-stone-800 mb-3">
+              Écosystème institutionnel
+            </span>
+            <h2 class="text-2xl font-black text-stone-900 font-title m-0">Partenaires & Institutions</h2>
+            <p class="text-sm text-stone-500 mt-2">Mali Job repose sur une alliance tripartite pour maximiser l'impact auprès de la jeunesse malienne.</p>
+          </div>
 
           <div class="space-y-4">
             <!-- APEJ -->
-            <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div class="w-16 h-16 shrink-0 bg-white rounded-xl p-2 border border-stone-200 flex items-center justify-center">
-                <img src="/images/logo-apej.svg" alt="APEJ Mali" class="max-h-12 w-auto object-contain" />
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 class="text-sm font-bold text-stone-900">APEJ Mali — Institution Mandataire & Commanditaire</h3>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300">Tutelle Emploi</span>
+            <div class="group bg-white p-6 md:p-7 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+              <div class="flex flex-col sm:flex-row items-start gap-5">
+                <div class="w-16 h-16 shrink-0 bg-amber-50 rounded-2xl p-3 border border-amber-200/70 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <img src="/images/logo-apej.svg" alt="APEJ Mali" class="max-h-10 w-auto object-contain" />
                 </div>
-                <p class="text-xs text-stone-600 leading-relaxed">
-                  L'Agence Pour la Promotion de l'Emploi des Jeunes est l'organe d'exécution du Programme Emploi-Jeunes (PEJ). Elle impulse la politique d'insertion, pilote les grands programmes de stages de qualification et facilite le financement des projets pour les jeunes de 15 à 40 ans.
-                </p>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                    <h3 class="text-base font-black text-stone-900 font-title">APEJ Mali</h3>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300">Institution Mandataire</span>
+                  </div>
+                  <p class="text-sm text-stone-600 leading-relaxed">
+                    L'Agence Pour la Promotion de l'Emploi des Jeunes est l'organe d'exécution du Programme Emploi-Jeunes (PEJ). Elle impulse la politique d'insertion, pilote les grands programmes de stages de qualification et facilite le financement des projets pour les jeunes de 15 à 40 ans.
+                  </p>
+                </div>
               </div>
             </div>
 
             <!-- EOJ -->
-            <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div class="w-16 h-16 shrink-0 bg-white rounded-xl p-2 border border-stone-200 flex items-center justify-center">
-                <img src="/images/logo-eoj.svg" alt="EOJ Mali" class="max-h-10 w-auto object-contain" />
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 class="text-sm font-bold text-stone-900">EOJ Mali — Espaces d'Orientation Jeunesse</h3>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-orange-100 text-orange-900 border border-orange-300">Orientation Terrain</span>
+            <div class="group bg-white p-6 md:p-7 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+              <div class="flex flex-col sm:flex-row items-start gap-5">
+                <div class="w-16 h-16 shrink-0 bg-orange-50 rounded-2xl p-3 border border-orange-200/70 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <img src="/images/logo-eoj.svg" alt="EOJ Mali" class="max-h-10 w-auto object-contain" />
                 </div>
-                <p class="text-xs text-stone-600 leading-relaxed">
-                  Dispositif transversal de proximité qui offre un accueil personnalisé, des bilans de compétences, un accompagnement à la recherche d'emploi et des ateliers pratiques animés par des conseillers qualifiés à Bamako et dans les régions.
-                </p>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                    <h3 class="text-base font-black text-stone-900 font-title">EOJ Mali</h3>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-orange-100 text-orange-900 border border-orange-300">Orientation Terrain</span>
+                  </div>
+                  <p class="text-sm text-stone-600 leading-relaxed">
+                    Dispositif transversal de proximité qui offre un accueil personnalisé, des bilans de compétences, un accompagnement à la recherche d'emploi et des ateliers pratiques animés par des conseillers qualifiés à Bamako et dans les régions.
+                  </p>
+                </div>
               </div>
             </div>
 
             <!-- PartiCIP -->
-            <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div class="w-16 h-16 shrink-0 bg-white rounded-xl p-2 border border-stone-200 flex items-center justify-center">
-                <img src="/images/logo-particip.png" alt="PartiCIP" class="max-h-12 w-auto object-contain rounded-lg" />
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <h3 class="text-sm font-bold text-stone-900">Programme PartiCIP — Partenariat pour l'Insertion Inclusive</h3>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-100 text-sky-900 border border-sky-300">Formation & Compétences</span>
+            <div class="group bg-white p-6 md:p-7 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-all">
+              <div class="flex flex-col sm:flex-row items-start gap-5">
+                <div class="w-16 h-16 shrink-0 bg-sky-50 rounded-2xl p-3 border border-sky-200/70 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <img src="/images/logo-particip.png" alt="PartiCIP" class="max-h-10 w-auto object-contain rounded-lg" />
                 </div>
-                <p class="text-xs text-stone-600 leading-relaxed">
-                  Programme innovant axé sur le développement des compétences professionnelles inclusives et pérennes, l'apprentissage adapté aux filières locales et l'implication du secteur privé pour une insertion durable des jeunes de 15 à 35 ans.
-                </p>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                    <h3 class="text-base font-black text-stone-900 font-title">Programme PartiCIP</h3>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-100 text-sky-900 border border-sky-300">Formation & Compétences</span>
+                  </div>
+                  <p class="text-sm text-stone-600 leading-relaxed">
+                    Programme innovant axé sur le développement des compétences professionnelles inclusives et pérennes, l'apprentissage adapté aux filières locales et l'implication du secteur privé pour une insertion durable des jeunes de 15 à 35 ans.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </section>
-
-        <!-- Appel à l'action -->
-        <div class="pt-6 border-t border-stone-100 text-center">
-          <p class="text-xs text-stone-500 mb-4">
-            Vous souhaitez publier une offre ou rejoindre le réseau des partenaires ?
-          </p>
-          <a
-            href="/contact"
-            class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm shadow-md transition-all no-underline"
-          >
-            <span>Contacter l'équipe Mali Job</span>
-            <span>&rarr;</span>
-          </a>
         </div>
+
+        <!-- CTA -->
+        <div class="bg-gradient-to-br from-orange-500 to-amber-600 p-8 md:p-10 rounded-3xl shadow-lg text-center">
+          <div class="max-w-xl mx-auto">
+            <h2 class="text-xl md:text-2xl font-black text-white font-title mb-3">Vous souhaitez publier une offre ou rejoindre notre réseau ?</h2>
+            <p class="text-sm text-orange-100 mb-6">Rejoignez les partenaires qui diffusent leurs opportunités auprès de milliers de jeunes talents chaque mois.</p>
+            <a href="/contact"
+               class="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-white text-orange-700 hover:bg-orange-50 font-black text-sm shadow-lg hover:shadow-xl transition-all no-underline">
+              <span>Contacter l'équipe Mali Job</span>
+              <span class="text-lg leading-none">→</span>
+            </a>
+          </div>
+        </div>
+
       </div>
-    </div>
+    </section>
   </main>
 
   <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
