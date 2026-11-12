@@ -10,7 +10,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
 
 <!-- BLOC 1 : HERO TOUT-EN-UN ULTRA-ÉPURÉ (LECTURE EN 5 SECONDES) -->
 <section
-  class="ml-hero bg-gradient-to-b from-amber-50/95 via-orange-50/35 to-white text-stone-900 pt-7 pb-12 sm:py-14 px-3 sm:px-4 relative overflow-hidden border-b border-stone-200/80"
+  class="ml-hero bg-gradient-to-b from-amber-50/95 via-orange-50/35 to-white text-stone-900 pt-8 pb-12 sm:py-14 px-4 relative overflow-hidden border-b border-stone-200/80"
 >
   <!-- Illustrations latérales Mali Job -->
   <div
@@ -47,7 +47,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
     </picture>
   </div>
 
-  <div class="w-full max-w-4xl mx-auto text-center relative z-10 px-2 sm:px-4">
+  <div class="w-full max-w-4xl mx-auto text-center relative z-10 sm:px-4">
     <!-- Petit badge court -->
     <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-stone-900 text-amber-300 text-xs font-extrabold mb-4 shadow-xs">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -71,7 +71,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
     </p>
 
     <!-- CARTE MAÎTRESSE CENTRALE : TOUT EN UN COUP D'ŒIL (PLUS LARGE & AÉRÉE) -->
-    <div class="bg-white p-6 sm:p-9 rounded-3xl shadow-xl shadow-orange-950/10 border-2 border-orange-200/90 max-w-3xl mx-auto text-left relative z-20">
+    <div class="bg-white p-5 sm:p-9 rounded-3xl shadow-xl shadow-orange-950/10 border-2 border-orange-200/90 max-w-3xl mx-auto text-left relative z-20">
       
       <!-- 1. CE QU'IL Y A À GAGNER (2 CARTES VALORISÉES) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
@@ -178,12 +178,12 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
     <!-- ÉTAPE 1 : VÉRIFICATION DE RECEVABILITÉ -->
     <div class="relative mb-8 sm:mb-10">
       <div class="bg-white p-5 sm:p-7 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-shadow">
-        <div class="flex items-start gap-4 sm:gap-5">
+        <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3.5 sm:gap-x-5 gap-y-3 sm:gap-y-4">
           <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-stone-900 text-amber-300 flex items-center justify-center shrink-0 font-black text-base sm:text-lg shadow-xs">
             1
           </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-base sm:text-lg font-black text-stone-900 font-title mb-1.5">Vérification de recevabilité</h3>
+          <h3 class="text-base sm:text-lg font-black text-stone-900 font-title leading-snug m-0">Vérification de recevabilité</h3>
+          <div class="col-span-2 sm:col-span-1 sm:col-start-2 min-w-0">
             <p class="text-sm text-stone-600 leading-relaxed m-0">
               L'équipe Mali Job vérifie que chaque candidature respecte les conditions du concours&nbsp;: projet porté au Mali, format vidéo inférieur à 3&nbsp;minutes, présentation claire du problème résolu et de la solution proposée.
             </p>
@@ -199,12 +199,12 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
     <!-- ÉTAPE 2 : GRILLE D'ÉVALUATION 100 POINTS -->
     <div class="relative mb-8 sm:mb-10">
       <div class="bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 p-5 sm:p-7 rounded-2xl border-2 border-orange-200/80 shadow-sm hover:shadow-md transition-shadow">
-        <div class="flex items-start gap-4 sm:gap-5">
+        <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3.5 sm:gap-x-5 gap-y-3 sm:gap-y-4">
           <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-600 text-white flex items-center justify-center shrink-0 font-black text-base sm:text-lg shadow-xs">
             2
           </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-base sm:text-lg font-black text-stone-900 font-title mb-3">Grille d'évaluation sur <span class="text-orange-600">100 points</span></h3>
+          <h3 class="text-base sm:text-lg font-black text-stone-900 font-title leading-snug m-0">Grille d'évaluation sur <span class="text-orange-600">100 points</span></h3>
+          <div class="col-span-2 sm:col-span-1 sm:col-start-2 min-w-0">
             <p class="text-sm text-stone-600 mb-4 leading-relaxed">
               Les vidéos recevables sont évaluées selon quatre critères adaptés aux projets en phase de lancement ou de développement&nbsp;:
             </p>
@@ -263,12 +263,12 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
     <!-- ÉTAPE 3 : JURY & ENTRETIENS -->
     <div class="mb-6 sm:mb-8">
       <div class="bg-white p-5 sm:p-7 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-shadow">
-        <div class="flex items-start gap-4 sm:gap-5">
+        <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3.5 sm:gap-x-5 gap-y-3 sm:gap-y-4">
           <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-black text-base sm:text-lg shadow-xs">
             3
           </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-base sm:text-lg font-black text-stone-900 font-title mb-3">Le jury & les entretiens de sélection</h3>
+          <h3 class="text-base sm:text-lg font-black text-stone-900 font-title leading-snug m-0">Le jury & les entretiens de sélection</h3>
+          <div class="col-span-2 sm:col-span-1 sm:col-start-2 min-w-0">
             <p class="text-sm text-stone-600 mb-4 leading-relaxed">
               Un jury indépendant de <strong class="text-stone-900">5 membres</strong> évalue les candidatures présélectionnées en toute impartialité, sur la seule base de la grille d'évaluation ci-dessus&nbsp;:
             </p>
