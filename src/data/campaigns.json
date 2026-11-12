@@ -34,11 +34,11 @@
       "submission": {
         "deadline": "30 Novembre 2026 à 23h59",
         "maxDurationMinutes": 3,
-        "juryWhatsappNumber": "+22370000000",
-        "juryWhatsappDisplay": "+223 70 00 00 00",
+        "juryWhatsappNumber": "+22370514040",
+        "juryWhatsappDisplay": "+223 70 51 40 40",
         "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Je suis membre du groupe communautaire et je vous envoie ma vidéo de participation au Concours d'Innovation.",
-        "juryTelegramUsername": "malijob_jury",
-        "juryTelegramUrl": "https://t.me/malijob_jury",
+        "juryTelegramNumber": "+22370514040",
+        "juryTelegramUrl": "https://t.me/+22370514040",
         "introText": "Filmez-vous simplement avec votre téléphone en moins de 3 minutes. Pas besoin de matériel professionnel ni de dossier écrit !",
         "videoQuestions": [
           {
@@ -120,11 +120,11 @@
       "submission": {
         "deadline": "Ouverture prochaine",
         "maxDurationMinutes": 3,
-        "juryWhatsappNumber": "+22370000000",
-        "juryWhatsappDisplay": "+223 70 00 00 00",
+        "juryWhatsappNumber": "+22370514040",
+        "juryWhatsappDisplay": "+223 70 51 40 40",
         "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Voici ma vidéo pour le Challenge Innovation Agricole.",
-        "juryTelegramUsername": "malijob_jury",
-        "juryTelegramUrl": "https://t.me/malijob_jury",
+        "juryTelegramNumber": "+22370514040",
+        "juryTelegramUrl": "https://t.me/+22370514040",
         "introText": "Filmez votre exploitation, votre atelier de transformation ou votre équipement en moins de 3 minutes avec votre téléphone.",
         "videoQuestions": [
           {
