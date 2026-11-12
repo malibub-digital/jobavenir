@@ -12,6 +12,10 @@
     "address": "Hamdallaye ACI 2000 (près du monument de l'Obélisque), BP E2584, Bamako, République du Mali",
     "hours": "Du Lundi au Vendredi de 8h00 à 16h00"
   },
+  "community": {
+    "whatsappGroupUrl": "https://chat.whatsapp.com/DqikQtnuQig3PnL9HxAQki?s=cl&p=a&iam=2",
+    "telegramGroupUrl": "https://t.me/malijob_innovation"
+  },
   "socialLinks": [
     {
       "platform": "Facebook",
