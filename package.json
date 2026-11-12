@@ -15,10 +15,10 @@
   },
   "dependencies": {
     "@astrojs/node": "^6.1.0",
-    "@malihub/dsml-core": "file:../dsml/packages/core",
+    "@malihub/dsml-core": "^0.1.7",
     "@malihub/git-headless-cms-astro": "^0.1.1",
     "@malihub/git-headless-cms-core": "^0.1.1",
-    "@malihub/sites-core": "file:../sites/packages/core",
+    "@malihub/sites-core": "^0.1.7",
     "astro": "^3.6.5",
     "dotenv": "^17.4.2",
     "node-cron": "^4.6.0",
