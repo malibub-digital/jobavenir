@@ -158,7 +158,185 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
   </div>
 </section>
 
-<!-- BLOC 2 : ENCART SPONSORING COMPACT -->
+<!-- BLOC 2 : PROCESSUS DE SÉLECTION & JURY -->
+<section class="py-12 sm:py-16 bg-gradient-to-b from-white via-amber-50/20 to-stone-50/40 border-b border-stone-200/80">
+  <div class="ml-container max-w-5xl mx-auto px-4">
+
+    <!-- En-tête -->
+    <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-stone-900 text-amber-300 border border-stone-800 mb-3 shadow-xs">
+        Comment sont sélectionnés les projets ?
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight m-0">
+        Critères de sélection & Jury
+      </h2>
+      <p class="text-sm sm:text-base text-stone-600 mt-2 max-w-xl mx-auto leading-relaxed">
+        Une évaluation équitable, transparente et accessible à tous les talents, en trois étapes à partir de votre vidéo de présentation de moins de 3 minutes.
+      </p>
+    </div>
+
+    <!-- ÉTAPE 1 : VÉRIFICATION DE RECEVABILITÉ -->
+    <div class="relative mb-8 sm:mb-10">
+      <div class="bg-white p-5 sm:p-7 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-4 sm:gap-5">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-stone-900 text-amber-300 flex items-center justify-center shrink-0 font-black text-base sm:text-lg shadow-xs">
+            1
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base sm:text-lg font-black text-stone-900 font-title mb-1.5">Vérification de recevabilité</h3>
+            <p class="text-sm text-stone-600 leading-relaxed m-0">
+              L'équipe Mali Job vérifie que chaque candidature respecte les conditions du concours&nbsp;: projet porté au Mali, format vidéo inférieur à 3&nbsp;minutes, présentation claire du problème résolu et de la solution proposée.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Flèche de liaison -->
+      <div class="hidden sm:flex justify-center py-1 text-stone-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : GRILLE D'ÉVALUATION 100 POINTS -->
+    <div class="relative mb-8 sm:mb-10">
+      <div class="bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 p-5 sm:p-7 rounded-2xl border-2 border-orange-200/80 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-4 sm:gap-5">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-600 text-white flex items-center justify-center shrink-0 font-black text-base sm:text-lg shadow-xs">
+            2
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base sm:text-lg font-black text-stone-900 font-title mb-3">Grille d'évaluation sur <span class="text-orange-600">100 points</span></h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">
+              Les vidéos recevables sont évaluées selon quatre critères adaptés aux projets en phase de lancement ou de développement&nbsp;:
+            </p>
+            <!-- 4 critères en grille 2x2 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Critère 1 -->
+              <div class="bg-white p-4 rounded-xl border border-orange-200/70 flex flex-col">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xs font-black text-orange-700 uppercase tracking-wider">Utilité & impact local</span>
+                  <span class="text-sm font-black text-orange-600 bg-orange-100/80 px-2 py-0.5 rounded-lg">30 pts</span>
+                </div>
+                <p class="text-xs sm:text-sm text-stone-600 leading-relaxed m-0">
+                  Le projet répond-il à un besoin réel au Mali et présente-t-il un potentiel concret de création d'activité ou d'emplois&nbsp;?
+                </p>
+              </div>
+              <!-- Critère 2 -->
+              <div class="bg-white p-4 rounded-xl border border-orange-200/70 flex flex-col">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xs font-black text-stone-700 uppercase tracking-wider">Clarté & faisabilité</span>
+                  <span class="text-sm font-black text-orange-600 bg-orange-100/80 px-2 py-0.5 rounded-lg">30 pts</span>
+                </div>
+                <p class="text-xs sm:text-sm text-stone-600 leading-relaxed m-0">
+                  La solution est-elle compréhensible, réaliste et activable rapidement avec un premier soutien de 100&nbsp;000&nbsp;FCFA&nbsp;?
+                </p>
+              </div>
+              <!-- Critère 3 -->
+              <div class="bg-white p-4 rounded-xl border border-amber-200/70 flex flex-col">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xs font-black text-amber-800 uppercase tracking-wider">Motivation & maîtrise</span>
+                  <span class="text-sm font-black text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-lg">25 pts</span>
+                </div>
+                <p class="text-xs sm:text-sm text-stone-600 leading-relaxed m-0">
+                  Le porteur démontre-t-il sa connaissance du terrain, son engagement et sa capacité à passer à l'action dans sa vidéo&nbsp;?
+                </p>
+              </div>
+              <!-- Critère 4 -->
+              <div class="bg-white p-4 rounded-xl border border-amber-200/70 flex flex-col">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-xs font-black text-emerald-800 uppercase tracking-wider">Originalité de l'approche</span>
+                  <span class="text-sm font-black text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-lg">15 pts</span>
+                </div>
+                <p class="text-xs sm:text-sm text-stone-600 leading-relaxed m-0">
+                  Le projet apporte-t-il une amélioration concrète, une idée neuve ou une adaptation pertinente aux réalités maliennes&nbsp;?
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Flèche -->
+      <div class="hidden sm:flex justify-center py-1 text-stone-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 : JURY & ENTRETIENS -->
+    <div class="mb-6 sm:mb-8">
+      <div class="bg-white p-5 sm:p-7 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-start gap-4 sm:gap-5">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-black text-base sm:text-lg shadow-xs">
+            3
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base sm:text-lg font-black text-stone-900 font-title mb-3">Le jury & les entretiens de sélection</h3>
+            <p class="text-sm text-stone-600 mb-4 leading-relaxed">
+              Un jury indépendant de <strong class="text-stone-900">5 membres</strong> évalue les candidatures présélectionnées en toute impartialité, sur la seule base de la grille d'évaluation ci-dessus&nbsp;:
+            </p>
+
+            <!-- 5 membres du jury -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-5">
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
+                <div class="text-lg mb-1">🏛️</div>
+                <div class="text-xs font-bold text-stone-800 leading-tight">APEJ Mali</div>
+                <div class="text-[10px] text-stone-500">1 représentant</div>
+              </div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
+                <div class="text-lg mb-1">🤝</div>
+                <div class="text-xs font-bold text-stone-800 leading-tight">PartiCIP</div>
+                <div class="text-[10px] text-stone-500">1 représentant</div>
+              </div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
+                <div class="text-lg mb-1">⭐</div>
+                <div class="text-xs font-bold text-stone-800 leading-tight">Sponsor</div>
+                <div class="text-[10px] text-stone-500">2 représentants</div>
+              </div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
+                <div class="text-lg mb-1">💡</div>
+                <div class="text-xs font-bold text-stone-800 leading-tight">Entrepreneur</div>
+                <div class="text-[10px] text-stone-500">1 expérimenté</div>
+              </div>
+              <div class="col-span-2 sm:col-span-1 bg-amber-50/60 p-3 rounded-xl border border-amber-200 text-center">
+                <div class="text-lg mb-1">⚖️</div>
+                <div class="text-xs font-bold text-stone-800 leading-tight">5 membres</div>
+                <div class="text-[10px] text-stone-500">indépendants</div>
+              </div>
+            </div>
+
+            <!-- Suite : entretiens + résultats -->
+            <div class="bg-stone-50/60 p-4 sm:p-5 rounded-xl border border-stone-200/80">
+              <p class="text-sm text-stone-700 leading-relaxed m-0 mb-3">
+                Les <strong class="text-stone-900">10 meilleurs projets</strong> retenus par le jury bénéficient d'un entretien individuel avec l'équipe d'évaluation afin de valider la réalité du projet, d'approfondir les besoins du porteur et de préparer leur mise en lumière sur la plateforme Mali Job.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200/70 flex items-start gap-3">
+                  <span class="text-lg shrink-0 mt-0.5">🏅</span>
+                  <div>
+                    <div class="text-xs font-black text-stone-900">10 lauréats</div>
+                    <p class="text-xs text-stone-600 m-0 leading-relaxed">
+                      Une page officielle dédiée sur Mali Job pour gagner en visibilité auprès des partenaires et investisseurs.
+                    </p>
+                  </div>
+                </div>
+                <div class="bg-amber-50/80 p-3.5 rounded-xl border border-amber-200/70 flex items-start gap-3">
+                  <span class="text-lg shrink-0 mt-0.5">🏆</span>
+                  <div>
+                    <div class="text-xs font-black text-stone-900">3 Grands Prix</div>
+                    <p class="text-xs text-stone-600 m-0 leading-relaxed">
+                      Les 3 premiers du classement final remportent <strong class="text-amber-700">100&nbsp;000&nbsp;FCFA</strong> chacun pour accélérer leur lancement.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BLOC 3 : ENCART SPONSORING COMPACT -->
 <section class="py-8 bg-stone-50 border-b border-stone-200">
   <div class="ml-container max-w-4xl mx-auto px-4">
     <div class="bg-white rounded-2xl p-5 sm:p-6 border border-amber-300/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">

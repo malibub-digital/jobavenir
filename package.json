@@ -34,6 +34,10 @@
     "tsx": "^4.23.13"
   },
   "allowScripts": {
-    "sharp@0.32.6": true
+    "sharp@0.32.6": true,
+    "esbuild@0.19.12": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.18.20": true,
+    "sharp@0.33.5": true
   }
 }
