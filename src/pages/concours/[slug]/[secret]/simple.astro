@@ -1,0 +1,185 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import MinimalHeader from "../../../../components/MinimalHeader.astro";
+import Footer from "@malihub/sites-core/components/Footer.astro";
+import siteConfig from "../../../../../site.config.json";
+import campaignsData from "../../../../data/campaigns.json";
+
+const { slug, secret } = Astro.params;
+const allCampaigns = campaignsData.campaigns || [];
+let campaign: any = allCampaigns.find((c: any) => c.slug === slug);
+
+if (!campaign && (slug === "innovation-2026" || slug === "innovation-2026-c1")) {
+  campaign = allCampaigns.find((c: any) => c.slug === "innovation-2026-c1" || c.slug === (siteConfig as any).activeCampaignSlug);
+}
+
+if (!campaign) {
+  return Astro.redirect(`/concours/${(siteConfig as any).activeCampaignSlug || "innovation-2026-c1"}`);
+}
+
+if (secret !== campaign.secretToken) {
+  return Astro.redirect(`/concours/${campaign.slug}`);
+}
+
+const cleanPhone = (campaign.submission.juryWhatsappNumber || "").replace(/[^0-9]/g, "");
+const waUrl = `https://wa.me/${cleanPhone}`;
+const tgUrl = `https://t.me/${cleanPhone}`;
+
+const footerLogos = [
+  { src: "/images/logo-apej.svg", alt: "APEJ Mali" },
+  { src: "/images/logo-eoj.svg", alt: "EOJ Mali" },
+  { src: "/images/logo-particip.png", alt: "PartiCIP" },
+];
+---
+
+<BaseLayout title={`Consignes simplifiées — Concours Mali Job`}
+  description="Simplified multilingual secret instructions page."
+>
+  <MinimalHeader slot="header" />
+
+  <main class="py-8 sm:py-12 bg-stone-50 min-h-screen">
+    <div class="ml-container max-w-4xl mx-auto px-4">
+
+      <div class="mb-4 rounded-xl bg-stone-900 text-amber-300 px-4 py-2.5 text-xs font-bold flex items-center justify-between gap-2 shadow-sm">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Dépôt de candidature</span>
+        </span>
+        <span class="text-stone-300">Date limite : <strong class="text-white">{campaign.submission.deadline}</strong></span>
+      </div>
+
+      <!-- Language tabs -->
+      <div class="flex gap-2 mb-6 border-b border-stone-200 pb-2">
+        <a href="#fr" class="px-3 py-1.5 rounded-t-lg text-xs font-bold bg-white border border-stone-200 text-stone-900 no-underline">Français</a>
+        <a href="#bm" class="px-3 py-1.5 rounded-t-lg text-xs font-bold bg-amber-50 border border-amber-200 text-stone-700 no-underline">Bamanankan</a>
+        <a href="#nko" class="px-3 py-1.5 rounded-t-lg text-xs font-bold bg-amber-50 border border-amber-200 text-stone-700 no-underline">ߒߞߏ</a>
+      </div>
+
+      <!-- FRANÇAIS -->
+      <section id="fr" class="bg-white rounded-3xl border border-stone-200 shadow-sm mb-8 scroll-mt-20">
+        <div class="p-6 sm:p-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/60 mb-4">Français</div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title mb-4">Envoyez votre vidéo au jury</h1>
+
+          <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70 mb-4">
+            <h2 class="text-sm font-black text-stone-900 mb-2">🏆 Ce que vous pouvez gagner</h2>
+            <ul class="text-sm text-stone-700 space-y-1">
+              <li><strong>{campaign.prizes.grandPrizeCount} Grands Prix</strong> de {campaign.prizes.grandPrizeAmount} chacun</li>
+              <li><strong>{campaign.prizes.laureateCount} projets</strong> mis en valeur sur Mali Job</li>
+            </ul>
+          </div>
+
+          <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 mb-4">
+            <h2 class="text-sm font-black text-stone-900 mb-2">📹 Comment envoyer votre vidéo</h2>
+            <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+              <li>Filmez-vous en <strong>moins de 3 minutes</strong> avec votre téléphone</li>
+              <li>Dites : votre nom, votre projet, le problème que vous résolvez, et à quoi servira l'argent</li>
+              <li>Envoyez la vidéo au numéro ci-dessous sur WhatsApp ou Telegram</li>
+              <li>Ajoutez vos nom, prénom, ville et un numéro où vous joindre</li>
+            </ol>
+          </div>
+
+          <!-- Numéro direct -->
+          <div class="bg-stone-900 rounded-xl p-5 border border-amber-400/30 text-center mb-4">
+            <p class="text-xs text-amber-300 font-bold uppercase tracking-wider mb-1">Numéro du jury</p>
+            <p class="text-3xl sm:text-4xl font-black text-white tracking-wider">{campaign.submission.juryWhatsappDisplay}</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-xl text-center text-sm no-underline transition-colors shadow-md">📱 Envoyer sur WhatsApp</a>
+            <a href={tgUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-5 rounded-xl text-center text-sm no-underline transition-colors shadow-md">✈️ Envoyer sur Telegram</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- BAMANANKAN -->
+      <section id="bm" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
+        <div class="p-6 sm:p-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">Bamanankan</div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title mb-4">Aw ka u ye aw ka videyo ci jury ma</h1>
+
+          <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70 mb-4">
+            <h2 class="text-sm font-black text-stone-900 mb-2">🏆 Aw bɛ se ka min sɔrɔ</h2>
+            <ul class="text-sm text-stone-700 space-y-1">
+              <li><strong>Jaraba 3</strong> 100.000 FCFA kelen-kelen bɛɛ la</li>
+              <li><strong>Porozɛ 10</strong> jirala Mali Baara ɲɛ ofisiyali dɔ kan</li>
+            </ul>
+          </div>
+
+          <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 mb-4">
+            <h2 class="text-sm font-black text-stone-900 mb-2">📹 I ka videyo ci cogo di</h2>
+            <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+              <li>I yɛrɛ ja miniti 3 kɔnɔ ni i ka telefɔni ye</li>
+              <li>A fɔ: i tɔgɔ, i ka porozɛ, gɛlɛya min i bɛ ɲɛnabɔ, ani waridonnaw bɛna kɛ mun na</li>
+              <li>I ka videyo ci nimɔrɔ min bɛ duguma WhatsApp walima Telegram kan</li>
+              <li>I tɔgɔ, i sigiyɔrɔ, i ta, ani nimɔrɔ min kɔnɔ u bɛ se ka i sɔrɔ</li>
+            </ol>
+          </div>
+
+          <div class="bg-stone-900 rounded-xl p-5 border border-amber-400/30 text-center mb-4">
+            <p class="text-xs text-amber-300 font-bold uppercase tracking-wider mb-1">Jury ka nimɔrɔ</p>
+            <p class="text-3xl sm:text-4xl font-black text-white tracking-wider">{campaign.submission.juryWhatsappDisplay}</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-xl text-center text-sm no-underline transition-colors shadow-md">WhatsApp</a>
+            <a href={tgUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-5 rounded-xl text-center text-sm no-underline transition-colors shadow-md">Telegram</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- N'KO -->
+      <section id="nko" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
+        <div class="p-6 sm:p-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">ߒߞߏ</div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title mb-4">ߊߟߎ߫ ߦߋ߫ ߊߟߎ߫ ߟߊ߫ ߦߋߕߊ ߗߋ߫ ߛߙߊߥߵߟߊ ߟߎ߬ ߡߊ߬</h1>
+
+          <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70 mb-4">
+            <h2 class="text-sm font-black text-stone-900 mb-2">🏆 ߊߟߎ߫ ߘߌ߫ ߛߐ߬ߘߐ߲߬ ߡߍ߲ ߠߎ߬</h2>
+            <ul class="text-sm text-stone-700 space-y-1">
+              <li><strong>ߛߙߊߥߵ ߓߊ ߃</strong> ߁߀߀ ߀߀߀ FCFA ߘߐ ߓߍ</li>
+              <li><strong>ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߯ ߁߀</strong> ߦߌ߬ߘߊ߬ߣߍ߲߫ ߡߊߟߌ߫ ߓߊ߯ߙߊ߫ ߞߐߜߍ߫ ߞߎ߲߬ߠߊ߬ߛߌ߰ߡߊ ߘߏ߫ ߞߊ߲߬</li>
+            </ul>
+          </div>
+
+          <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 mb-4">
+            <h2 class="text-sm font-black text-stone-900 mb-2">📹 ߦߋߕߊ ߗߋ߫ ߢߊ ߡߍ߲</h2>
+            <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+              <li>ߊߟߎ߫ ߦߋ߫ ߊߟߎ߫ ߖߍ߬ߘߍ ߦߋ߫ ߦߋߕߊ ߘߏ߫ ߘߐ߫ ߡߎ߬ߕߎ߲߬ ߡߌ߬ߛߍ߲߬ ߃ ߞߘߐ߫ ߊߟߎ߫ ߟߊ߫ ߜߋߟߋ߲ߜߋߟߋ߲ ߠߊ߫</li>
+              <li>ߊߟߎ߫ ߦߴߊߟߎ߫ ߕߐ߮ ߝߐ߫، ߊߟߎ߫ ߟߊ߫ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ (ߔߙߏߖߍ)، ߕߌ߰ߟߊ߬ߞߟߊ߬ ߡߍ߲ ߦߴߊߟߎ߫ ߦߋ߫ ߛߏ߲߬ߘߐ߫ ߟߊ߫، ߊ߬ ߣߌ߫ ߝߟߏ߬ ߞߍߕߐ߫ ߡߍ߲ ߘߐ߫ ߟߊߓߊ߯ߙߊ߫ ߟߊ߫</li>
+              <li>ߦߋߕߊ ߗߋ߫ ߝߙߍߕߍ ߡߊ߬ ߘߎ߰ߟߊ߫ ߸ WhatsApp ߥߟߊ߫ Telegram ߞߊ߲߬</li>
+              <li>ߊߟߎ߫ ߕߐ߮، ߊߟߎ߫ ߛߏ، ߊ߬ ߣߌ߫ ߝߙߍߕߍ ߘߏ߫ ߟߊߝߌ߲߬ ߛߴߊߟߎ߫ ߘߌ߫ ߛߋ߫ ߡߍ߲ ߠߊߞߎ߲߬ߣߍ߲߫ ߠߊ߫</li>
+            </ol>
+          </div>
+
+          <div class="bg-stone-900 rounded-xl p-5 border border-amber-400/30 text-center mb-4">
+            <p class="text-xs text-amber-300 font-bold uppercase tracking-wider mb-1">ߛߙߊߥߵߟߊ ߟߎ߬ ߟߊ߫ ߝߙߍߕߍ</p>
+            <p class="text-3xl sm:text-4xl font-black text-white tracking-wider">{campaign.submission.juryWhatsappDisplay}</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-xl text-center text-sm no-underline transition-colors shadow-md">WhatsApp</a>
+            <a href={tgUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-5 rounded-xl text-center text-sm no-underline transition-colors shadow-md">Telegram</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="text-center mb-8">
+        <a href={`/concours/${campaign.slug}/simple`} class="text-xs font-bold text-stone-500 hover:text-stone-800 no-underline inline-flex items-center gap-1">
+          <span>←</span>
+          <span>Retour à la page simplifiée du concours</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
+    slot="footer"
+    institution={siteConfig.institution}
+    partnerLogos={footerLogos}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
