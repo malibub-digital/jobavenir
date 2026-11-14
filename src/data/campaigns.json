@@ -36,10 +36,10 @@
       "submission": {
         "deadline": "30 Novembre 2026 à 23h59",
         "maxDurationMinutes": 3,
-        "juryWhatsappNumber": "+22370000000",
-        "juryWhatsappDisplay": "+223 70 00 00 00",
-        "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Je suis membre du groupe communautaire et je vous envoie ma vidéo de participation au Concours d'Innovation.",
-        "juryTelegramUsername": "malijob_jury",
+        "juryWhatsappNumber": "+22370514040",
+                "juryWhatsappDisplay": "+223 70 51 40 40",
+                "juryWhatsappPrefill": "Bonjour l'équipe Mali Job ! Voici ma vidéo et mes coordonnées pour le Concours d'Innovation.",
+                "juryTelegramUsername": "malijob_innovation",
         "juryTelegramUrl": "https://t.me/malijob_innovation",
         "introText": "Filmez-vous simplement avec votre téléphone en moins de 3 minutes. Pas besoin de matériel professionnel ni de dossier écrit !",
         "videoQuestions": [
