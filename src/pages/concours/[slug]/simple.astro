@@ -1,0 +1,186 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MinimalHeader from "../../../components/MinimalHeader.astro";
+import Footer from "@malihub/sites-core/components/Footer.astro";
+import siteConfig from "../../../../site.config.json";
+import campaignsData from "../../../data/campaigns.json";
+
+const { slug } = Astro.params;
+const allCampaigns = campaignsData.campaigns || [];
+let campaign: any = allCampaigns.find((c: any) => c.slug === slug);
+
+if (!campaign && (slug === "innovation-2026" || slug === "innovation-2026-c1")) {
+  campaign = allCampaigns.find((c: any) => c.slug === "innovation-2026-c1" || c.slug === (siteConfig as any).activeCampaignSlug);
+}
+
+if (!campaign) {
+  return Astro.redirect(`/concours/${(siteConfig as any).activeCampaignSlug || "innovation-2026-c1"}`);
+}
+
+const footerLogos = [
+  { src: "/images/logo-apej.svg", alt: "APEJ Mali" },
+  { src: "/images/logo-eoj.svg", alt: "EOJ Mali" },
+  { src: "/images/logo-particip.png", alt: "PartiCIP" },
+];
+---
+
+<BaseLayout title={`Concours d'Innovation — Mali Job (Bamanankan & N'Ko)`}
+  description="Simplified multilingual campaign page in French, Bambara and N'Ko."
+>
+  <MinimalHeader slot="header" />
+
+  <main class="py-8 sm:py-12 bg-stone-50 min-h-screen">
+    <div class="ml-container max-w-4xl mx-auto px-4">
+
+      <!-- Language tabs -->
+      <div class="flex gap-2 mb-6 border-b border-stone-200 pb-2">
+        <a href="#francais" class="px-3 py-1.5 rounded-t-lg text-xs font-bold bg-white border border-stone-200 text-stone-900 no-underline">Français</a>
+        <a href="#bamanankan" class="px-3 py-1.5 rounded-t-lg text-xs font-bold bg-amber-50 border border-amber-200 text-stone-700 no-underline">Bamanankan</a>
+        <a href="#nko" class="px-3 py-1.5 rounded-t-lg text-xs font-bold bg-amber-50 border border-amber-200 text-stone-700 no-underline">ߒߞߏ</a>
+      </div>
+
+      <!-- FRANÇAIS -->
+      <section id="francais" class="bg-white rounded-3xl border border-stone-200 shadow-sm mb-8 scroll-mt-20">
+        <div class="p-6 sm:p-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/60 mb-4">Français</div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Grand Concours d'Innovation Mali Job</h1>
+          <p class="text-base font-bold text-orange-600 mb-5">{campaign.prizes.grandPrizeCount} × {campaign.prizes.grandPrizeAmount} + {campaign.prizes.laureateCount} projets mis en lumière</p>
+
+          <div class="space-y-4">
+            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70">
+              <h2 class="text-sm font-black text-stone-900 mb-2">🏆 Ce que vous pouvez gagner</h2>
+              <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
+                <li><strong>{campaign.prizes.grandPrizeCount} Grand Prix</strong> de {campaign.prizes.grandPrizeAmount} chacun pour lancer votre projet</li>
+                <li><strong>{campaign.prizes.laureateCount} projets</strong> publiés sur une page officielle Mali Job pour être vus par des partenaires et investisseurs</li>
+              </ul>
+            </div>
+
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+              <h2 class="text-sm font-black text-stone-900 mb-2">📹 Comment participer ?</h2>
+              <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+                <li>Rejoignez notre groupe WhatsApp ou Telegram (liens ci-dessous)</li>
+                <li>Filmez une vidéo de <strong>moins de 3 minutes</strong> avec votre téléphone</li>
+                <li>Présentez votre projet : le problème que vous résolvez et votre solution</li>
+                <li>Envoyez votre vidéo au numéro qui vous sera donné dans le groupe</li>
+              </ol>
+            </div>
+
+            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70">
+              <h2 class="text-sm font-black text-stone-900 mb-1">🆓 C'est gratuit</h2>
+              <p class="text-sm text-stone-700">Aucun frais de participation. Ouvert à tous les jeunes porteurs de projets au Mali.</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
+              <h2 class="text-sm font-black text-stone-900 mb-3">💬 Rejoignez les groupes</h2>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Rejoindre WhatsApp</a>
+                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Rejoindre Telegram</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BAMANANKAN -->
+      <section id="bamanankan" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
+        <div class="p-6 sm:p-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">Bamanankan</div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Mali Job ka ߢߣߊߕߊߟߌ߫ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ߬ߟߌ߬ߟߊ ߟߎ߬</h1>
+          <p class="text-base font-bold text-orange-600 mb-5">{campaign.prizes.grandPrizeCount} × {campaign.prizes.grandPrizeAmount} + {campaign.prizes.laureateCount} ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ ߟߎ߬ ߦߋ߫ ߟߊߞߊ߬ߟߌ߬ ߟߊ߫</p>
+
+          <div class="space-y-4">
+            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70">
+              <h2 class="text-sm font-black text-stone-900 mb-2">🏆 ߌ ߦߋ߫ ߛߐ߬ߘߐ߲߬ ߠߊ߫ ߡߎ߬ߕߎ߲߬</h2>
+              <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
+                <li><strong>{campaign.prizes.grandPrizeCount} ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ</strong> ߓߐ߫ ߁߀߀ ߀߀߀ FCFA ߞߋ߬ߟߋ߲߬ߞߋ߬ߟߋ߲߬ߠߊ</li>
+                <li><strong>{campaign.prizes.laureateCount} ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ</strong> Mali Job ߞߐߜߍ߫ ߞߊ߬ߣߌ߲߬ ߞߊ߲߬</li>
+              </ul>
+            </div>
+
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+              <h2 class="text-sm font-black text-stone-900 mb-2">📹 ߌ ߦߋ߫ ߘߏ߲߬ ߠߊ߫ ߘߌ߫ ߘߏ߲߬ ߘߐ߫ ߘߌ߬ ?</h2>
+              <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+                <li>ߘߏ߲߬ ߊ߲ ߠߊ߫ WhatsApp ߥߟߊ߫ Telegram ߞߙߎ ߘߐ߫</li>
+                <li>ߥߊ߲߬ߥߊ߲߫ ߥߊ߲߬ߥߊ߲߫ ߃ ߘߌ߫ ߌ ߟߊ߫ ߘߐ߬ߞߐ ߟߊ߫</li>
+                <li>ߌ ߟߊ߫ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ ߟߊ߬ߘߌ߬ߡߛߏ ߞߌ߲߬ ߘߐ߫</li>
+                <li>ߌ ߟߊ߫ ߥߊ߲߬ߥߊ߲ ߗߋ߫ ߝߙߍߕߍ߫ ߡߍ߲ ߘߌ߫ ߘߌ߫ ߞߙߎ ߘߐ߫</li>
+              </ol>
+            </div>
+
+            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70">
+              <h2 class="text-sm font-black text-stone-900 mb-1">🆓 ߊ߬ ߦߋ߫ ߘߋ߲߬ߓߐ߫ ߟߊ߫</h2>
+              <p class="text-sm text-stone-700">ߘߏ߲߬ߠߌ߲ ߛߐ߬ߘߐ߲߬ ߛߌ߫ ߕߍ߫. ߘߊߦߟߍ߬ߡߊ߲߬ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ ߘߐ߫ ߛߊ߲ߡߊߛߓߍ ߟߎ߬ ߦߋ߫ ߡߊ߯ߟߌ ߟߊ߫</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
+              <h2 class="text-sm font-black text-stone-900 mb-3">💬 ߘߏ߲߬ ߞߙߎ ߟߎ߬ ߘߐ߫</h2>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">WhatsApp ߘߏ߲߬</a>
+                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Telegram ߘߏ߲߬</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- N'KO -->
+      <section id="nko" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
+        <div class="p-6 sm:p-8">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">ߒߞߏ</div>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">ߡߊߟߌ ߖߏߓ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ߬ߟߌ߬ߟߊ</h1>
+          <p class="text-base font-bold text-orange-600 mb-5">{campaign.prizes.grandPrizeCount} × {campaign.prizes.grandPrizeAmount} + {campaign.prizes.laureateCount} ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ ߟߎ߬ ߟߊߞߊ߬ߟߌ߬ ߟߊ߫</p>
+
+          <div class="space-y-4">
+            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70">
+              <h2 class="text-sm font-black text-stone-900 mb-2">🏆 ߌ ߘߌ߫ ߛߐ߬ߘߐ߲߬ ߡߍ߲ ߠߎ߬</h2>
+              <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
+                <li><strong>{campaign.prizes.grandPrizeCount} ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ</strong> ߓߐ߫ ߁߀߀ ߀߀߀ FCFA</li>
+                <li><strong>{campaign.prizes.laureateCount} ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ</strong> Mali Job ߞߐߜߍ߫ ߞߊ߬ߣߌ߲߬ ߞߊ߲߬</li>
+              </ul>
+            </div>
+
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+              <h2 class="text-sm font-black text-stone-900 mb-2">📹 ߌ ߘߌ߫ ߘߏ߲߬ ߠߊ߫ ߘߏ߲߬ ߘߐ߫ ߘߌ߬؟</h2>
+              <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+                <li>WhatsApp ߥߟߊ߫ Telegram ߞߙߎ ߘߏ߲߬</li>
+                <li>ߥߊ߲߬ߥߊ߲߫ ߃ ߘߌ߫ ߥߊ߲߬ߥߊ߲߫</li>
+                <li>ߌ ߟߊ߫ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ߓߊ ߟߊ߬ߘߌ߬ߡߛߏ</li>
+                <li>ߥߊ߲߬ߥߊ߲ ߗߋ߫ ߞߙߎ ߘߐ߫ ߝߙߍߕߍ ߡߊ߬</li>
+              </ol>
+            </div>
+
+            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70">
+              <h2 class="text-sm font-black text-stone-900 mb-1">🆓 ߊ߬ ߦߋ߫ ߕߐ߮ ߟߋ߬</h2>
+              <p class="text-sm text-stone-700">ߘߏ߲߬ߠߌ߲ ߛߐ߬ߘߐ߲߬ ߛߌ߫ ߕߍ߫. ߡߊ߯ߟߌ ߣߊ߲߬ߕߌ߮ ߟߎ߬ ߟߊ߫ ߞߊ߬ߙߊ߲߬ߘߋ߲߬ ߓߍ߯ ߦߋ߫ ߘߊߦߟߍ߬ ߟߊ߫</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
+              <h2 class="text-sm font-black text-stone-900 mb-3">💬 ߞߙߎ ߟߎ߬ ߘߏ߲߬</h2>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">WhatsApp ߘߏ߲߬</a>
+                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Telegram ߘߏ߲߬</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="text-center mb-8">
+        <a href={`/concours/${campaign.slug}`} class="text-xs font-bold text-stone-500 hover:text-stone-800 no-underline inline-flex items-center gap-1">
+          <span>←</span>
+          <span>Voir la page complète du concours (français)</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer serviceName={siteConfig.title} serviceTagline="un dispositif de l'APEJ"
+    slot="footer"
+    institution={siteConfig.institution}
+    partnerLogos={footerLogos}
+    contact={siteConfig.contact}
+    footerLinks={siteConfig.footerLinks}
+  />
+</BaseLayout>
