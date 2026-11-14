@@ -42,6 +42,10 @@
         "juryTelegramUsername": "malijob_innovation",
         "juryTelegramUrl": "https://t.me/malijob_innovation",
         "introText": "Filmez-vous simplement avec votre téléphone en moins de 3 minutes. Pas besoin de matériel professionnel ni de dossier écrit !",
+        "languages": {
+          "label": "Vidéo en français ou en bambara",
+          "text": "Vous pouvez présenter votre projet en français ou en bambara (bamanankan) : les deux langues sont acceptées, sans pénalité. Parlez dans la langue où vous êtes le plus à l'aise !"
+        },
         "videoQuestions": [
           {
             "step": 1,
@@ -71,6 +75,7 @@
         "tips": [
           "Endroit bien éclairé et sans bruit pour qu'on vous entende bien.",
           "Durée max : 3 minutes chrono.",
+          "Langues acceptées : français ou bambara (bamanankan).",
           "Indiquez un numéro de téléphone joignable pour vous recontacter si vous êtes sélectionné."
         ]
       },
@@ -130,6 +135,10 @@
         "juryTelegramUsername": "malijob_innovation",
         "juryTelegramUrl": "https://t.me/malijob_innovation",
         "introText": "Filmez votre exploitation, votre atelier de transformation ou votre équipement en moins de 3 minutes avec votre téléphone.",
+        "languages": {
+          "label": "Vidéo en français ou en bambara",
+          "text": "Vous pouvez présenter votre projet en français ou en bambara (bamanankan) : les deux langues sont acceptées, sans pénalité. Parlez dans la langue où vous êtes le plus à l'aise !"
+        },
         "videoQuestions": [
           {
             "step": 1,
@@ -159,6 +168,7 @@
         "tips": [
           "Filmez directement sur votre parcelle, ferme ou atelier à la lumière du jour.",
           "Durée maximale : 3 minutes.",
+          "Langues acceptées : français ou bambara (bamanankan).",
           "Précisez votre nom, votre localité et votre téléphone dans le message."
         ]
       },

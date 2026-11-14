@@ -104,6 +104,17 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
         </div>
       </div>
 
+      <!-- LANGUES ACCEPTÉES POUR LA VIDÉO -->
+      {campaign.submission?.languages && (
+        <div class="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-4">
+          <span class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-lg" aria-hidden="true">🗣️</span>
+          <div class="min-w-0">
+            <div class="text-sm sm:text-base font-black text-emerald-950 leading-snug">{campaign.submission.languages.label}</div>
+            <p class="text-xs sm:text-sm text-emerald-900 mt-1 mb-0 leading-normal">{campaign.submission.languages.text}</p>
+          </div>
+        </div>
+      )}
+
       <!-- 2. REJOINDRE LE GROUPE POUR (2 RAISONS SIMPLES) -->
       <div class="border-t border-stone-200/80 pt-5 mb-5">
         <div class="text-sm sm:text-base font-black text-stone-900 mb-3 flex items-center gap-2">
@@ -115,7 +126,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
           <div class="flex items-center gap-3 bg-amber-50/90 px-4 py-3 rounded-xl border border-amber-200">
             <span class="w-6 h-6 rounded-full bg-orange-600 text-white text-xs font-black flex items-center justify-center shrink-0 shadow-xs">1</span>
             <span class="text-xs sm:text-sm text-stone-800">
-              <strong>Participer au concours</strong> <span class="text-stone-600">(consignes dans le groupe : 1 vidéo simple &lt; 3 min)</span>
+              <strong>Participer au concours</strong> <span class="text-stone-600">(consignes dans le groupe : 1 vidéo simple &lt; 3 min, en français ou en bambara)</span>
             </span>
           </div>
 
@@ -220,7 +231,7 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
           <h3 class="text-base sm:text-lg font-black text-stone-900 font-title leading-snug m-0">Vérification de recevabilité</h3>
           <div class="col-span-2 sm:col-span-1 sm:col-start-2 min-w-0">
             <p class="text-sm text-stone-600 leading-relaxed m-0">
-              L'équipe Mali Job vérifie que chaque candidature respecte les conditions du concours&nbsp;: projet porté au Mali, format vidéo inférieur à 3&nbsp;minutes, présentation claire du problème résolu et de la solution proposée.
+              L'équipe Mali Job vérifie que chaque candidature respecte les conditions du concours&nbsp;: projet porté au Mali, format vidéo inférieur à 3&nbsp;minutes (en français ou en bambara), présentation claire du problème résolu et de la solution proposée.
             </p>
           </div>
         </div>
