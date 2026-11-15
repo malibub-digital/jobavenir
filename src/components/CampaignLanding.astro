@@ -115,6 +115,17 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
         </div>
       )}
 
+      <!-- CONFIDENTIALITÉ DE LA VIDÉO -->
+      {campaign.submission?.confidentiality && (
+        <div class="mb-6 flex items-start gap-3 rounded-2xl border border-stone-300 bg-stone-50 p-4">
+          <span class="w-10 h-10 rounded-xl bg-stone-800 text-white flex items-center justify-center shrink-0 text-lg" aria-hidden="true">🔒</span>
+          <div class="min-w-0">
+            <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">{campaign.submission.confidentiality.label}</div>
+            <p class="text-xs sm:text-sm text-stone-700 mt-1 mb-0 leading-normal">{campaign.submission.confidentiality.text}</p>
+          </div>
+        </div>
+      )}
+
       <!-- 2. REJOINDRE LE GROUPE POUR (2 RAISONS SIMPLES) -->
       <div class="border-t border-stone-200/80 pt-5 mb-5">
         <div class="text-sm sm:text-base font-black text-stone-900 mb-3 flex items-center gap-2">
