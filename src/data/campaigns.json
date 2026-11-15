@@ -46,6 +46,14 @@
           "label": "Vidéo en français ou en bambara",
           "text": "Vous pouvez présenter votre projet en français ou en bambara (bamanankan) : les deux langues sont acceptées, sans pénalité. Parlez dans la langue où vous êtes le plus à l'aise !"
         },
+        "confidentiality": {
+          "label": "Votre vidéo reste confidentielle",
+          "text": "Elle ne sera jamais diffusée : seuls les membres du jury la verront."
+        },
+        "faceOptional": {
+          "label": "Montrer votre visage n'est pas obligatoire",
+          "text": "Ce qui nous intéresse d'abord, c'est votre projet. Vous pouvez filmer votre produit, votre atelier ou votre terrain, et parler en voix off si vous préférez."
+        },
         "videoQuestions": [
           {
             "step": 1,
@@ -138,6 +146,14 @@
         "languages": {
           "label": "Vidéo en français ou en bambara",
           "text": "Vous pouvez présenter votre projet en français ou en bambara (bamanankan) : les deux langues sont acceptées, sans pénalité. Parlez dans la langue où vous êtes le plus à l'aise !"
+        },
+        "confidentiality": {
+          "label": "Votre vidéo reste confidentielle",
+          "text": "Elle ne sera jamais diffusée : seuls les membres du jury la verront."
+        },
+        "faceOptional": {
+          "label": "Montrer votre visage n'est pas obligatoire",
+          "text": "Ce qui nous intéresse d'abord, c'est votre projet. Vous pouvez filmer votre produit, votre atelier ou votre terrain, et parler en voix off si vous préférez."
         },
         "videoQuestions": [
           {
