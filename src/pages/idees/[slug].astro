@@ -264,7 +264,9 @@ const ogImageType = isImageWebp ? 'image/webp' : 'image/jpeg';
               <!-- PARTAGE WHATSAPP -->
               <button
                 type="button"
-                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('Idée de projet pour le Mali : ' + document.title + ' ' + window.location.href), '_blank');`}
+                data-umami-event="share-idea-whatsapp"
+                data-umami-event-idea-slug={idea.slug}
+                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('Idée de projet pour le Mali : ' + document.title + ' ' + window.location.origin + window.location.pathname + '?utm_source=whatsapp&utm_medium=share-button&utm_campaign=partage-idee'), '_blank');`}
                 class="flex-1 py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <i class="ml-icon-whatsapp-line ml-icon--sm"></i>

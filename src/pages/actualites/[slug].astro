@@ -76,9 +76,9 @@ const pageDescription = article.excerpt || article.title;
 const isJpg = ogImageUrl.toLowerCase().endsWith('.jpg') || ogImageUrl.toLowerCase().endsWith('.jpeg');
 const isPng = ogImageUrl.toLowerCase().endsWith('.png');
 const ogImageType = isJpg ? 'image/jpeg' : isPng ? 'image/png' : 'image/webp';
-const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`${article.title} — Découvrez ce projet sur Mali Job : ${canonicalUrl}`)}`;
-const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalUrl)}`;
-const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalUrl)}`;
+const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`${article.title} — Découvrez ce projet sur Mali Job : ${canonicalUrl}?utm_source=whatsapp&utm_medium=share-button&utm_campaign=partage-laureat`)}`;
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${canonicalUrl}?utm_source=facebook&utm_medium=share-button&utm_campaign=partage-laureat`)}`;
+const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${canonicalUrl}?utm_source=linkedin&utm_medium=share-button&utm_campaign=partage-laureat`)}`;
 ---
 
 <BaseLayout title={`${article.title} — ${siteConfig.title}`} description={pageDescription}>
@@ -283,6 +283,8 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
                     href={whatsappShareUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-umami-event="share-laureate-whatsapp"
+                    data-umami-event-article={article.slug}
                     class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold no-underline transition-colors"
                   >
                     WhatsApp
@@ -291,6 +293,8 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
                     href={facebookShareUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-umami-event="share-laureate-facebook"
+                    data-umami-event-article={article.slug}
                     class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold no-underline transition-colors"
                   >
                     Facebook
@@ -299,6 +303,8 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
                     href={linkedinShareUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-umami-event="share-laureate-linkedin"
+                    data-umami-event-article={article.slug}
                     class="px-3 py-1.5 rounded-lg bg-sky-700 hover:bg-sky-600 text-white text-xs font-bold no-underline transition-colors"
                   >
                     LinkedIn
@@ -307,6 +313,8 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
                     type="button"
                     id="copy-laureate-url-btn"
                     data-url={canonicalUrl}
+                    data-umami-event="copy-laureate-link"
+                    data-umami-event-article={article.slug}
                     class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold border border-stone-700 cursor-pointer transition-colors inline-flex items-center gap-1"
                   >
                     <i class="ml-icon-attachment-line ml-icon--xs"></i>

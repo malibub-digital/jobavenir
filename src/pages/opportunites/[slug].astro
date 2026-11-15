@@ -422,6 +422,10 @@ const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'im
                 href={job.data.originalUrl || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-umami-event="click-apply-opportunity"
+                data-umami-event-opportunity-id={job.id}
+                data-umami-event-opportunity-type={job.data.opportunityType || "EMPLOI"}
+                data-umami-event-company={job.data.company}
                 class="flex-1 py-4 px-6 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-sm font-black rounded-xl transition-all shadow-md hover:shadow-lg no-underline text-center inline-flex items-center justify-center gap-2 group"
               >
                 <span>{ctaLabel}</span>
@@ -433,7 +437,10 @@ const ogImageType = isImageWebp ? 'image/webp' : (isImagePng ? 'image/png' : 'im
               <!-- PARTAGER SUR WHATSAPP -->
               <button
                 type="button"
-                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${isProject ? "Opportunité" : "Offre"}: ' + document.title + ' ' + window.location.href), '_blank');`}
+                data-umami-event="share-opportunity-whatsapp"
+                data-umami-event-opportunity-id={job.id}
+                data-umami-event-opportunity-type={job.data.opportunityType || "EMPLOI"}
+                onclick={`window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${isProject ? "Opportunité" : "Offre"}: ' + document.title + ' ' + window.location.origin + window.location.pathname + '?utm_source=whatsapp&utm_medium=share-button&utm_campaign=partage-opportunite'), '_blank');`}
                 class="py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <span>{shareLabel}</span>

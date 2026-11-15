@@ -158,6 +158,8 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
             href={campaign.community.whatsappGroupUrl}
             target="_blank"
             rel="noopener noreferrer"
+            data-umami-event="join-community-whatsapp"
+            data-umami-event-campaign={campaign.slug}
             class="bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-extrabold py-3.5 px-5 rounded-2xl shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2.5 no-underline text-sm sm:text-base"
           >
             <svg class="w-5 h-5 shrink-0 fill-current" viewBox="0 0 24 24">
@@ -170,6 +172,8 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
             href={campaign.community.telegramGroupUrl}
             target="_blank"
             rel="noopener noreferrer"
+            data-umami-event="join-community-telegram"
+            data-umami-event-campaign={campaign.slug}
             class="bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white font-extrabold py-3.5 px-5 rounded-2xl shadow-md shadow-sky-600/20 transition-all flex items-center justify-center gap-2.5 no-underline text-sm sm:text-base"
           >
             <svg class="w-5 h-5 shrink-0 fill-current" viewBox="0 0 24 24">
@@ -408,6 +412,8 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
       </div>
       <a
         href={campaign.sponsoring.contactUrl}
+        data-umami-event="click-sponsor-contact"
+        data-umami-event-campaign={campaign.slug}
         class="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-extrabold text-xs sm:text-sm no-underline shrink-0 transition-all shadow-xs inline-flex items-center gap-1.5"
       >
         <i class="ml-icon-mail-line ml-icon--xs"></i>
