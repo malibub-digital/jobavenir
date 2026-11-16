@@ -1,0 +1,79 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  name: string;
+  size?: number | string;
+  class?: string;
+  title?: string;
+}
+
+const {
+  name,
+  size = 48,
+  class: className = '',
+  title,
+} = Astro.props;
+
+// Normalise pictogram name (supports 'digital/innovation' or 'innovation')
+let relativePath = name;
+if (!relativePath.endsWith('.svg')) {
+  relativePath = `${relativePath}.svg`;
+}
+
+// Find path in @malihub/dsml-core/assets/pictograms
+const basePath = path.resolve('node_modules/@malihub/dsml-core/assets/pictograms');
+let targetFile = path.join(basePath, relativePath);
+
+if (!fs.existsSync(targetFile)) {
+  // Try searching in subfolders
+  const subdirs = ['digital', 'institutions', 'document', 'leisure', 'map', 'system', 'environment', 'health', 'buildings', 'accessibility'];
+  const baseName = path.basename(relativePath);
+  for (const dir of subdirs) {
+    const candidate = path.join(basePath, dir, baseName);
+    if (fs.existsSync(candidate)) {
+      targetFile = candidate;
+      break;
+    }
+  }
+}
+
+let svgBody = '';
+let viewBox = '0 0 80 80';
+
+if (fs.existsSync(targetFile)) {
+  let content = fs.readFileSync(targetFile, 'utf-8');
+  content = content.replace(/<style[\s\S]*?<\/style>/gi, '');
+  const vbMatch = content.match(/viewBox="([^"]+)"/i);
+  if (vbMatch) {
+    viewBox = vbMatch[1];
+  }
+  svgBody = content.replace(/<svg[^>]*>|<\/svg>/gi, '').trim();
+  // Ensure unique symbol IDs if multiple pictograms are rendered on the same page
+  const uid = Math.random().toString(36).slice(2, 8);
+  svgBody = svgBody.replace(/id="([^"]+)"/g, `id="${uid}-$1"`);
+  svgBody = svgBody.replace(/href="#([^"]+)"/g, `href="#${uid}-$1"`);
+}
+
+const sizePx = typeof size === 'number' ? `${size}px` : size;
+---
+
+<span
+  class:list={['ml-pictogram', className]}
+  style={`width: ${sizePx}; height: ${sizePx};`}
+  aria-hidden={title ? 'false' : 'true'}
+  role={title ? 'img' : 'presentation'}
+>
+  {svgBody ? (
+    <svg
+      viewBox={viewBox}
+      width={sizePx}
+      height={sizePx}
+      aria-label={title}
+      set:html={svgBody}
+    />
+  ) : (
+    <span class="inline-block bg-stone-100 rounded-lg text-xs p-1">[{name}]</span>
+  )}
+</span>

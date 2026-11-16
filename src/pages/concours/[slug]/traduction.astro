@@ -4,6 +4,7 @@ export const prerender = false;
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import MinimalHeader from "../../../components/MinimalHeader.astro";
 import Footer from "@malihub/sites-core/components/Footer.astro";
+import DsmlPictogram from "../../../components/DsmlPictogram.astro";
 import siteConfig from "../../../../site.config.json";
 import campaignsData from "../../../data/campaigns.json";
 
@@ -49,27 +50,42 @@ const footerLogos = [
           <p class="text-base font-bold text-orange-600 mb-5">{campaign.prizes.grandPrizeCount} × {campaign.prizes.grandPrizeAmount} + {campaign.prizes.laureateCount} projets mis en lumière</p>
 
           <div class="space-y-4">
-            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70">
-              <h2 class="text-sm font-black text-stone-900 mb-2">🏆 Ce que vous pouvez gagner</h2>
-              <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
-                <li><strong>{campaign.prizes.grandPrizeCount} Grand Prix</strong> de {campaign.prizes.grandPrizeAmount} chacun pour lancer votre projet</li>
-                <li><strong>{campaign.prizes.laureateCount} projets</strong> publiés sur une page officielle Mali Job pour être vus par des partenaires et investisseurs</li>
-              </ul>
+            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="institutions/money" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-2">Ce que vous pouvez gagner</h2>
+                <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
+                  <li><strong>{campaign.prizes.grandPrizeCount} Grand Prix</strong> de {campaign.prizes.grandPrizeAmount} chacun pour lancer votre projet</li>
+                  <li><strong>{campaign.prizes.laureateCount} projets</strong> publiés sur une page officielle Mali Job pour être vus par des partenaires et investisseurs</li>
+                </ul>
+              </div>
             </div>
 
-            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
-              <h2 class="text-sm font-black text-stone-900 mb-2">📹 Comment participer ?</h2>
-              <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
-                <li>Rejoignez notre groupe WhatsApp ou Telegram (liens ci-dessous)</li>
-                <li>Filmez une vidéo de <strong>moins de 3 minutes</strong> avec votre téléphone</li>
-                <li>Présentez votre projet : le problème que vous résolvez et votre solution</li>
-                <li>Envoyez votre vidéo au numéro qui vous sera donné dans le groupe</li>
-              </ol>
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-stone-200/80 border border-stone-300 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="leisure/video" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-2">Comment participer ?</h2>
+                <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+                  <li>Rejoignez notre groupe WhatsApp ou Telegram (liens ci-dessous)</li>
+                  <li>Filmez une vidéo de <strong>moins de 3 minutes</strong> avec votre téléphone</li>
+                  <li>Présentez votre projet : le problème que vous résolvez et votre solution</li>
+                  <li>Envoyez votre vidéo au numéro qui vous sera donné dans le groupe</li>
+                </ol>
+              </div>
             </div>
 
-            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70">
-              <h2 class="text-sm font-black text-stone-900 mb-1">🆓 C'est gratuit</h2>
-              <p class="text-sm text-stone-700">Aucun frais de participation. Ouvert à tous les jeunes porteurs de projets au Mali.</p>
+            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="system/success" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-1">C'est gratuit</h2>
+                <p class="text-sm text-stone-700 m-0">Aucun frais de participation. Ouvert à tous les jeunes porteurs de projets au Mali.</p>
+              </div>
             </div>
 
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
@@ -91,27 +107,42 @@ const footerLogos = [
           <p class="text-base font-bold text-orange-600 mb-5">3 x 100.000 FCFA + Porozɛ 10 minnu bɛ jira</p>
 
           <div class="space-y-4">
-            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70">
-              <h2 class="text-sm font-black text-stone-900 mb-2">🏆 I bɛ se ka min sɔrɔ</h2>
-              <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
-                <li><strong>3 Jaraba</strong> 100.000 FCFA kelen-kelen bɛɛ la walasa k’aw ka porozɛ daminɛ</li>
-                <li><strong>Porozɛ 10</strong> jirala Mali Baara ɲɛ ofisiyali dɔ kan walasa jɛɲɔgɔnw ni waridonnaw bɛna u ye</li>
-              </ul>
+            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="institutions/money" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-2">I bɛ se ka min sɔrɔ</h2>
+                <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
+                  <li><strong>3 Jaraba</strong> 100.000 FCFA kelen-kelen bɛɛ la walasa k’aw ka porozɛ daminɛ</li>
+                  <li><strong>Porozɛ 10</strong> jirala Mali Baara ɲɛ ofisiyali dɔ kan walasa jɛɲɔgɔnw ni waridonnaw bɛna u ye</li>
+                </ul>
+              </div>
             </div>
 
-            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
-              <h2 class="text-sm font-black text-stone-900 mb-2">📹 Aw bɛ se ka aw sen don a la cogo di?</h2>
-              <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
-                <li>Aw ka fara an ka WhatsApp walima Telegram kulu kan (lienw bɛ duguma)</li>
-                <li>Wideyo min tɛ miniti 3 bɔ, o ta ni i ka telefɔni ye</li>
-                <li>Aw ye aw ka poroze jira: aw bɛ gɛlɛya min ɲɛnabɔ ani aw ka fura</li>
-                <li>I ka wideyo ci nimɔrɔ min dira kulu kɔnɔ</li>
-              </ol>
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-stone-200/80 border border-stone-300 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="leisure/video" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-2">Aw bɛ se ka aw sen don a la cogo di?</h2>
+                <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+                  <li>Aw ka fara an ka WhatsApp walima Telegram kulu kan (lienw bɛ duguma)</li>
+                  <li>Wideyo min tɛ miniti 3 bɔ, o ta ni i ka telefɔni ye</li>
+                  <li>Aw ye aw ka poroze jira: aw bɛ gɛlɛya min ɲɛnabɔ ani aw ka fura</li>
+                  <li>I ka wideyo ci nimɔrɔ min dira kulu kɔnɔ</li>
+                </ol>
+              </div>
             </div>
 
-            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70">
-              <h2 class="text-sm font-black text-stone-900 mb-1">🆓 A ye fu ye</h2>
-              <p class="text-sm text-stone-700">U sendon sara tɛ. A dabɔra ka ɲɛsin porozɛ ɲɛmɔgɔ kamalenninw bɛɛ ma Mali kɔnɔ.</p>
+            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="system/success" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-1">A ye fu ye</h2>
+                <p class="text-sm text-stone-700 m-0">U sendon sara tɛ. A dabɔra ka ɲɛsin porozɛ ɲɛmɔgɔ kamalenninw bɛɛ ma Mali kɔnɔ.</p>
+              </div>
             </div>
 
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
@@ -133,27 +164,42 @@ const footerLogos = [
           <p class="text-base font-bold text-orange-600 mb-5">߃ x ߁߀߀ ߀߀߀ FCFA + ߔߙߏߖߍ ߁߀ ߡߊߦߋߙߋ߲ߣߋ߲ߥߵ</p>
 
           <div class="space-y-4">
-            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70">
-              <h2 class="text-sm font-black text-stone-900 mb-2">🏆 ߌ ߓߋ߫ ߛߋ߫ ߞߊ߬ ߡߌ߲ ߛߙߐ߬</h2>
-              <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
-                <li><strong>ߛߙߊߥߵ ߓߊ ߃</strong> ߁߀߀ ߀߀߀ FCFA ߘߐ ߓߍ ߥߟߊߛߊ߫ ߞߴߊߥߵ ߞߊ߫ ߔߙߏߖߍ ߘߊߡߌ߬ߣߍ߬</li>
-                <li><strong>ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߯ ߁߀</strong> ߦߌ߬ߘߊ߬ߣߍ߲߫ ߡߊߟߌ߫ ߓߊ߯ߙߊ߫ ߞߐߜߍ߫ ߞߎ߲߬ߠߊ߬ߛߌ߰ߡߊ ߘߏ߫ ߞߊ߲߬</li>
-              </ul>
+            <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200/70 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="institutions/money" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-2">ߌ ߓߋ߫ ߛߋ߫ ߞߊ߬ ߡߌ߲ ߛߙߐ߬</h2>
+                <ul class="text-sm text-stone-700 space-y-1.5 list-disc pl-4">
+                  <li><strong>ߛߙߊߥߵ ߓߊ ߃</strong> ߁߀߀ ߀߀߀ FCFA ߘߐ ߓߍ ߥߟߊߛߊ߫ ߞߴߊߥߵ ߞߊ߫ ߔߙߏߖߍ ߘߊߡߌ߬ߣߍ߬</li>
+                  <li><strong>ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߯ ߁߀</strong> ߦߌ߬ߘߊ߬ߣߍ߲߫ ߡߊߟߌ߫ ߓߊ߯ߙߊ߫ ߞߐߜߍ߫ ߞߎ߲߬ߠߊ߬ߛߌ߰ߡߊ ߘߏ߫ ߞߊ߲߬</li>
+                </ul>
+              </div>
             </div>
 
-            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
-              <h2 class="text-sm font-black text-stone-900 mb-2">📹 ߊ߲ ߓߋ߫ ߛߋ߫ ߞߊ߬ ߢߍߛߌ߲ ߗߜ߭ߏߘߌ؟</h2>
-              <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
-                <li>ߊߥߵ ߦߋ߫ ߊߥߵ ߜ߭ߟߍߦߊ ߊ߲ ߞߊ ߥߊߕߌߥߊߕߌ ߥߊߟߌߡߊ ߕߍߟߍߜ߭ߙߊߡߎ ߞߟߎ ߟߊ߫</li>
-                <li>ߦߋߕߊ ߘߏ߫ ߞߎ߲߬ߘߎ߫ ߡߍ߲ ߞߊ߫ ߘߐ߯ ߡߌ߬ߛߍ߲߬ ߃ ߘߌ߫ ߌ ߟߊ߫ ߜߋߟߋ߲ߜߋߟߋ߲ ߠߊ߫</li>
-                <li>ߊߥߵ ߦߴߊߥߵ ߞߊ߫ ߔߙߏߖߍ ߦߌ߬ߙߊ߬</li>
-                <li>ߌ ߟߊ߫ ߦߋߕߊ ߟߊߕߊ߯ ߝߙߍߕߍ ߡߊ߬ ߡߍ߲ ߦߴߌ ߟߊ߫ ߞߙߎ ߘߐ߫</li>
-              </ol>
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-stone-200/80 border border-stone-300 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="leisure/video" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-2">ߊ߲ ߓߋ߫ ߛߋ߫ ߞߊ߬ ߢߍߛߌ߲ ߗߜ߭ߏߘߌ؟</h2>
+                <ol class="text-sm text-stone-700 space-y-1.5 list-decimal pl-4">
+                  <li>ߊߥߵ ߦߋ߫ ߊߥߵ ߜ߭ߟߍߦߊ ߊ߲ ߞߊ ߥߊߕߌߥߊߕߌ ߥߊߟߌߡߊ ߕߍߟߍߜ߭ߙߊߡߎ ߞߟߎ ߟߊ߫</li>
+                  <li>ߦߋߕߊ ߘߏ߫ ߞߎ߲߬ߘߎ߫ ߡߍ߲ ߞߊ߫ ߘߐ߯ ߡߌ߬ߛߍ߲߬ ߃ ߘߌ߫ ߌ ߟߊ߫ ߜߋߟߋ߲ߜߋߟߋ߲ ߠߊ߫</li>
+                  <li>ߊߥߵ ߦߴߊߥߵ ߞߊ߫ ߔߙߏߖߍ ߦߌ߬ߙߊ߬</li>
+                  <li>ߌ ߟߊ߫ ߦߋߕߊ ߟߊߕߊ߯ ߝߙߍߕߍ ߡߊ߬ ߡߍ߲ ߦߴߌ ߟߊ߫ ߞߙߎ ߘߐ߫</li>
+                </ol>
+              </div>
             </div>
 
-            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70">
-              <h2 class="text-sm font-black text-stone-900 mb-1">🆓 ߊ ߕߋ߫ ߝߎߛߊ ߦߋ߫</h2>
-              <p class="text-sm text-stone-700">ߕߘߍ߬ߒ߬ߘߐ߬ߟߌ ߟߊߒߞߎ߲߫ ߕߍ߫. ߊ߬ ߘߊߦߟߍ߬ߣߍ߲߫ ߝߎߣߎ߲ߞߋ߫ ߝߎߣߎ߲ߞߋ ߟߎ߬ ߦߋ߫ ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߮ ߢߍߡߌߘߊ ߟߎ߬ ߦߋ߫ ߡߊ߬ߟߌ ߞߣߐ߫.</p>
+            <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/70 flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-lg bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0">
+                <DsmlPictogram name="system/success" size={26} />
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-sm font-black text-stone-900 mb-1">ߊ ߕߋ߫ ߝߎߛߊ ߦߋ߫</h2>
+                <p class="text-sm text-stone-700 m-0">ߕߘߍ߬ߒ߬ߘߐ߬ߟߌ ߟߊߒߞߎ߲߫ ߕߍ߫. ߊ߬ ߘߊߦߟߍ߬ߣߍ߲߫ ߝߎߣߎ߲ߞߋ߫ ߝߎߣߎ߲ߞߋ ߟߎ߬ ߦߋ߫ ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߮ ߢߍߡߌߘߊ ߟߎ߬ ߦߋ߫ ߡߊ߬ߟߌ ߞߣߐ߫.</p>
+              </div>
             </div>
 
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">

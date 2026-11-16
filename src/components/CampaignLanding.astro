@@ -1,4 +1,6 @@
 ---
+import DsmlPictogram from './DsmlPictogram.astro';
+
 interface Props {
   campaign: any;
   isHomePrelaunch?: boolean;
@@ -6,6 +8,7 @@ interface Props {
 }
 
 const { campaign, isHomePrelaunch = false } = Astro.props;
+const isAgri = campaign.slug === 'innovation-agricole';
 ---
 
 <!-- BLOC 1 : HERO TOUT-EN-UN ULTRA-ÉPURÉ (LECTURE EN 5 SECONDES) -->
@@ -76,8 +79,8 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
       <!-- 1. CE QU'IL Y A À GAGNER (2 CARTES VALORISÉES) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
         <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-300 flex items-start gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-amber-500 text-stone-950 flex items-center justify-center shrink-0 shadow-sm font-black text-lg">
-            🏆
+          <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name="institutions/money" size={36} />
           </div>
           <div>
             <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">
@@ -90,8 +93,8 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
         </div>
 
         <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-300 flex items-start gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm font-black text-lg">
-            🚀
+          <div class="w-12 h-12 rounded-xl bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name={isAgri ? "environment/leaf" : "digital/innovation"} size={36} />
           </div>
           <div>
             <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">
@@ -106,8 +109,10 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
 
       <!-- LANGUES ACCEPTÉES POUR LA VIDÉO -->
       {campaign.submission?.languages && (
-        <div class="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-4">
-          <span class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-lg" aria-hidden="true">🗣️</span>
+        <div class="mb-6 flex items-start gap-3.5 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-4">
+          <div class="w-11 h-11 rounded-xl bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name="system/language" size={32} />
+          </div>
           <div class="min-w-0">
             <div class="text-sm sm:text-base font-black text-emerald-950 leading-snug">{campaign.submission.languages.label}</div>
             <p class="text-xs sm:text-sm text-emerald-900 mt-1 mb-0 leading-normal">{campaign.submission.languages.text}</p>
@@ -117,8 +122,10 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
 
       <!-- CONFIDENTIALITÉ DE LA VIDÉO -->
       {campaign.submission?.confidentiality && (
-        <div class="mb-6 flex items-start gap-3 rounded-2xl border border-stone-300 bg-stone-50 p-4">
-          <span class="w-10 h-10 rounded-xl bg-stone-800 text-white flex items-center justify-center shrink-0 text-lg" aria-hidden="true">🔒</span>
+        <div class="mb-6 flex items-start gap-3.5 rounded-2xl border border-stone-300 bg-stone-50 p-4">
+          <div class="w-11 h-11 rounded-xl bg-stone-200/80 border border-stone-300 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name="system/padlock" size={32} />
+          </div>
           <div class="min-w-0">
             <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">{campaign.submission.confidentiality.label}</div>
             <p class="text-xs sm:text-sm text-stone-700 mt-1 mb-0 leading-normal">{campaign.submission.confidentiality.text}</p>
@@ -336,28 +343,38 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
 
             <!-- 5 membres du jury -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-5">
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
-                <div class="text-lg mb-1">🏛️</div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
+                <div class="mb-1.5 flex justify-center">
+                  <DsmlPictogram name="buildings/city-hall" size={32} />
+                </div>
                 <div class="text-xs font-bold text-stone-800 leading-tight">APEJ Mali</div>
                 <div class="text-[10px] text-stone-500">1 représentant</div>
               </div>
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
-                <div class="text-lg mb-1">🤝</div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
+                <div class="mb-1.5 flex justify-center">
+                  <DsmlPictogram name="environment/human-cooperation" size={32} />
+                </div>
                 <div class="text-xs font-bold text-stone-800 leading-tight">PartiCIP</div>
                 <div class="text-[10px] text-stone-500">1 représentant</div>
               </div>
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
-                <div class="text-lg mb-1">⭐</div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
+                <div class="mb-1.5 flex justify-center">
+                  <DsmlPictogram name="buildings/companie" size={32} />
+                </div>
                 <div class="text-xs font-bold text-stone-800 leading-tight">Sponsor</div>
                 <div class="text-[10px] text-stone-500">2 représentants</div>
               </div>
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center">
-                <div class="text-lg mb-1">💡</div>
+              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
+                <div class="mb-1.5 flex justify-center">
+                  <DsmlPictogram name="digital/innovation" size={32} />
+                </div>
                 <div class="text-xs font-bold text-stone-800 leading-tight">Entrepreneur</div>
                 <div class="text-[10px] text-stone-500">1 expérimenté</div>
               </div>
-              <div class="col-span-2 sm:col-span-1 bg-amber-50/60 p-3 rounded-xl border border-amber-200 text-center">
-                <div class="text-lg mb-1">⚖️</div>
+              <div class="col-span-2 sm:col-span-1 bg-amber-50/60 p-3 rounded-xl border border-amber-200 text-center flex flex-col items-center">
+                <div class="mb-1.5 flex justify-center">
+                  <DsmlPictogram name="institutions/justice" size={32} />
+                </div>
                 <div class="text-xs font-bold text-stone-800 leading-tight">5 membres</div>
                 <div class="text-[10px] text-stone-500">indépendants</div>
               </div>
@@ -370,7 +387,9 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
               </p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200/70 flex items-start gap-3">
-                  <span class="text-lg shrink-0 mt-0.5">🏅</span>
+                  <div class="w-10 h-10 rounded-xl bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-xs">
+                    <DsmlPictogram name="digital/avatar" size={28} />
+                  </div>
                   <div>
                     <div class="text-xs font-black text-stone-900">10 lauréats</div>
                     <p class="text-xs text-stone-600 m-0 leading-relaxed">
@@ -379,7 +398,9 @@ const { campaign, isHomePrelaunch = false } = Astro.props;
                   </div>
                 </div>
                 <div class="bg-amber-50/80 p-3.5 rounded-xl border border-amber-200/70 flex items-start gap-3">
-                  <span class="text-lg shrink-0 mt-0.5">🏆</span>
+                  <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0 shadow-xs">
+                    <DsmlPictogram name="institutions/money" size={28} />
+                  </div>
                   <div>
                     <div class="text-xs font-black text-stone-900">3 Grands Prix</div>
                     <p class="text-xs text-stone-600 m-0 leading-relaxed">
