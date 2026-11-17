@@ -4,7 +4,7 @@ export const prerender = false;
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import MinimalHeader from "../../../components/MinimalHeader.astro";
 import Footer from "@malihub/sites-core/components/Footer.astro";
-import DsmlPictogram from "../../../components/DsmlPictogram.astro";
+import PremiumIcon from "../../../components/PremiumIcon.astro";
 import siteConfig from "../../../../site.config.json";
 import campaignsData from "../../../data/campaigns.json";
 
@@ -51,22 +51,18 @@ const footerLogos = [
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="institutions/money" size={44} variant="gold" />
-              </div>
+              <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Ce que vous pouvez gagner</h2>
                 <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                  <li><strong>{campaign.prizes.grandPrizeCount} Grand Prix</strong> de {campaign.prizes.grandPrizeAmount} chacun en appui de lancement ou d'amélioration pour accélérer votre projet</li>
+                  <li><strong class="whitespace-nowrap">{campaign.prizes.grandPrizeCount} Grands Prix de&nbsp;{campaign.prizes.grandPrizeAmount}</strong> chacun en appui de lancement ou d'amélioration pour accélérer votre projet</li>
                   <li><strong>{campaign.prizes.laureateCount} projets</strong> publiés sur une page officielle Mali Job pour être vus par des partenaires et investisseurs</li>
                 </ul>
               </div>
             </div>
 
             <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-sky-500/15 border-2 border-sky-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="leisure/video" size={44} variant="river" />
-              </div>
+              <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Comment participer ?</h2>
                 <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
@@ -79,9 +75,7 @@ const footerLogos = [
             </div>
 
             <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="system/success" size={44} variant="emerald" />
-              </div>
+              <PremiumIcon name="success" size={56} variant="emerald" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">C'est gratuit</h2>
                 <p class="text-xs sm:text-sm text-stone-700 m-0">Aucun frais de participation. Ouvert à tous les jeunes porteurs de projets au Mali.</p>
@@ -108,22 +102,18 @@ const footerLogos = [
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="institutions/money" size={44} variant="gold" />
-              </div>
+              <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">I bɛ se ka min sɔrɔ</h2>
                 <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                  <li><strong>3 Jaraba</strong> 100.000 FCFA kelen-kelen bɛɛ la k'aw dɛmɛ ka porozɛ daminɛ walima k'a ɲɛnajira ka teliya</li>
+                  <li><strong class="whitespace-nowrap">3 Jaraba 100.000&nbsp;FCFA</strong> kelen-kelen bɛɛ la k'aw dɛmɛ ka porozɛ daminɛ walima k'a ɲɛnajira ka teliya</li>
                   <li><strong>Porozɛ 10</strong> jirala Mali Baara ɲɛ ofisiyali dɔ kan walasa jɛɲɔgɔnw ni waridonnaw bɛna u ye</li>
                 </ul>
               </div>
             </div>
 
             <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-sky-500/15 border-2 border-sky-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="leisure/video" size={44} variant="river" />
-              </div>
+              <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Aw bɛ se ka aw sen don a la cogo di?</h2>
                 <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
@@ -136,9 +126,7 @@ const footerLogos = [
             </div>
 
             <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="system/success" size={44} variant="emerald" />
-              </div>
+              <PremiumIcon name="success" size={56} variant="emerald" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">A ye fu ye</h2>
                 <p class="text-xs sm:text-sm text-stone-700 m-0">U sendon sara tɛ. A dabɔra ka ɲɛsin porozɛ ɲɛmɔgɔ kamalenninw bɛɛ ma Mali kɔnɔ.</p>
@@ -165,22 +153,18 @@ const footerLogos = [
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="institutions/money" size={44} variant="gold" />
-              </div>
+              <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">ߌ ߓߋ߫ ߛߋ߫ ߞߊ߬ ߡߌ߲ ߛߙߐ߬</h2>
                 <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                  <li><strong>ߛߙߊߥߵ ߓߊ ߃</strong> ߁߀߀ ߀߀߀ FCFA ߘߐ ߓߍ ߥߟߊߛߊ߫ ߞߴߊߥߵ ߞߊ߫ ߔߙߏߖߍ ߘߊߡߌ߬ߣߍ߬</li>
+                  <li><strong class="whitespace-nowrap">ߛߙߊߥߵ ߓߊ ߃ ߁߀߀&nbsp;߀߀߀&nbsp;FCFA</strong> ߘߐ ߓߍ ߥߟߊߛߊ߫ ߞߴߊߥߵ ߞߊ߫ ߔߙߏߖߍ ߘߊߡߌ߬ߣߍ߬</li>
                   <li><strong>ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߯ ߁߀</strong> ߦߌ߬ߘߊ߬ߣߍ߲߫ ߡߊߟߌ߫ ߓߊ߯ߙߊ߫ ߞߐߜߍ߫ ߞߎ߲߬ߠߊ߬ߛߌ߰ߡߊ ߘߏ߫ ߞߊ߲߬</li>
                 </ul>
               </div>
             </div>
 
             <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-sky-500/15 border-2 border-sky-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="leisure/video" size={44} variant="river" />
-              </div>
+              <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">ߊ߲ ߓߋ߫ ߛߋ߫ ߞߊ߬ ߢߍߛߌ߲ ߗߜ߭ߏߘߌ؟</h2>
                 <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
@@ -193,9 +177,7 @@ const footerLogos = [
             </div>
 
             <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 flex items-center gap-4 shadow-xs">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0">
-                <DsmlPictogram name="system/success" size={44} variant="emerald" />
-              </div>
+              <PremiumIcon name="success" size={56} variant="emerald" class="shrink-0" />
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">ߊ ߕߋ߫ ߝߎߛߊ ߦߋ߫</h2>
                 <p class="text-xs sm:text-sm text-stone-700 m-0">ߕߘߍ߬ߒ߬ߘߐ߬ߟߌ ߟߊߒߞߎ߲߫ ߕߍ߫. ߊ߬ ߘߊߦߟߍ߬ߣߍ߲߫ ߝߎߣߎ߲ߞߋ߫ ߝߎߣߎ߲ߞߋ ߟߎ߬ ߦߋ߫ ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߮ ߢߍߡߌߘߊ ߟߎ߬ ߦߋ߫ ߡߊ߬ߟߌ ߞߣߐ߫.</p>

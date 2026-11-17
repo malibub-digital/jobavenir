@@ -1,5 +1,5 @@
 ---
-import DsmlPictogram from './DsmlPictogram.astro';
+import PremiumIcon from './PremiumIcon.astro';
 
 interface Props {
   campaign: any;
@@ -77,14 +77,12 @@ const isAgri = campaign.slug === 'innovation-agricole';
     <div class="bg-white p-5 sm:p-9 rounded-3xl shadow-xl shadow-orange-950/10 border-2 border-orange-200/90 max-w-3xl mx-auto text-left relative z-20">
       
       <!-- 1. CE QU'IL Y A À GAGNER (2 CARTES VALORISÉES) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
-          <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name="institutions/money" size={52} variant="gold" />
-          </div>
-          <div class="min-w-0">
-            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug">
-              {campaign.prizes.grandPrizeCount} Grands Prix de {campaign.prizes.grandPrizeAmount}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-stretch">
+        <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/40 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm hover:shadow-md transition-all flex items-start gap-4">
+          <PremiumIcon name="money" size={56} variant="gold" class="shrink-0 mt-0.5" />
+          <div class="min-w-0 flex-1">
+            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug whitespace-nowrap">
+              {campaign.prizes.grandPrizeCount} Grands Prix de&nbsp;{campaign.prizes.grandPrizeAmount}
             </div>
             <div class="text-xs sm:text-sm text-stone-600 mt-1 leading-normal">
               Appui financier de lancement ou coup d'accélérateur pour améliorer votre business + vitrine officielle.
@@ -92,12 +90,10 @@ const isAgri = campaign.slug === 'innovation-agricole';
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
-          <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name={isAgri ? "environment/leaf" : "digital/innovation"} size={52} variant="emerald" />
-          </div>
-          <div class="min-w-0">
-            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug">
+        <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 shadow-sm hover:shadow-md transition-all flex items-start gap-4">
+          <PremiumIcon name={isAgri ? "leaf" : "innovation"} size={56} variant="emerald" class="shrink-0 mt-0.5" />
+          <div class="min-w-0 flex-1">
+            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug whitespace-nowrap">
               {campaign.prizes.laureateCount} Projets publiés sur Mali Job
             </div>
             <div class="text-xs sm:text-sm text-stone-600 mt-1 leading-normal">
@@ -109,11 +105,9 @@ const isAgri = campaign.slug === 'innovation-agricole';
 
       <!-- LANGUES ACCEPTÉES POUR LA VIDÉO -->
       {campaign.submission?.languages && (
-        <div class="mb-5 flex items-center gap-4 rounded-2xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50/90 via-white to-emerald-50/40 p-4 sm:p-4.5 shadow-xs">
-          <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name="system/language" size={44} variant="emerald" />
-          </div>
-          <div class="min-w-0">
+        <div class="mb-4 flex items-center gap-4 rounded-2xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50/90 via-white to-emerald-50/40 p-4 sm:p-4.5 shadow-xs">
+          <PremiumIcon name="language" size={52} variant="emerald" class="shrink-0" />
+          <div class="min-w-0 flex-1">
             <div class="text-sm sm:text-base font-black text-emerald-950 leading-snug">{campaign.submission.languages.label}</div>
             <p class="text-xs sm:text-sm text-emerald-900 mt-1 mb-0 leading-normal">{campaign.submission.languages.text}</p>
           </div>
@@ -123,10 +117,8 @@ const isAgri = campaign.slug === 'innovation-agricole';
       <!-- CONFIDENTIALITÉ DE LA VIDÉO -->
       {campaign.submission?.confidentiality && (
         <div class="mb-6 flex items-center gap-4 rounded-2xl border-2 border-stone-300 bg-gradient-to-r from-stone-50 via-white to-stone-50/60 p-4 sm:p-4.5 shadow-xs">
-          <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-stone-200/80 border-2 border-stone-300 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name="system/padlock" size={44} variant="default" />
-          </div>
-          <div class="min-w-0">
+          <PremiumIcon name="padlock" size={52} variant="stone" class="shrink-0" />
+          <div class="min-w-0 flex-1">
             <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">{campaign.submission.confidentiality.label}</div>
             <p class="text-xs sm:text-sm text-stone-700 mt-1 mb-0 leading-normal">{campaign.submission.confidentiality.text}</p>
           </div>
@@ -344,36 +336,36 @@ const isAgri = campaign.slug === 'innovation-agricole';
             <!-- 5 membres du jury -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
-                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
-                  <DsmlPictogram name="buildings/city-hall" size={44} variant="default" />
+                <div class="mb-2">
+                  <PremiumIcon name="city-hall" size={48} variant="stone" />
                 </div>
                 <div class="text-xs font-black text-stone-900 leading-tight">APEJ Mali</div>
                 <div class="text-[10px] text-stone-500 mt-0.5">1 représentant</div>
               </div>
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
-                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
-                  <DsmlPictogram name="environment/human-cooperation" size={44} variant="default" />
+                <div class="mb-2">
+                  <PremiumIcon name="human-cooperation" size={48} variant="emerald" />
                 </div>
                 <div class="text-xs font-black text-stone-900 leading-tight">PartiCIP</div>
                 <div class="text-[10px] text-stone-500 mt-0.5">1 représentant</div>
               </div>
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
-                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
-                  <DsmlPictogram name="buildings/companie" size={44} variant="default" />
+                <div class="mb-2">
+                  <PremiumIcon name="companie" size={48} variant="stone" />
                 </div>
                 <div class="text-xs font-black text-stone-900 leading-tight">Sponsor</div>
                 <div class="text-[10px] text-stone-500 mt-0.5">2 représentants</div>
               </div>
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
-                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
-                  <DsmlPictogram name="digital/innovation" size={44} variant="emerald" />
+                <div class="mb-2">
+                  <PremiumIcon name="innovation" size={48} variant="amber" />
                 </div>
                 <div class="text-xs font-black text-stone-900 leading-tight">Entrepreneur</div>
                 <div class="text-[10px] text-stone-500 mt-0.5">1 expérimenté</div>
               </div>
               <div class="col-span-2 sm:col-span-1 bg-gradient-to-b from-amber-50/70 to-white p-3.5 rounded-2xl border border-amber-300 text-center flex flex-col items-center shadow-xs">
-                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-amber-100/60 border border-amber-200/60">
-                  <DsmlPictogram name="institutions/justice" size={44} variant="gold" />
+                <div class="mb-2">
+                  <PremiumIcon name="justice" size={48} variant="gold" />
                 </div>
                 <div class="text-xs font-black text-stone-900 leading-tight">5 membres</div>
                 <div class="text-[10px] text-amber-800 font-semibold mt-0.5">indépendants</div>
@@ -387,9 +379,7 @@ const isAgri = campaign.slug === 'innovation-agricole';
               </p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div class="bg-gradient-to-br from-emerald-50/90 to-white p-4 rounded-xl border-2 border-emerald-300 flex items-center gap-3.5 shadow-xs">
-                  <div class="w-13 h-13 rounded-xl bg-emerald-600/15 border border-emerald-400/50 flex items-center justify-center shrink-0">
-                    <DsmlPictogram name="digital/avatar" size={40} variant="emerald" />
-                  </div>
+                  <PremiumIcon name="avatar" size={48} variant="emerald" class="shrink-0" />
                   <div>
                     <div class="text-sm font-black text-stone-900">10 lauréats</div>
                     <p class="text-xs text-stone-600 m-0 leading-relaxed">
@@ -398,9 +388,7 @@ const isAgri = campaign.slug === 'innovation-agricole';
                   </div>
                 </div>
                 <div class="bg-gradient-to-br from-amber-50/90 to-white p-4 rounded-xl border-2 border-amber-300 flex items-center gap-3.5 shadow-xs">
-                  <div class="w-13 h-13 rounded-xl bg-amber-500/15 border border-amber-400/50 flex items-center justify-center shrink-0">
-                    <DsmlPictogram name="institutions/money" size={40} variant="gold" />
-                  </div>
+                  <PremiumIcon name="money" size={48} variant="gold" class="shrink-0" />
                   <div>
                     <div class="text-sm font-black text-stone-900">3 Grands Prix</div>
                     <p class="text-xs text-stone-600 m-0 leading-relaxed">

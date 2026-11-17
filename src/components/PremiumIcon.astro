@@ -1,0 +1,422 @@
+---
+interface Props {
+  name: string;
+  size?: number | string;
+  variant?: 'gold' | 'emerald' | 'river' | 'amber' | 'stone' | 'purple';
+  class?: string;
+  title?: string;
+}
+
+const {
+  name,
+  size = 48,
+  variant = 'gold',
+  class: className = '',
+  title,
+} = Astro.props;
+
+const sizePx = typeof size === 'number' ? `${size}px` : size;
+
+// Map colors
+const palettes: Record<string, { bgGrad: string; border: string; stroke: string; fill: string; accent: string; glow: string }> = {
+  gold: {
+    bgGrad: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+    border: '#F59E0B',
+    stroke: '#78350F',
+    fill: '#F59E0B',
+    accent: '#D97706',
+    glow: 'rgba(245, 158, 11, 0.25)',
+  },
+  emerald: {
+    bgGrad: 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)',
+    border: '#10B981',
+    stroke: '#064E3B',
+    fill: '#10B981',
+    accent: '#059669',
+    glow: 'rgba(16, 185, 129, 0.25)',
+  },
+  river: {
+    bgGrad: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+    border: '#0284C7',
+    stroke: '#0C4A6E',
+    fill: '#0284C7',
+    accent: '#0369A1',
+    glow: 'rgba(2, 132, 199, 0.25)',
+  },
+  stone: {
+    bgGrad: 'linear-gradient(135deg, #F5F5F4 0%, #E7E5E4 100%)',
+    border: '#78716C',
+    stroke: '#292524',
+    fill: '#78716C',
+    accent: '#57534E',
+    glow: 'rgba(120, 113, 108, 0.2)',
+  },
+  purple: {
+    bgGrad: 'linear-gradient(135deg, #F3E8FF 0%, #DDD6FE 100%)',
+    border: '#8B5CF6',
+    stroke: '#4C1D95',
+    fill: '#8B5CF6',
+    accent: '#7C3AED',
+    glow: 'rgba(139, 92, 246, 0.25)',
+  },
+  amber: {
+    bgGrad: 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)',
+    border: '#F97316',
+    stroke: '#7C2D12',
+    fill: '#F97316',
+    accent: '#EA580C',
+    glow: 'rgba(249, 115, 22, 0.25)',
+  },
+};
+
+const c = palettes[variant] || palettes.gold;
+
+// Base icon identifier
+const iconKey = name.includes('/') ? name.split('/')[1] : name;
+---
+
+<span
+  class:list={['premium-icon-box', className]}
+  style={`width: ${sizePx}; height: ${sizePx};`}
+  aria-hidden={title ? 'false' : 'true'}
+  role={title ? 'img' : 'presentation'}
+>
+  <svg
+    viewBox="0 0 64 64"
+    width="100%"
+    height="100%"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-label={title}
+  >
+    <defs>
+      <!-- Background subtle gradient badge -->
+      <linearGradient id={`grad-${iconKey}-${variant}`} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color={c.bgGrad.split(',')[1].trim()} />
+        <stop offset="100%" stop-color={c.bgGrad.split(',')[2].replace(')', '').trim()} />
+      </linearGradient>
+      
+      <!-- Shadow filter for floating depth -->
+      <filter id={`shadow-${iconKey}`} x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.12)" />
+      </filter>
+    </defs>
+
+    {/* BACKGROUND BADGE */}
+    <rect
+      x="3"
+      y="3"
+      width="58"
+      height="58"
+      rx="16"
+      fill={`url(#grad-${iconKey}-${variant})`}
+      stroke={c.border}
+      stroke-width="1.5"
+      stroke-opacity="0.5"
+    />
+
+    {/* SUBTLE INNER HIGHLIGHT RING */}
+    <rect
+      x="4.5"
+      y="4.5"
+      width="55"
+      height="55"
+      rx="14.5"
+      stroke="#FFFFFF"
+      stroke-width="1"
+      stroke-opacity="0.8"
+    />
+
+    {/* ICON GRAPHIC */}
+    {iconKey === 'money' && (
+      /* TROPHÉE / MONNAIE DE VICTOIRE ULTRA PREMIUM */
+      <g filter={`url(#shadow-${iconKey})`}>
+        {/* Glow halo */}
+        <circle cx="32" cy="27" r="14" fill={c.fill} fill-opacity="0.25" />
+        {/* Cup */}
+        <path
+          d="M22 18H42V28C42 33.5228 37.5228 38 32 38C26.4772 38 22 33.5228 22 28V18Z"
+          fill="#FFFDF5"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        {/* Cup inner gold */}
+        <path
+          d="M25 21H39V27C39 30.866 35.866 34 32 34C28.134 34 25 30.866 25 27V21Z"
+          fill={c.fill}
+          fill-opacity="0.3"
+        />
+        {/* Handles */}
+        <path
+          d="M22 22H17C15.3431 22 14 23.3431 14 25C14 27.7614 16.2386 30 19 30H22"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M42 22H47C48.6569 22 50 23.3431 50 25C50 27.7614 47.7614 30 45 30H42"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+        {/* Stem */}
+        <path d="M32 38V44" stroke={c.stroke} stroke-width="2.5" stroke-linecap="round" />
+        {/* Base */}
+        <path
+          d="M20 48C20 45.7909 21.7909 44 24 44H40C42.2091 44 44 45.7909 44 48H20Z"
+          fill="#FFFDF5"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        <path d="M17 48H47" stroke={c.stroke} stroke-width="2.5" stroke-linecap="round" />
+        {/* Star in cup */}
+        <path
+          d="M32 23L33.2 25.5L36 25.8L34 27.6L34.5 30.3L32 29L29.5 30.3L30 27.6L28 25.8L30.8 25.5L32 23Z"
+          fill={c.accent}
+        />
+      </g>
+    )}
+
+    {(iconKey === 'innovation' || iconKey === 'lightbulb') && (
+      /* AMPOULE INNOVATION & IMPACT */
+      <g filter={`url(#shadow-${iconKey})`}>
+        {/* Glow */}
+        <circle cx="32" cy="27" r="15" fill={c.fill} fill-opacity="0.25" />
+        {/* Rays */}
+        <path d="M32 10V14" stroke={c.accent} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M19 15L22 18" stroke={c.accent} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M45 15L42 18" stroke={c.accent} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M14 28H18" stroke={c.accent} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M46 28H50" stroke={c.accent} stroke-width="2.2" stroke-linecap="round" />
+        {/* Bulb body */}
+        <path
+          d="M24 28C24 23.5817 27.5817 20 32 20C36.4183 20 40 23.5817 40 28C40 31.2589 38.0538 34.0628 35.2586 35.3121C34.5029 35.65 34 36.3887 34 37.2174V39H30V37.2174C30 36.3887 29.4971 35.65 28.7414 35.3121C25.9462 34.0628 24 31.2589 24 28Z"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        {/* Filament / Core */}
+        <path
+          d="M29 27C29 25.3431 30.3431 24 32 24C33.6569 24 35 25.3431 35 27V30H29V27Z"
+          fill={c.fill}
+          fill-opacity="0.4"
+          stroke={c.accent}
+          stroke-width="1.5"
+        />
+        {/* Base screw */}
+        <path d="M29 42H35" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M30 45H34" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
+      </g>
+    )}
+
+    {iconKey === 'leaf' && (
+      /* FEUILLE NATURE & AGRICULTURE */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <circle cx="32" cy="30" r="14" fill={c.fill} fill-opacity="0.25" />
+        <path
+          d="M45 18C45 18 33 17 24 26C16.8 33.2 19 44 19 44C19 44 29.8 46.2 37 39C46 30 45 18 45 18Z"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M19 44C24 39 31 32 45 18"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+        <path d="M27 34L32 37" stroke={c.accent} stroke-width="1.8" stroke-linecap="round" />
+        <path d="M33 28L39 31" stroke={c.accent} stroke-width="1.8" stroke-linecap="round" />
+      </g>
+    )}
+
+    {iconKey === 'language' && (
+      /* BULLES DE DIALOGUE MULTILINGUES (FR & BAMANANKAN) */
+      <g filter={`url(#shadow-${iconKey})`}>
+        {/* Back bubble */}
+        <path
+          d="M26 18H44C47.3137 18 50 20.6863 50 24V32C50 35.3137 47.3137 38 44 38H42L38 43V38H26C22.6863 38 20 35.3137 20 32V24C20 20.6863 22.6863 18 26 18Z"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        {/* Front bubble overlay */}
+        <path
+          d="M17 26H35C37.7614 26 40 28.2386 40 31V38C40 40.7614 37.7614 43 35 43H28L23 47V43H17C14.2386 43 12 40.7614 12 38V31C12 28.2386 14.2386 26 17 26Z"
+          fill={c.fill}
+          fill-opacity="0.2"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        {/* Characters inside: 'A' and 'ߒ' or conversation dots */}
+        <circle cx="21" cy="34.5" r="1.8" fill={c.stroke} />
+        <circle cx="26" cy="34.5" r="1.8" fill={c.stroke} />
+        <circle cx="31" cy="34.5" r="1.8" fill={c.stroke} />
+        <path d="M30 28H40" stroke={c.accent} stroke-width="2" stroke-linecap="round" />
+      </g>
+    )}
+
+    {(iconKey === 'padlock' || iconKey === 'lock') && (
+      /* CADENAS CONFIDENTIALITÉ SÉCURISÉ */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <circle cx="32" cy="33" r="13" fill={c.fill} fill-opacity="0.25" />
+        {/* Shackle */}
+        <path
+          d="M25 28V23C25 19.134 28.134 16 32 16C35.866 16 39 19.134 39 23V28"
+          stroke={c.stroke}
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+        {/* Lock Body */}
+        <rect
+          x="20"
+          y="28"
+          width="24"
+          height="19"
+          rx="5"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+        />
+        {/* Keyhole */}
+        <circle cx="32" cy="36" r="2.5" fill={c.accent} />
+        <path d="M32 38V41" stroke={c.accent} stroke-width="2.2" stroke-linecap="round" />
+      </g>
+    )}
+
+    {iconKey === 'video' && (
+      /* CAMÉRA SMARTPHONE / VIDÉO */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <circle cx="32" cy="32" r="14" fill={c.fill} fill-opacity="0.25" />
+        <rect
+          x="15"
+          y="20"
+          width="24"
+          height="24"
+          rx="5"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+        />
+        {/* Lens triangle projection */}
+        <path
+          d="M39 27L48 22V42L39 37V27Z"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        {/* Play symbol inside */}
+        <path
+          d="M24 27L31 32L24 37V27Z"
+          fill={c.accent}
+          stroke={c.accent}
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+      </g>
+    )}
+
+    {iconKey === 'avatar' && (
+      /* PROFIL LAURÉAT / VITRINE */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <circle cx="32" cy="24" r="8" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" />
+        <path
+          d="M18 45C18 39.4772 22.4772 35 28 35H36C41.5228 35 46 39.4772 46 45V46H18V45Z"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        {/* Star badge */}
+        <circle cx="44" cy="22" r="6" fill={c.accent} stroke="#FFFFFF" stroke-width="1.5" />
+        <path
+          d="M44 19L44.8 21.2L47 21.5L45.4 22.9L45.8 25L44 24L42.2 25L42.6 22.9L41 21.5L43.2 21.2L44 19Z"
+          fill="#FFFFFF"
+        />
+      </g>
+    )}
+
+    {iconKey === 'city-hall' && (
+      /* INSTITUTION / GOUVERNANCE */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <path d="M16 28L32 17L48 28H16Z" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M20 28V42" stroke={c.stroke} stroke-width="2.2" />
+        <path d="M28 28V42" stroke={c.stroke} stroke-width="2.2" />
+        <path d="M36 28V42" stroke={c.stroke} stroke-width="2.2" />
+        <path d="M44 28V42" stroke={c.stroke} stroke-width="2.2" />
+        <path d="M14 42H50" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M12 46H52" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
+      </g>
+    )}
+
+    {iconKey === 'human-cooperation' && (
+      /* PARTENARIAT / COOPÉRATION POIGNÉE DE MAIN */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <path
+          d="M16 32L24 26L32 32L40 26L48 32L38 42L32 37L26 42L16 32Z"
+          fill="#FFFFFF"
+          stroke={c.stroke}
+          stroke-width="2.2"
+          stroke-linejoin="round"
+        />
+        <circle cx="32" cy="22" r="3" fill={c.accent} />
+      </g>
+    )}
+
+    {iconKey === 'companie' && (
+      /* ENTREPRISE / SPONSOR */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <rect x="18" y="20" width="18" height="26" rx="2" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" />
+        <rect x="36" y="27" width="14" height="19" rx="2" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" />
+        <circle cx="27" cy="26" r="1.5" fill={c.accent} />
+        <circle cx="27" cy="33" r="1.5" fill={c.accent} />
+        <circle cx="43" cy="33" r="1.5" fill={c.accent} />
+      </g>
+    )}
+
+    {iconKey === 'justice' && (
+      /* BALANCE DE JUSTICE IMPARTIALE */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <path d="M32 16V46" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M20 22H44" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
+        <path d="M20 22L15 32H25L20 22Z" fill="#FFFFFF" stroke={c.stroke} stroke-width="1.8" stroke-linejoin="round" />
+        <path d="M44 22L39 32H49L44 22Z" fill="#FFFFFF" stroke={c.stroke} stroke-width="1.8" stroke-linejoin="round" />
+        <path d="M25 46H39" stroke={c.stroke} stroke-width="2.5" stroke-linecap="round" />
+      </g>
+    )}
+
+    {iconKey === 'success' && (
+      /* CHECK SUCCÈS VALIDÉ */
+      <g filter={`url(#shadow-${iconKey})`}>
+        <circle cx="32" cy="32" r="15" fill={c.fill} fill-opacity="0.2" stroke={c.stroke} stroke-width="2.2" />
+        <path
+          d="M24 32.5L29.5 38L40 26.5"
+          stroke={c.accent}
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+    )}
+  </svg>
+</span>
+
+<style>
+  .premium-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .premium-icon-box:hover {
+    transform: scale(1.04);
+  }
+</style>

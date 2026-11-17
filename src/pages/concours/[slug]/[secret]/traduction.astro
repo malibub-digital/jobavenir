@@ -4,7 +4,7 @@ export const prerender = false;
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import MinimalHeader from "../../../../components/MinimalHeader.astro";
 import Footer from "@malihub/sites-core/components/Footer.astro";
-import DsmlPictogram from "../../../../components/DsmlPictogram.astro";
+import PremiumIcon from "../../../../components/PremiumIcon.astro";
 import siteConfig from "../../../../../site.config.json";
 import campaignsData from "../../../../data/campaigns.json";
 
@@ -65,22 +65,18 @@ const footerLogos = [
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title mb-4">Envoyez votre vidéo au jury</h1>
 
           <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 mb-4 flex items-center gap-4 shadow-xs">
-            <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0">
-              <DsmlPictogram name="institutions/money" size={44} variant="gold" />
-            </div>
+            <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
             <div class="min-w-0">
               <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Ce que vous pouvez gagner</h2>
               <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                <li><strong>{campaign.prizes.grandPrizeCount} Grands Prix</strong> de {campaign.prizes.grandPrizeAmount} chacun en appui de lancement ou d'accélération</li>
+                <li><strong class="whitespace-nowrap">{campaign.prizes.grandPrizeCount} Grands Prix de&nbsp;{campaign.prizes.grandPrizeAmount}</strong> chacun en appui de lancement ou d'accélération</li>
                 <li><strong>{campaign.prizes.laureateCount} projets</strong> mis en valeur sur Mali Job</li>
               </ul>
             </div>
           </div>
 
           <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 mb-5 flex items-center gap-4 shadow-xs">
-            <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-sky-500/15 border-2 border-sky-400/50 flex items-center justify-center shrink-0">
-              <DsmlPictogram name="leisure/video" size={44} variant="river" />
-            </div>
+            <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
             <div class="min-w-0">
               <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Comment envoyer votre vidéo</h2>
               <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
@@ -112,22 +108,18 @@ const footerLogos = [
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title mb-4">Aw ka u ye aw ka videyo ci jury ma</h1>
 
           <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 mb-4 flex items-center gap-4 shadow-xs">
-            <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0">
-              <DsmlPictogram name="institutions/money" size={44} variant="gold" />
-            </div>
+            <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
             <div class="min-w-0">
               <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Aw bɛ se ka min sɔrɔ</h2>
               <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                <li><strong>Jaraba 3</strong> 100.000 FCFA kelen-kelen bɛɛ la</li>
+                <li><strong class="whitespace-nowrap">Jaraba 3 100.000&nbsp;FCFA</strong> kelen-kelen bɛɛ la</li>
                 <li><strong>Porozɛ 10</strong> jirala Mali Baara ɲɛ ofisiyali dɔ kan</li>
               </ul>
             </div>
           </div>
 
           <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 mb-5 flex items-center gap-4 shadow-xs">
-            <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-sky-500/15 border-2 border-sky-400/50 flex items-center justify-center shrink-0">
-              <DsmlPictogram name="leisure/video" size={44} variant="river" />
-            </div>
+            <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
             <div class="min-w-0">
               <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">I ka videyo ci cogo di</h2>
               <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
@@ -158,22 +150,18 @@ const footerLogos = [
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title mb-4">ߊߟߎ߫ ߦߋ߫ ߊߟߎ߫ ߟߊ߫ ߦߋߕߊ ߗߋ߫ ߛߙߊߥߵߟߊ ߟߎ߬ ߡߊ߬</h1>
 
           <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 mb-4 flex items-center gap-4 shadow-xs">
-            <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0">
-              <DsmlPictogram name="institutions/money" size={44} variant="gold" />
-            </div>
+            <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
             <div class="min-w-0">
               <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">ߊߟߎ߫ ߘߌ߫ ߛߐ߬ߘߐ߲߬ ߡߍ߲ ߠߎ߬</h2>
               <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                <li><strong>ߛߙߊߥߵ ߓߊ ߃</strong> ߁߀߀ ߀߀߀ FCFA ߘߐ ߓߍ</li>
+                <li><strong class="whitespace-nowrap">ߛߙߊߥߵ ߓߊ ߃ ߁߀߀&nbsp;߀߀߀&nbsp;FCFA</strong> ߘߐ ߓߍ</li>
                 <li><strong>ߖߊ߬ߕߋ߬ߘߐ߬ߛߌ߯ ߁߀</strong> ߦߌ߬ߘߊ߬ߣߍ߲߫ ߡߊߟߌ߫ ߓߊ߯ߙߊ߫ ߞߐߜߍ߫ ߞߎ߲߬ߠߊ߬ߛߌ߰ߡߊ ߘߏ߫ ߞߊ߲߬</li>
               </ul>
             </div>
           </div>
 
           <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 mb-5 flex items-center gap-4 shadow-xs">
-            <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-sky-500/15 border-2 border-sky-400/50 flex items-center justify-center shrink-0">
-              <DsmlPictogram name="leisure/video" size={44} variant="river" />
-            </div>
+            <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
             <div class="min-w-0">
               <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">ߦߋߕߊ ߗߋ߫ ߢߊ ߡߍ߲</h2>
               <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
