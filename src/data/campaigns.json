@@ -14,7 +14,7 @@
         "grandPrizeCount": 3,
         "grandPrizeAmount": "100 000 FCFA",
         "grandPrizeTotal": "300 000 FCFA",
-        "grandPrizeDescription": "3 projets lauréats reçoivent chacun une dotation directe de 100 000 FCFA pour accélérer leur développement, ainsi qu'une mise en avant en une du portail officiel Mali Job.",
+        "grandPrizeDescription": "3 projets lauréats reçoivent chacun un appui financier direct de 100 000 FCFA (financement de lancement ou coup d'accélérateur pour améliorer votre activité), ainsi qu'une mise en avant en une du portail officiel Mali Job.",
         "laureateCount": 10,
         "laureateTitle": "10 Lauréats « Vitrine Officielle & Levée de Fonds »",
         "laureateDescription": "Les 10 projets les plus prometteurs auront la chance de voir leur projet entièrement rédigé par notre équipe éditoriale et publié sur une page officielle dédiée sur Mali Job. Un lien crédible et professionnel pour communiquer sur vos réseaux, convaincre des partenaires et lever des fonds.",
@@ -69,9 +69,9 @@
           },
           {
             "step": 3,
-            "title": "Les 100 000 FCFA",
+            "title": "L'appui de 100 000 FCFA",
             "duration": "45 sec",
-            "prompt": "À quoi servira concrètement l'argent pour faire grandir votre activité ?"
+            "prompt": "À quoi servira concrètement cet appui financier : coup d'accélérateur pour améliorer votre activité ou financement pour amorcer le lancement ?"
           },
           {
             "step": 4,
@@ -115,7 +115,7 @@
         "grandPrizeCount": 3,
         "grandPrizeAmount": "100 000 FCFA",
         "grandPrizeTotal": "300 000 FCFA",
-        "grandPrizeDescription": "3 projets agricoles ou agro-alimentaires reçoivent chacun un coup de pouce financier direct de 100 000 FCFA et un accompagnement en visibilité.",
+        "grandPrizeDescription": "3 projets agricoles ou agro-alimentaires reçoivent chacun un appui financier direct de 100 000 FCFA pour amorcer leur lancement ou accélérer l'amélioration de leur production, avec un accompagnement en visibilité.",
         "laureateCount": 10,
         "laureateTitle": "10 Lauréats « Vitrine Agri-Innovation »",
         "laureateDescription": "Les 10 meilleurs projets agricoles bénéficient d'un article complet publié sur Mali Job pour attirer acheteurs, équipements et investisseurs du secteur rural.",
@@ -170,9 +170,9 @@
           },
           {
             "step": 3,
-            "title": "Le besoin de financement",
+            "title": "L'appui de 100 000 FCFA",
             "duration": "~45 sec",
-            "prompt": "Qu'allez-vous financer en priorité avec la dotation (semences, pompe solaire, emballages, outillage) et quels partenaires cherchez-vous ?"
+            "prompt": "À quoi servira concrètement cet appui financier : amorçage de votre lancement ou amélioration/accélération de votre exploitation (semences, outillage, emballage) ?"
           },
           {
             "step": 4,
