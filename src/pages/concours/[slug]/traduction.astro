@@ -47,7 +47,16 @@ const footerLogos = [
         <div class="p-6 sm:p-8">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/60 mb-4">Français</div>
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Grand Concours d'Innovation Mali Job</h1>
-          <p class="text-base font-bold text-orange-600 mb-5">{campaign.prizes.grandPrizeCount} × {campaign.prizes.grandPrizeAmount} + {campaign.prizes.laureateCount} projets mis en lumière</p>
+          <p class="text-base font-bold text-orange-600 mb-3">{campaign.prizes.grandPrizeCount} × {campaign.prizes.grandPrizeAmount} + {campaign.prizes.laureateCount} projets mis en lumière</p>
+
+          <!-- BANDEAU DATE LIMITE -->
+          <div class="mb-5 flex items-center justify-between gap-2 bg-amber-50 p-3 rounded-xl border border-amber-300 text-xs sm:text-sm font-bold text-stone-800">
+            <span class="inline-flex items-center gap-1.5">
+              <span>⏱️</span>
+              <span>Date limite :</span>
+            </span>
+            <span class="text-orange-700 font-black">{campaign.submission?.deadline || "30 Novembre 2026 à 23h59"}</span>
+          </div>
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
@@ -98,7 +107,16 @@ const footerLogos = [
         <div class="p-6 sm:p-8">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">Bamanankan</div>
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Mali Baara Grand Innovation Concours</h1>
-          <p class="text-base font-bold text-orange-600 mb-5">3 x 100.000 FCFA + Porozɛ 10 minnu bɛ jira</p>
+          <p class="text-base font-bold text-orange-600 mb-3">3 x 100.000 FCFA + Porozɛ 10 minnu bɛ jira</p>
+
+          <!-- BANDEAU DATE LIMITE -->
+          <div class="mb-5 flex items-center justify-between gap-2 bg-amber-50 p-3 rounded-xl border border-amber-300 text-xs sm:text-sm font-bold text-stone-800">
+            <span class="inline-flex items-center gap-1.5">
+              <span>⏱️</span>
+              <span>Labanna don (Date limite) :</span>
+            </span>
+            <span class="text-orange-700 font-black">{campaign.submission?.deadline || "30 Nowanburukalo 2026"}</span>
+          </div>
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
@@ -149,7 +167,16 @@ const footerLogos = [
         <div class="p-6 sm:p-8">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">ߒߞߏ</div>
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">ߡߊߟߌ ߖߏߓߌ ߞߏ ߞߎߙߊߥߵ ߢߐ߲ߜ߭ߐ߲ߘߊ߲ ߓߊ</h1>
-          <p class="text-base font-bold text-orange-600 mb-5">߃ x ߁߀߀ ߀߀߀ FCFA + ߔߙߏߖߍ ߁߀ ߡߊߦߋߙߋ߲ߣߋ߲ߥߵ</p>
+          <p class="text-base font-bold text-orange-600 mb-3">߃ x ߁߀߀ ߀߀߀ FCFA + ߔߙߏߖߍ ߁߀ ߡߊߦߋߙߋ߲ߣߋ߲ߥߵ</p>
+
+          <!-- BANDEAU DATE LIMITE -->
+          <div class="mb-5 flex items-center justify-between gap-2 bg-amber-50 p-3 rounded-xl border border-amber-300 text-xs sm:text-sm font-bold text-stone-800">
+            <span class="inline-flex items-center gap-1.5">
+              <span>⏱️</span>
+              <span>ߘߊ߲߬ ߕߎߡߊ (Date limite) :</span>
+            </span>
+            <span class="text-orange-700 font-black">{campaign.submission?.deadline || "ߣߍߣߍߓߊ ߃߀ ߂߀߂߆"}</span>
+          </div>
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
