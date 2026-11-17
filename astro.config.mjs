@@ -10,7 +10,12 @@ export default defineConfig({
   }),
   integrations: [tailwind(), gitCms()],
   vite: {
-    envDir: '../'
+    envDir: '../',
+    server: {
+      watch: {
+        ignored: ['**/inspiration/**', '**/.git/**', '**/dist/**']
+      }
+    }
   }
 });
 
