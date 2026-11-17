@@ -5,13 +5,15 @@ import path from 'node:path';
 interface Props {
   name: string;
   size?: number | string;
+  variant?: 'default' | 'gold' | 'emerald' | 'dark' | 'river' | 'amber';
   class?: string;
   title?: string;
 }
 
 const {
   name,
-  size = 48,
+  size = 56,
+  variant = 'default',
   class: className = '',
   title,
 } = Astro.props;
@@ -27,7 +29,6 @@ const basePath = path.resolve('node_modules/@malihub/dsml-core/assets/pictograms
 let targetFile = path.join(basePath, relativePath);
 
 if (!fs.existsSync(targetFile)) {
-  // Try searching in subfolders
   const subdirs = ['digital', 'institutions', 'document', 'leisure', 'map', 'system', 'environment', 'health', 'buildings', 'accessibility'];
   const baseName = path.basename(relativePath);
   for (const dir of subdirs) {
@@ -50,7 +51,7 @@ if (fs.existsSync(targetFile)) {
     viewBox = vbMatch[1];
   }
   svgBody = content.replace(/<svg[^>]*>|<\/svg>/gi, '').trim();
-  // Ensure unique symbol IDs if multiple pictograms are rendered on the same page
+  // Ensure unique symbol IDs
   const uid = Math.random().toString(36).slice(2, 8);
   svgBody = svgBody.replace(/id="([^"]+)"/g, `id="${uid}-$1"`);
   svgBody = svgBody.replace(/href="#([^"]+)"/g, `href="#${uid}-$1"`);
@@ -60,7 +61,12 @@ const sizePx = typeof size === 'number' ? `${size}px` : size;
 ---
 
 <span
-  class:list={['ml-pictogram', className]}
+  class:list={[
+    'ml-pictogram',
+    'ml-pictogram--premium',
+    `ml-picto-${variant}`,
+    className,
+  ]}
   style={`width: ${sizePx}; height: ${sizePx};`}
   aria-hidden={title ? 'false' : 'true'}
   role={title ? 'img' : 'presentation'}
@@ -77,3 +83,107 @@ const sizePx = typeof size === 'number' ? `${size}px` : size;
     <span class="inline-block bg-stone-100 rounded-lg text-xs p-1">[{name}]</span>
   )}
 </span>
+
+<style is:global>
+  /* Premium DSML Pictograms Stylings */
+  .ml-pictogram--premium {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 2px 4px rgba(26, 26, 22, 0.08));
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
+  }
+
+  .ml-pictogram--premium svg {
+    overflow: visible;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Default Premium (Verte & Or Mali) */
+  .ml-picto-default .ml-artwork-major,
+  .ml-pictogram--premium .ml-artwork-major {
+    stroke: #0f172a;
+    stroke-width: 1.8px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .ml-picto-default .ml-artwork-minor,
+  .ml-pictogram--premium .ml-artwork-minor {
+    fill: #f59e0b; /* Ambre chaud éclatant */
+  }
+  .ml-picto-default .ml-artwork-background,
+  .ml-pictogram--premium .ml-artwork-background {
+    fill: #dcfce7; /* Vert clair doux */
+  }
+  .ml-picto-default .ml-artwork-decorative,
+  .ml-pictogram--premium .ml-artwork-decorative {
+    fill: #10b981; /* Emeraude */
+    opacity: 0.65;
+  }
+
+  /* Variant: Gold / Financement / Trophée */
+  .ml-picto-gold .ml-artwork-major {
+    stroke: #451a03;
+    stroke-width: 1.8px;
+  }
+  .ml-picto-gold .ml-artwork-minor {
+    fill: #d97706;
+  }
+  .ml-picto-gold .ml-artwork-background {
+    fill: #fef3c7;
+  }
+  .ml-picto-gold .ml-artwork-decorative {
+    fill: #f59e0b;
+    opacity: 0.8;
+  }
+
+  /* Variant: Emerald / Succès / Innovation / Nature */
+  .ml-picto-emerald .ml-artwork-major {
+    stroke: #064e3b;
+    stroke-width: 1.8px;
+  }
+  .ml-picto-emerald .ml-artwork-minor {
+    fill: #059669;
+  }
+  .ml-picto-emerald .ml-artwork-background {
+    fill: #d1fae5;
+  }
+  .ml-picto-emerald .ml-artwork-decorative {
+    fill: #34d399;
+    opacity: 0.75;
+  }
+
+  /* Variant: Dark (pour blocs sombres ou contrastés) */
+  .ml-picto-dark .ml-artwork-major {
+    stroke: #ffffff;
+    stroke-width: 1.7px;
+  }
+  .ml-picto-dark .ml-artwork-minor {
+    fill: #fbbf24;
+  }
+  .ml-picto-dark .ml-artwork-background {
+    fill: rgba(255, 255, 255, 0.15);
+  }
+  .ml-picto-dark .ml-artwork-decorative {
+    fill: #34d399;
+    opacity: 0.85;
+  }
+
+  /* Variant: River / Vidéo / Numérique */
+  .ml-picto-river .ml-artwork-major {
+    stroke: #0f172a;
+    stroke-width: 1.8px;
+  }
+  .ml-picto-river .ml-artwork-minor {
+    fill: #0284c7;
+  }
+  .ml-picto-river .ml-artwork-background {
+    fill: #e0f2fe;
+  }
+  .ml-picto-river .ml-artwork-decorative {
+    fill: #38bdf8;
+    opacity: 0.75;
+  }
+</style>

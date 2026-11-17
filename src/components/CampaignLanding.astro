@@ -77,30 +77,30 @@ const isAgri = campaign.slug === 'innovation-agricole';
     <div class="bg-white p-5 sm:p-9 rounded-3xl shadow-xl shadow-orange-950/10 border-2 border-orange-200/90 max-w-3xl mx-auto text-left relative z-20">
       
       <!-- 1. CE QU'IL Y A À GAGNER (2 CARTES VALORISÉES) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
-        <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-300 flex items-start gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name="institutions/money" size={36} />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
+          <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-amber-500/15 border-2 border-amber-400/50 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name="institutions/money" size={52} variant="gold" />
           </div>
-          <div>
-            <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">
+          <div class="min-w-0">
+            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug">
               {campaign.prizes.grandPrizeCount} Grands Prix de {campaign.prizes.grandPrizeAmount}
             </div>
-            <div class="text-xs text-stone-600 mt-1 leading-normal">
+            <div class="text-xs sm:text-sm text-stone-600 mt-1 leading-normal">
               Financement direct + mise à l'honneur sur le site officiel.
             </div>
           </div>
         </div>
 
-        <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-300 flex items-start gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name={isAgri ? "environment/leaf" : "digital/innovation"} size={36} />
+        <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4">
+          <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name={isAgri ? "environment/leaf" : "digital/innovation"} size={52} variant="emerald" />
           </div>
-          <div>
-            <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">
+          <div class="min-w-0">
+            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug">
               {campaign.prizes.laureateCount} Projets publiés sur Mali Job
             </div>
-            <div class="text-xs text-stone-600 mt-1 leading-normal">
+            <div class="text-xs sm:text-sm text-stone-600 mt-1 leading-normal">
               Une page officielle dédiée pour vous faire connaître et lever des fonds.
             </div>
           </div>
@@ -109,9 +109,9 @@ const isAgri = campaign.slug === 'innovation-agricole';
 
       <!-- LANGUES ACCEPTÉES POUR LA VIDÉO -->
       {campaign.submission?.languages && (
-        <div class="mb-6 flex items-start gap-3.5 rounded-2xl border border-emerald-300 bg-emerald-50/80 p-4">
-          <div class="w-11 h-11 rounded-xl bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name="system/language" size={32} />
+        <div class="mb-5 flex items-center gap-4 rounded-2xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50/90 via-white to-emerald-50/40 p-4 sm:p-4.5 shadow-xs">
+          <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-emerald-600/15 border-2 border-emerald-400/50 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name="system/language" size={44} variant="emerald" />
           </div>
           <div class="min-w-0">
             <div class="text-sm sm:text-base font-black text-emerald-950 leading-snug">{campaign.submission.languages.label}</div>
@@ -122,9 +122,9 @@ const isAgri = campaign.slug === 'innovation-agricole';
 
       <!-- CONFIDENTIALITÉ DE LA VIDÉO -->
       {campaign.submission?.confidentiality && (
-        <div class="mb-6 flex items-start gap-3.5 rounded-2xl border border-stone-300 bg-stone-50 p-4">
-          <div class="w-11 h-11 rounded-xl bg-stone-200/80 border border-stone-300 flex items-center justify-center shrink-0 shadow-xs">
-            <DsmlPictogram name="system/padlock" size={32} />
+        <div class="mb-6 flex items-center gap-4 rounded-2xl border-2 border-stone-300 bg-gradient-to-r from-stone-50 via-white to-stone-50/60 p-4 sm:p-4.5 shadow-xs">
+          <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-stone-200/80 border-2 border-stone-300 flex items-center justify-center shrink-0 shadow-xs">
+            <DsmlPictogram name="system/padlock" size={44} variant="default" />
           </div>
           <div class="min-w-0">
             <div class="text-sm sm:text-base font-black text-stone-900 leading-snug">{campaign.submission.confidentiality.label}</div>
@@ -342,41 +342,41 @@ const isAgri = campaign.slug === 'innovation-agricole';
             </p>
 
             <!-- 5 membres du jury -->
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-5">
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
-                <div class="mb-1.5 flex justify-center">
-                  <DsmlPictogram name="buildings/city-hall" size={32} />
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+              <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
+                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
+                  <DsmlPictogram name="buildings/city-hall" size={44} variant="default" />
                 </div>
-                <div class="text-xs font-bold text-stone-800 leading-tight">APEJ Mali</div>
-                <div class="text-[10px] text-stone-500">1 représentant</div>
+                <div class="text-xs font-black text-stone-900 leading-tight">APEJ Mali</div>
+                <div class="text-[10px] text-stone-500 mt-0.5">1 représentant</div>
               </div>
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
-                <div class="mb-1.5 flex justify-center">
-                  <DsmlPictogram name="environment/human-cooperation" size={32} />
+              <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
+                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
+                  <DsmlPictogram name="environment/human-cooperation" size={44} variant="default" />
                 </div>
-                <div class="text-xs font-bold text-stone-800 leading-tight">PartiCIP</div>
-                <div class="text-[10px] text-stone-500">1 représentant</div>
+                <div class="text-xs font-black text-stone-900 leading-tight">PartiCIP</div>
+                <div class="text-[10px] text-stone-500 mt-0.5">1 représentant</div>
               </div>
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
-                <div class="mb-1.5 flex justify-center">
-                  <DsmlPictogram name="buildings/companie" size={32} />
+              <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
+                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
+                  <DsmlPictogram name="buildings/companie" size={44} variant="default" />
                 </div>
-                <div class="text-xs font-bold text-stone-800 leading-tight">Sponsor</div>
-                <div class="text-[10px] text-stone-500">2 représentants</div>
+                <div class="text-xs font-black text-stone-900 leading-tight">Sponsor</div>
+                <div class="text-[10px] text-stone-500 mt-0.5">2 représentants</div>
               </div>
-              <div class="bg-stone-50/80 p-3 rounded-xl border border-stone-200 text-center flex flex-col items-center">
-                <div class="mb-1.5 flex justify-center">
-                  <DsmlPictogram name="digital/innovation" size={32} />
+              <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
+                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-stone-100/80 border border-stone-200/60">
+                  <DsmlPictogram name="digital/innovation" size={44} variant="emerald" />
                 </div>
-                <div class="text-xs font-bold text-stone-800 leading-tight">Entrepreneur</div>
-                <div class="text-[10px] text-stone-500">1 expérimenté</div>
+                <div class="text-xs font-black text-stone-900 leading-tight">Entrepreneur</div>
+                <div class="text-[10px] text-stone-500 mt-0.5">1 expérimenté</div>
               </div>
-              <div class="col-span-2 sm:col-span-1 bg-amber-50/60 p-3 rounded-xl border border-amber-200 text-center flex flex-col items-center">
-                <div class="mb-1.5 flex justify-center">
-                  <DsmlPictogram name="institutions/justice" size={32} />
+              <div class="col-span-2 sm:col-span-1 bg-gradient-to-b from-amber-50/70 to-white p-3.5 rounded-2xl border border-amber-300 text-center flex flex-col items-center shadow-xs">
+                <div class="w-13 h-13 mb-2 flex items-center justify-center rounded-xl bg-amber-100/60 border border-amber-200/60">
+                  <DsmlPictogram name="institutions/justice" size={44} variant="gold" />
                 </div>
-                <div class="text-xs font-bold text-stone-800 leading-tight">5 membres</div>
-                <div class="text-[10px] text-stone-500">indépendants</div>
+                <div class="text-xs font-black text-stone-900 leading-tight">5 membres</div>
+                <div class="text-[10px] text-amber-800 font-semibold mt-0.5">indépendants</div>
               </div>
             </div>
 
@@ -385,24 +385,24 @@ const isAgri = campaign.slug === 'innovation-agricole';
               <p class="text-sm text-stone-700 leading-relaxed m-0 mb-3">
                 Les <strong class="text-stone-900">10 meilleurs projets</strong> retenus par le jury bénéficient d'un entretien individuel avec l'équipe d'évaluation afin de valider la réalité du projet, d'approfondir les besoins du porteur et de préparer leur mise en lumière sur la plateforme Mali Job.
               </p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200/70 flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-emerald-600/15 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-xs">
-                    <DsmlPictogram name="digital/avatar" size={28} />
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div class="bg-gradient-to-br from-emerald-50/90 to-white p-4 rounded-xl border-2 border-emerald-300 flex items-center gap-3.5 shadow-xs">
+                  <div class="w-13 h-13 rounded-xl bg-emerald-600/15 border border-emerald-400/50 flex items-center justify-center shrink-0">
+                    <DsmlPictogram name="digital/avatar" size={40} variant="emerald" />
                   </div>
                   <div>
-                    <div class="text-xs font-black text-stone-900">10 lauréats</div>
+                    <div class="text-sm font-black text-stone-900">10 lauréats</div>
                     <p class="text-xs text-stone-600 m-0 leading-relaxed">
                       Une page officielle dédiée sur Mali Job pour gagner en visibilité auprès des partenaires et investisseurs.
                     </p>
                   </div>
                 </div>
-                <div class="bg-amber-50/80 p-3.5 rounded-xl border border-amber-200/70 flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center shrink-0 shadow-xs">
-                    <DsmlPictogram name="institutions/money" size={28} />
+                <div class="bg-gradient-to-br from-amber-50/90 to-white p-4 rounded-xl border-2 border-amber-300 flex items-center gap-3.5 shadow-xs">
+                  <div class="w-13 h-13 rounded-xl bg-amber-500/15 border border-amber-400/50 flex items-center justify-center shrink-0">
+                    <DsmlPictogram name="institutions/money" size={40} variant="gold" />
                   </div>
                   <div>
-                    <div class="text-xs font-black text-stone-900">3 Grands Prix</div>
+                    <div class="text-sm font-black text-stone-900">3 Grands Prix</div>
                     <p class="text-xs text-stone-600 m-0 leading-relaxed">
                       Les 3 premiers du classement final remportent <strong class="text-amber-700">100&nbsp;000&nbsp;FCFA</strong> chacun pour accélérer leur lancement.
                     </p>
