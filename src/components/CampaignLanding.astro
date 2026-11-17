@@ -203,7 +203,7 @@ const isAgri = campaign.slug === 'innovation-agricole';
 
         <!-- QR Codes -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="bg-white/80 p-3 rounded-xl border border-emerald-200/60 flex items-center gap-3">
+          <div class="bg-white/80 p-3.5 rounded-xl border border-emerald-200/60 flex items-center gap-3.5">
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(campaign.community.whatsappGroupUrl)}`}
               alt="QR Code WhatsApp"
@@ -213,11 +213,11 @@ const isAgri = campaign.slug === 'innovation-agricole';
               loading="lazy"
             />
             <div class="min-w-0">
-              <p class="text-xs font-bold text-stone-800">Scannez pour rejoindre</p>
-              <p class="text-[11px] text-stone-500 leading-tight">le groupe WhatsApp du Concours d'Innovation</p>
+              <p class="text-sm font-bold text-stone-800 m-0">Scannez pour rejoindre</p>
+              <p class="text-xs text-stone-500 leading-tight mt-0.5 m-0">le groupe WhatsApp du Concours d'Innovation</p>
             </div>
           </div>
-          <div class="bg-white/80 p-3 rounded-xl border border-sky-200/60 flex items-center gap-3">
+          <div class="bg-white/80 p-3.5 rounded-xl border border-sky-200/60 flex items-center gap-3.5">
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(campaign.community.telegramGroupUrl)}`}
               alt="QR Code Telegram"
@@ -227,8 +227,8 @@ const isAgri = campaign.slug === 'innovation-agricole';
               loading="lazy"
             />
             <div class="min-w-0">
-              <p class="text-xs font-bold text-stone-800">Scannez pour rejoindre</p>
-              <p class="text-[11px] text-stone-500 leading-tight">le canal Telegram du Concours d'Innovation</p>
+              <p class="text-sm font-bold text-stone-800 m-0">Scannez pour rejoindre</p>
+              <p class="text-xs text-stone-500 leading-tight mt-0.5 m-0">le canal Telegram du Concours d'Innovation</p>
             </div>
           </div>
         </div>
@@ -358,36 +358,36 @@ const isAgri = campaign.slug === 'innovation-agricole';
                 <div class="mb-2">
                   <PremiumIcon name="city-hall" size={48} variant="stone" />
                 </div>
-                <div class="text-xs font-black text-stone-900 leading-tight">APEJ Mali</div>
-                <div class="text-[10px] text-stone-500 mt-0.5">1 représentant</div>
+                <div class="text-xs sm:text-sm font-black text-stone-900 leading-tight">APEJ Mali</div>
+                <div class="text-xs text-stone-500 mt-1">1 représentant</div>
               </div>
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
                 <div class="mb-2">
                   <PremiumIcon name="human-cooperation" size={48} variant="emerald" />
                 </div>
-                <div class="text-xs font-black text-stone-900 leading-tight">PartiCIP</div>
-                <div class="text-[10px] text-stone-500 mt-0.5">1 représentant</div>
+                <div class="text-xs sm:text-sm font-black text-stone-900 leading-tight">PartiCIP</div>
+                <div class="text-xs text-stone-500 mt-1">1 représentant</div>
               </div>
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
                 <div class="mb-2">
                   <PremiumIcon name="companie" size={48} variant="stone" />
                 </div>
-                <div class="text-xs font-black text-stone-900 leading-tight">Sponsor</div>
-                <div class="text-[10px] text-stone-500 mt-0.5">2 représentants</div>
+                <div class="text-xs sm:text-sm font-black text-stone-900 leading-tight">Sponsor</div>
+                <div class="text-xs text-stone-500 mt-1">2 représentants</div>
               </div>
               <div class="bg-gradient-to-b from-stone-50 to-white p-3.5 rounded-2xl border border-stone-200/90 text-center flex flex-col items-center shadow-xs hover:border-amber-400/60 transition-colors">
                 <div class="mb-2">
                   <PremiumIcon name="innovation" size={48} variant="amber" />
                 </div>
-                <div class="text-xs font-black text-stone-900 leading-tight">Entrepreneur</div>
-                <div class="text-[10px] text-stone-500 mt-0.5">1 expérimenté</div>
+                <div class="text-xs sm:text-sm font-black text-stone-900 leading-tight">Entrepreneur</div>
+                <div class="text-xs text-stone-500 mt-1">1 expérimenté</div>
               </div>
               <div class="col-span-2 sm:col-span-1 bg-gradient-to-b from-amber-50/70 to-white p-3.5 rounded-2xl border border-amber-300 text-center flex flex-col items-center shadow-xs">
                 <div class="mb-2">
                   <PremiumIcon name="justice" size={48} variant="gold" />
                 </div>
-                <div class="text-xs font-black text-stone-900 leading-tight">5 membres</div>
-                <div class="text-[10px] text-amber-800 font-semibold mt-0.5">indépendants</div>
+                <div class="text-xs sm:text-sm font-black text-stone-900 leading-tight">5 membres</div>
+                <div class="text-xs text-amber-800 font-semibold mt-1">indépendants</div>
               </div>
             </div>
 
@@ -430,7 +430,7 @@ const isAgri = campaign.slug === 'innovation-agricole';
   <div class="ml-container max-w-4xl mx-auto px-4">
     <div class="bg-white rounded-2xl p-5 sm:p-6 border border-amber-300/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
       <div>
-        <span class="text-[11px] font-black uppercase tracking-wider text-orange-700 block mb-0.5 flex items-center justify-center sm:justify-start gap-1">
+        <span class="text-xs font-black uppercase tracking-wider text-orange-700 block mb-0.5 flex items-center justify-center sm:justify-start gap-1">
           <i class="ml-icon-building-line ml-icon--xs"></i>
           <span>Entreprises, ONG, Institutions & Diaspora</span>
         </span>
