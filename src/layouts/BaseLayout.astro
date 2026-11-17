@@ -140,11 +140,11 @@ const {
       color: var(--ml-text-primary) !important;
     }
 
-    /* Hero section de concours en thème sombre */
+    /* Hero section de concours & accueil en thème sombre */
     [data-theme="dark"] .ml-hero,
     html[data-theme="dark"] .ml-hero,
     .dark .ml-hero {
-      background: radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.12) 0%, rgba(12, 18, 14, 0.98) 70%, #0C120E 100%) !important;
+      background: radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.15) 0%, rgba(12, 18, 14, 0.98) 70%, #0C120E 100%) !important;
       border-bottom-color: rgba(255, 255, 255, 0.1) !important;
       color: var(--ml-text-primary) !important;
     }
@@ -176,30 +176,30 @@ const {
     [data-theme="dark"] .ml-hero .bg-gradient-to-br.from-amber-50\/90,
     html[data-theme="dark"] .ml-hero .bg-gradient-to-br.from-amber-50\/90,
     .dark .ml-hero .bg-gradient-to-br.from-amber-50\/90 {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
-      border-color: rgba(245, 158, 11, 0.4) !important;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
+      border-color: rgba(245, 158, 11, 0.45) !important;
     }
 
     [data-theme="dark"] .ml-hero .bg-gradient-to-br.from-emerald-50\/90,
     html[data-theme="dark"] .ml-hero .bg-gradient-to-br.from-emerald-50\/90,
     .dark .ml-hero .bg-gradient-to-br.from-emerald-50\/90 {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
-      border-color: rgba(16, 185, 129, 0.4) !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.45) !important;
     }
 
     /* Encart langues et cadenas */
     [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-emerald-50\/90,
     html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-emerald-50\/90,
     .dark .ml-hero .bg-gradient-to-r.from-emerald-50\/90 {
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.14) 0%, rgba(20, 30, 23, 0.9) 100%) !important;
-      border-color: rgba(16, 185, 129, 0.35) !important;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(20, 30, 23, 0.9) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
     }
 
     [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-stone-50,
     html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-stone-50,
     .dark .ml-hero .bg-gradient-to-r.from-stone-50 {
       background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(20, 30, 23, 0.9) 100%) !important;
-      border-color: rgba(255, 255, 255, 0.14) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
     }
 
     /* Textes dans les cartes */
@@ -221,7 +221,7 @@ const {
     [data-theme="dark"] .ml-hero .text-stone-600,
     html[data-theme="dark"] .ml-hero .text-stone-600,
     .dark .ml-hero .text-stone-600 {
-      color: #9CA3AF !important;
+      color: #D1D5DB !important;
     }
 
     [data-theme="dark"] .ml-hero .text-emerald-950,
@@ -241,7 +241,7 @@ const {
     html[data-theme="dark"] .ml-hero .bg-amber-50,
     .dark .ml-hero .bg-amber-50 {
       background-color: rgba(245, 158, 11, 0.15) !important;
-      border-color: rgba(245, 158, 11, 0.4) !important;
+      border-color: rgba(245, 158, 11, 0.45) !important;
       color: #FDE68A !important;
     }
 
@@ -249,8 +249,16 @@ const {
     [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-orange-50,
     html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-orange-50,
     .dark .ml-hero .bg-gradient-to-r.from-orange-50 {
-      background: linear-gradient(90deg, rgba(249, 115, 22, 0.15) 0%, rgba(245, 158, 11, 0.12) 100%) !important;
-      border-color: rgba(249, 115, 22, 0.35) !important;
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.16) 0%, rgba(245, 158, 11, 0.12) 100%) !important;
+      border-color: rgba(249, 115, 22, 0.4) !important;
+    }
+
+    [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-orange-50 .bg-white,
+    html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-orange-50 .bg-white,
+    .dark .ml-hero .bg-gradient-to-r.from-orange-50 .bg-white {
+      background-color: #101813 !important;
+      border-color: rgba(249, 115, 22, 0.4) !important;
+      color: #FB923C !important;
     }
 
     /* Pastilles d'étapes 1 et 2 */
@@ -268,11 +276,37 @@ const {
       border-color: rgba(255, 255, 255, 0.12) !important;
     }
 
-    /* Sections annexes (Jury, Évaluation, Partenaires) en thème sombre */
+    /* QR Code containers */
+    [data-theme="dark"] .ml-hero .bg-white\/80,
+    html[data-theme="dark"] .ml-hero .bg-white\/80,
+    .dark .ml-hero .bg-white\/80 {
+      background-color: rgba(20, 30, 23, 0.9) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    [data-theme="dark"] .ml-hero .bg-white\/80 img,
+    html[data-theme="dark"] .ml-hero .bg-white\/80 img,
+    .dark .ml-hero .bg-white\/80 img {
+      background-color: #FFFFFF !important;
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    /* ========================================================
+       SECTIONS ANNEXES (PROCESSUS, JURY, SPONSOR, PARTENAIRES)
+       ======================================================== */
+    [data-theme="dark"] section.bg-gradient-to-b.from-white,
+    html[data-theme="dark"] section.bg-gradient-to-b.from-white,
+    .dark section.bg-gradient-to-b.from-white {
+      background: linear-gradient(180deg, #0C120E 0%, #101813 60%, #0C120E 100%) !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
     [data-theme="dark"] section.bg-white,
     html[data-theme="dark"] section.bg-white,
     .dark section.bg-white {
       background-color: #0C120E !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
       color: var(--ml-text-primary) !important;
     }
 
@@ -284,6 +318,7 @@ const {
       color: var(--ml-text-primary) !important;
     }
 
+    /* Cartes blanches génériques dans les sections */
     [data-theme="dark"] section .bg-white,
     html[data-theme="dark"] section .bg-white,
     .dark section .bg-white {
@@ -292,6 +327,7 @@ const {
       color: var(--ml-text-primary) !important;
     }
 
+    /* Titres & textes des sections */
     [data-theme="dark"] section h2,
     html[data-theme="dark"] section h2,
     .dark section h2,
@@ -303,22 +339,180 @@ const {
 
     [data-theme="dark"] section p,
     html[data-theme="dark"] section p,
-    .dark section p {
+    .dark section p,
+    [data-theme="dark"] section .text-stone-600,
+    html[data-theme="dark"] section .text-stone-600,
+    .dark section .text-stone-600,
+    [data-theme="dark"] section .text-stone-700,
+    html[data-theme="dark"] section .text-stone-700,
+    .dark section .text-stone-700 {
       color: #D1D5DB !important;
     }
 
-    /* Pages de dépôt et traduction en thème sombre */
+    [data-theme="dark"] section .text-stone-900,
+    html[data-theme="dark"] section .text-stone-900,
+    .dark section .text-stone-900 {
+      color: #F3F4F6 !important;
+    }
+
+    /* Étape 2 : Grille 100 points (enveloppe principale) */
+    [data-theme="dark"] section .bg-gradient-to-br.from-orange-50\/60,
+    html[data-theme="dark"] section .bg-gradient-to-br.from-orange-50\/60,
+    .dark section .bg-gradient-to-br.from-orange-50\/60 {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(20, 30, 23, 0.95) 60%, rgba(245, 158, 11, 0.1) 100%) !important;
+      border-color: rgba(249, 115, 22, 0.35) !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* 4 tuiles de critères d'évaluation */
+    [data-theme="dark"] section .bg-white.p-4.rounded-xl,
+    html[data-theme="dark"] section .bg-white.p-4.rounded-xl,
+    .dark section .bg-white.p-4.rounded-xl {
+      background-color: #101813 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Pastilles points et libellés dans les critères */
+    [data-theme="dark"] section .bg-orange-100\/80,
+    html[data-theme="dark"] section .bg-orange-100\/80,
+    .dark section .bg-orange-100\/80 {
+      background-color: rgba(249, 115, 22, 0.22) !important;
+      color: #FB923C !important;
+    }
+
+    [data-theme="dark"] section .bg-amber-100\/80,
+    html[data-theme="dark"] section .bg-amber-100\/80,
+    .dark section .bg-amber-100\/80 {
+      background-color: rgba(245, 158, 11, 0.22) !important;
+      color: #FDE047 !important;
+    }
+
+    [data-theme="dark"] section .bg-emerald-100\/80,
+    html[data-theme="dark"] section .bg-emerald-100\/80,
+    .dark section .bg-emerald-100\/80 {
+      background-color: rgba(16, 185, 129, 0.22) !important;
+      color: #6EE7B7 !important;
+    }
+
+    [data-theme="dark"] section .text-orange-700,
+    html[data-theme="dark"] section .text-orange-700,
+    .dark section .text-orange-700 {
+      color: #FB923C !important;
+    }
+
+    [data-theme="dark"] section .text-amber-800,
+    html[data-theme="dark"] section .text-amber-800,
+    .dark section .text-amber-800 {
+      color: #FDE047 !important;
+    }
+
+    [data-theme="dark"] section .text-emerald-800,
+    html[data-theme="dark"] section .text-emerald-800,
+    .dark section .text-emerald-800 {
+      color: #6EE7B7 !important;
+    }
+
+    /* Étape 3 : Cartes des 5 membres du Jury */
+    [data-theme="dark"] section .bg-gradient-to-b.from-stone-50,
+    html[data-theme="dark"] section .bg-gradient-to-b.from-stone-50,
+    .dark section .bg-gradient-to-b.from-stone-50 {
+      background: linear-gradient(180deg, #1B2920 0%, #141E17 100%) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    [data-theme="dark"] section .bg-gradient-to-b.from-amber-50\/70,
+    html[data-theme="dark"] section .bg-gradient-to-b.from-amber-50\/70,
+    .dark section .bg-gradient-to-b.from-amber-50\/70 {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.18) 0%, #141E17 100%) !important;
+      border-color: rgba(245, 158, 11, 0.4) !important;
+    }
+
+    [data-theme="dark"] section .bg-stone-50\/60,
+    html[data-theme="dark"] section .bg-stone-50\/60,
+    .dark section .bg-stone-50\/60 {
+      background-color: #101813 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-theme="dark"] section .bg-gradient-to-br.from-emerald-50\/90,
+    html[data-theme="dark"] section .bg-gradient-to-br.from-emerald-50\/90,
+    .dark section .bg-gradient-to-br.from-emerald-50\/90 {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+
+    [data-theme="dark"] section .bg-gradient-to-br.from-amber-50\/90,
+    html[data-theme="dark"] section .bg-gradient-to-br.from-amber-50\/90,
+    .dark section .bg-gradient-to-br.from-amber-50\/90 {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
+      border-color: rgba(245, 158, 11, 0.4) !important;
+    }
+
+    /* Cartes partenaires en bas de page */
+    [data-theme="dark"] section .bg-gradient-to-b.from-amber-50\/40,
+    html[data-theme="dark"] section .bg-gradient-to-b.from-amber-50\/40,
+    .dark section .bg-gradient-to-b.from-amber-50\/40 {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #141E17 100%) !important;
+      border-color: rgba(245, 158, 11, 0.35) !important;
+    }
+
+    [data-theme="dark"] section .bg-stone-50\/70,
+    html[data-theme="dark"] section .bg-stone-50\/70,
+    .dark section .bg-stone-50\/70 {
+      background-color: #141E17 !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    /* Fond blanc autour des logos partenaires pour lisibilité parfaite en dark */
+    [data-theme="dark"] section .bg-gradient-to-b.from-amber-50\/40 img,
+    html[data-theme="dark"] section .bg-gradient-to-b.from-amber-50\/40 img,
+    .dark section .bg-gradient-to-b.from-amber-50\/40 img,
+    [data-theme="dark"] section .bg-stone-50\/70 img,
+    html[data-theme="dark"] section .bg-stone-50\/70 img,
+    .dark section .bg-stone-50\/70 img {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 6px 12px;
+      border-radius: 10px;
+    }
+
+    /* ========================================================
+       PAGES DÉPÔT CANDIDATURE & TRADUCTION EN THÈME SOMBRE
+       ======================================================== */
     [data-theme="dark"] main.bg-stone-50,
     html[data-theme="dark"] main.bg-stone-50,
-    .dark main.bg-stone-50 {
-      background-color: #0C120E !important;
+    .dark main.bg-stone-50,
+    [data-theme="dark"] main.bg-gradient-to-b.from-amber-50\/60,
+    html[data-theme="dark"] main.bg-gradient-to-b.from-amber-50\/60,
+    .dark main.bg-gradient-to-b.from-amber-50\/60 {
+      background: #0C120E !important;
     }
 
     [data-theme="dark"] section.bg-white.rounded-3xl,
     html[data-theme="dark"] section.bg-white.rounded-3xl,
-    .dark section.bg-white.rounded-3xl {
+    .dark section.bg-white.rounded-3xl,
+    [data-theme="dark"] div.bg-white.rounded-3xl,
+    html[data-theme="dark"] div.bg-white.rounded-3xl,
+    .dark div.bg-white.rounded-3xl {
       background-color: #141E17 !important;
       border-color: rgba(255, 255, 255, 0.12) !important;
+      color: var(--ml-text-primary) !important;
+    }
+
+    /* Onglets de langue sur traduction.astro */
+    [data-theme="dark"] a[href^="#"].bg-white,
+    html[data-theme="dark"] a[href^="#"].bg-white,
+    .dark a[href^="#"].bg-white {
+      background-color: #1B2920 !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: #FFFFFF !important;
+    }
+
+    [data-theme="dark"] a[href^="#"].bg-amber-50,
+    html[data-theme="dark"] a[href^="#"].bg-amber-50,
+    .dark a[href^="#"].bg-amber-50 {
+      background-color: #101813 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #9CA3AF !important;
     }
   </style>
 </body>
