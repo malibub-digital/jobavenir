@@ -80,6 +80,23 @@ const {
   </div>
 
   <style is:global>
+    /* ========================================================
+       ACCESSIBILITÉ & ÉCHELLE TYPOGRAPHIQUE GLOBALE
+       ======================================================== */
+    html {
+      font-size: 17px;
+    }
+    @media (min-width: 640px) {
+      html {
+        font-size: 17.5px;
+      }
+    }
+    body,
+    .ml-body {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
     body.cms-mode-editing [data-cms-bind] {
       position: relative;
       outline: 1.5px dashed rgba(2, 132, 199, 0.4);
