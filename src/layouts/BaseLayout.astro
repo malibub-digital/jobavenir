@@ -113,6 +113,213 @@ const {
     body.cms-mode-editing .brand-text {
       gap: 6px;
     }
+
+    /* ========================================================
+       DARK THEME HARMONIZATION (DSML & CONCOURS DESIGN SYSTEM)
+       ======================================================== */
+    [data-theme="dark"],
+    html[data-theme="dark"],
+    .dark {
+      /* DSML Dark variables */
+      --ml-bg-canvas: #0C120E;
+      --ml-bg-surface: #141E17;
+      --ml-bg-surface-elevated: #1B2920;
+      --ml-bg-surface-subtle: #101813;
+      --ml-border-subtle: rgba(255, 255, 255, 0.12);
+      --ml-border-strong: rgba(255, 255, 255, 0.22);
+      --ml-text-primary: #F3F4F6;
+      --ml-text-secondary: #D1D5DB;
+      --ml-text-muted: #9CA3AF;
+    }
+
+    /* Canvas global en thème sombre */
+    [data-theme="dark"] body,
+    html[data-theme="dark"] body,
+    .dark body {
+      background-color: var(--ml-bg-canvas) !important;
+      color: var(--ml-text-primary) !important;
+    }
+
+    /* Hero section de concours en thème sombre */
+    [data-theme="dark"] .ml-hero,
+    html[data-theme="dark"] .ml-hero,
+    .dark .ml-hero {
+      background: radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.12) 0%, rgba(12, 18, 14, 0.98) 70%, #0C120E 100%) !important;
+      border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+      color: var(--ml-text-primary) !important;
+    }
+
+    /* Titres et textes dans le hero */
+    [data-theme="dark"] .ml-hero h1,
+    html[data-theme="dark"] .ml-hero h1,
+    .dark .ml-hero h1 {
+      color: #FFFFFF !important;
+    }
+
+    [data-theme="dark"] .ml-hero p,
+    html[data-theme="dark"] .ml-hero p,
+    .dark .ml-hero p {
+      color: #D1D5DB !important;
+    }
+
+    /* Carte maîtresse centrale du concours */
+    [data-theme="dark"] .ml-hero .bg-white,
+    html[data-theme="dark"] .ml-hero .bg-white,
+    .dark .ml-hero .bg-white {
+      background-color: #141E17 !important;
+      border-color: rgba(245, 158, 11, 0.35) !important;
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65) !important;
+      color: #F3F4F6 !important;
+    }
+
+    /* Sous-cartes et encarts dans la carte maîtresse */
+    [data-theme="dark"] .ml-hero .bg-gradient-to-br.from-amber-50\/90,
+    html[data-theme="dark"] .ml-hero .bg-gradient-to-br.from-amber-50\/90,
+    .dark .ml-hero .bg-gradient-to-br.from-amber-50\/90 {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
+      border-color: rgba(245, 158, 11, 0.4) !important;
+    }
+
+    [data-theme="dark"] .ml-hero .bg-gradient-to-br.from-emerald-50\/90,
+    html[data-theme="dark"] .ml-hero .bg-gradient-to-br.from-emerald-50\/90,
+    .dark .ml-hero .bg-gradient-to-br.from-emerald-50\/90 {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(20, 30, 23, 0.95) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+
+    /* Encart langues et cadenas */
+    [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-emerald-50\/90,
+    html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-emerald-50\/90,
+    .dark .ml-hero .bg-gradient-to-r.from-emerald-50\/90 {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.14) 0%, rgba(20, 30, 23, 0.9) 100%) !important;
+      border-color: rgba(16, 185, 129, 0.35) !important;
+    }
+
+    [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-stone-50,
+    html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-stone-50,
+    .dark .ml-hero .bg-gradient-to-r.from-stone-50 {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(20, 30, 23, 0.9) 100%) !important;
+      border-color: rgba(255, 255, 255, 0.14) !important;
+    }
+
+    /* Textes dans les cartes */
+    [data-theme="dark"] .ml-hero .text-stone-900,
+    html[data-theme="dark"] .ml-hero .text-stone-900,
+    .dark .ml-hero .text-stone-900 {
+      color: #FFFFFF !important;
+    }
+
+    [data-theme="dark"] .ml-hero .text-stone-800,
+    html[data-theme="dark"] .ml-hero .text-stone-800,
+    .dark .ml-hero .text-stone-800 {
+      color: #E5E7EB !important;
+    }
+
+    [data-theme="dark"] .ml-hero .text-stone-700,
+    html[data-theme="dark"] .ml-hero .text-stone-700,
+    .dark .ml-hero .text-stone-700,
+    [data-theme="dark"] .ml-hero .text-stone-600,
+    html[data-theme="dark"] .ml-hero .text-stone-600,
+    .dark .ml-hero .text-stone-600 {
+      color: #9CA3AF !important;
+    }
+
+    [data-theme="dark"] .ml-hero .text-emerald-950,
+    html[data-theme="dark"] .ml-hero .text-emerald-950,
+    .dark .ml-hero .text-emerald-950 {
+      color: #6EE7B7 !important;
+    }
+
+    [data-theme="dark"] .ml-hero .text-emerald-900,
+    html[data-theme="dark"] .ml-hero .text-emerald-900,
+    .dark .ml-hero .text-emerald-900 {
+      color: #A7F3D0 !important;
+    }
+
+    /* Bandeau date limite dans le Hero */
+    [data-theme="dark"] .ml-hero .bg-amber-50,
+    html[data-theme="dark"] .ml-hero .bg-amber-50,
+    .dark .ml-hero .bg-amber-50 {
+      background-color: rgba(245, 158, 11, 0.15) !important;
+      border-color: rgba(245, 158, 11, 0.4) !important;
+      color: #FDE68A !important;
+    }
+
+    /* Encart date limite dans la carte */
+    [data-theme="dark"] .ml-hero .bg-gradient-to-r.from-orange-50,
+    html[data-theme="dark"] .ml-hero .bg-gradient-to-r.from-orange-50,
+    .dark .ml-hero .bg-gradient-to-r.from-orange-50 {
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.15) 0%, rgba(245, 158, 11, 0.12) 100%) !important;
+      border-color: rgba(249, 115, 22, 0.35) !important;
+    }
+
+    /* Pastilles d'étapes 1 et 2 */
+    [data-theme="dark"] .ml-hero .bg-amber-50\/90,
+    html[data-theme="dark"] .ml-hero .bg-amber-50\/90,
+    .dark .ml-hero .bg-amber-50\/90 {
+      background-color: rgba(245, 158, 11, 0.12) !important;
+      border-color: rgba(245, 158, 11, 0.3) !important;
+    }
+
+    [data-theme="dark"] .ml-hero .bg-stone-50,
+    html[data-theme="dark"] .ml-hero .bg-stone-50,
+    .dark .ml-hero .bg-stone-50 {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    /* Sections annexes (Jury, Évaluation, Partenaires) en thème sombre */
+    [data-theme="dark"] section.bg-white,
+    html[data-theme="dark"] section.bg-white,
+    .dark section.bg-white {
+      background-color: #0C120E !important;
+      color: var(--ml-text-primary) !important;
+    }
+
+    [data-theme="dark"] section.bg-stone-50,
+    html[data-theme="dark"] section.bg-stone-50,
+    .dark section.bg-stone-50 {
+      background-color: #101813 !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+      color: var(--ml-text-primary) !important;
+    }
+
+    [data-theme="dark"] section .bg-white,
+    html[data-theme="dark"] section .bg-white,
+    .dark section .bg-white {
+      background-color: #141E17 !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      color: var(--ml-text-primary) !important;
+    }
+
+    [data-theme="dark"] section h2,
+    html[data-theme="dark"] section h2,
+    .dark section h2,
+    [data-theme="dark"] section h3,
+    html[data-theme="dark"] section h3,
+    .dark section h3 {
+      color: #FFFFFF !important;
+    }
+
+    [data-theme="dark"] section p,
+    html[data-theme="dark"] section p,
+    .dark section p {
+      color: #D1D5DB !important;
+    }
+
+    /* Pages de dépôt et traduction en thème sombre */
+    [data-theme="dark"] main.bg-stone-50,
+    html[data-theme="dark"] main.bg-stone-50,
+    .dark main.bg-stone-50 {
+      background-color: #0C120E !important;
+    }
+
+    [data-theme="dark"] section.bg-white.rounded-3xl,
+    html[data-theme="dark"] section.bg-white.rounded-3xl,
+    .dark section.bg-white.rounded-3xl {
+      background-color: #141E17 !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
   </style>
 </body>
 </html>
