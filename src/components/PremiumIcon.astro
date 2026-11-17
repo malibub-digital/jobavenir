@@ -18,9 +18,10 @@ const {
 const sizePx = typeof size === 'number' ? `${size}px` : size;
 
 // Map colors
-const palettes: Record<string, { bgGrad: string; border: string; stroke: string; fill: string; accent: string; glow: string }> = {
+const palettes: Record<string, { stop0: string; stop1: string; border: string; stroke: string; fill: string; accent: string; glow: string }> = {
   gold: {
-    bgGrad: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+    stop0: '#FEF3C7',
+    stop1: '#FDE68A',
     border: '#F59E0B',
     stroke: '#78350F',
     fill: '#F59E0B',
@@ -28,7 +29,8 @@ const palettes: Record<string, { bgGrad: string; border: string; stroke: string;
     glow: 'rgba(245, 158, 11, 0.25)',
   },
   emerald: {
-    bgGrad: 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)',
+    stop0: '#D1FAE5',
+    stop1: '#A7F3D0',
     border: '#10B981',
     stroke: '#064E3B',
     fill: '#10B981',
@@ -36,7 +38,8 @@ const palettes: Record<string, { bgGrad: string; border: string; stroke: string;
     glow: 'rgba(16, 185, 129, 0.25)',
   },
   river: {
-    bgGrad: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+    stop0: '#E0F2FE',
+    stop1: '#BAE6FD',
     border: '#0284C7',
     stroke: '#0C4A6E',
     fill: '#0284C7',
@@ -44,7 +47,8 @@ const palettes: Record<string, { bgGrad: string; border: string; stroke: string;
     glow: 'rgba(2, 132, 199, 0.25)',
   },
   stone: {
-    bgGrad: 'linear-gradient(135deg, #F5F5F4 0%, #E7E5E4 100%)',
+    stop0: '#F5F5F4',
+    stop1: '#E7E5E4',
     border: '#78716C',
     stroke: '#292524',
     fill: '#78716C',
@@ -52,7 +56,8 @@ const palettes: Record<string, { bgGrad: string; border: string; stroke: string;
     glow: 'rgba(120, 113, 108, 0.2)',
   },
   purple: {
-    bgGrad: 'linear-gradient(135deg, #F3E8FF 0%, #DDD6FE 100%)',
+    stop0: '#F3E8FF',
+    stop1: '#DDD6FE',
     border: '#8B5CF6',
     stroke: '#4C1D95',
     fill: '#8B5CF6',
@@ -60,7 +65,8 @@ const palettes: Record<string, { bgGrad: string; border: string; stroke: string;
     glow: 'rgba(139, 92, 246, 0.25)',
   },
   amber: {
-    bgGrad: 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)',
+    stop0: '#FFF7ED',
+    stop1: '#FFEDD5',
     border: '#F97316',
     stroke: '#7C2D12',
     fill: '#F97316',
@@ -73,6 +79,10 @@ const c = palettes[variant] || palettes.gold;
 
 // Base icon identifier
 const iconKey = name.includes('/') ? name.split('/')[1] : name;
+// Generate a unique gradient ID per instance to prevent SVG collisions
+const uid = Math.random().toString(36).slice(2, 7);
+const gradId = `grad-${iconKey}-${variant}-${uid}`;
+const shadowId = `shadow-${iconKey}-${uid}`;
 ---
 
 <span
@@ -90,14 +100,14 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
     aria-label={title}
   >
     <defs>
-      <!-- Background subtle gradient badge -->
-      <linearGradient id={`grad-${iconKey}-${variant}`} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color={c.bgGrad.split(',')[1].trim()} />
-        <stop offset="100%" stop-color={c.bgGrad.split(',')[2].replace(')', '').trim()} />
+      <!-- Background subtle gradient badge with valid SVG stop-color syntax -->
+      <linearGradient id={gradId} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color={c.stop0} />
+        <stop offset="100%" stop-color={c.stop1} />
       </linearGradient>
       
       <!-- Shadow filter for floating depth -->
-      <filter id={`shadow-${iconKey}`} x="-20%" y="-20%" width="140%" height="140%">
+      <filter id={shadowId} x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.12)" />
       </filter>
     </defs>
@@ -109,7 +119,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
       width="58"
       height="58"
       rx="16"
-      fill={`url(#grad-${iconKey}-${variant})`}
+      fill={`url(#${gradId})`}
       stroke={c.border}
       stroke-width="1.5"
       stroke-opacity="0.5"
@@ -130,7 +140,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
     {/* ICON GRAPHIC */}
     {iconKey === 'money' && (
       /* TROPHÉE / MONNAIE DE VICTOIRE ULTRA PREMIUM */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         {/* Glow halo */}
         <circle cx="32" cy="27" r="14" fill={c.fill} fill-opacity="0.25" />
         {/* Cup */}
@@ -181,7 +191,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {(iconKey === 'innovation' || iconKey === 'lightbulb') && (
       /* AMPOULE INNOVATION & IMPACT */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         {/* Glow */}
         <circle cx="32" cy="27" r="15" fill={c.fill} fill-opacity="0.25" />
         {/* Rays */}
@@ -214,7 +224,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'leaf' && (
       /* FEUILLE NATURE & AGRICULTURE */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <circle cx="32" cy="30" r="14" fill={c.fill} fill-opacity="0.25" />
         <path
           d="M45 18C45 18 33 17 24 26C16.8 33.2 19 44 19 44C19 44 29.8 46.2 37 39C46 30 45 18 45 18Z"
@@ -236,7 +246,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'language' && (
       /* BULLES DE DIALOGUE MULTILINGUES (FR & BAMANANKAN) */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         {/* Back bubble */}
         <path
           d="M26 18H44C47.3137 18 50 20.6863 50 24V32C50 35.3137 47.3137 38 44 38H42L38 43V38H26C22.6863 38 20 35.3137 20 32V24C20 20.6863 22.6863 18 26 18Z"
@@ -264,7 +274,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {(iconKey === 'padlock' || iconKey === 'lock') && (
       /* CADENAS CONFIDENTIALITÉ SÉCURISÉ */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <circle cx="32" cy="33" r="13" fill={c.fill} fill-opacity="0.25" />
         {/* Shackle */}
         <path
@@ -292,7 +302,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'video' && (
       /* CAMÉRA SMARTPHONE / VIDÉO */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <circle cx="32" cy="32" r="14" fill={c.fill} fill-opacity="0.25" />
         <rect
           x="15"
@@ -325,7 +335,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'avatar' && (
       /* PROFIL LAURÉAT / VITRINE */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <circle cx="32" cy="24" r="8" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" />
         <path
           d="M18 45C18 39.4772 22.4772 35 28 35H36C41.5228 35 46 39.4772 46 45V46H18V45Z"
@@ -345,7 +355,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'city-hall' && (
       /* INSTITUTION / GOUVERNANCE */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <path d="M16 28L32 17L48 28H16Z" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" stroke-linejoin="round" />
         <path d="M20 28V42" stroke={c.stroke} stroke-width="2.2" />
         <path d="M28 28V42" stroke={c.stroke} stroke-width="2.2" />
@@ -358,7 +368,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'human-cooperation' && (
       /* PARTENARIAT / COOPÉRATION POIGNÉE DE MAIN */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <path
           d="M16 32L24 26L32 32L40 26L48 32L38 42L32 37L26 42L16 32Z"
           fill="#FFFFFF"
@@ -372,7 +382,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'companie' && (
       /* ENTREPRISE / SPONSOR */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <rect x="18" y="20" width="18" height="26" rx="2" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" />
         <rect x="36" y="27" width="14" height="19" rx="2" fill="#FFFFFF" stroke={c.stroke} stroke-width="2.2" />
         <circle cx="27" cy="26" r="1.5" fill={c.accent} />
@@ -383,7 +393,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'justice' && (
       /* BALANCE DE JUSTICE IMPARTIALE */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <path d="M32 16V46" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
         <path d="M20 22H44" stroke={c.stroke} stroke-width="2.2" stroke-linecap="round" />
         <path d="M20 22L15 32H25L20 22Z" fill="#FFFFFF" stroke={c.stroke} stroke-width="1.8" stroke-linejoin="round" />
@@ -394,7 +404,7 @@ const iconKey = name.includes('/') ? name.split('/')[1] : name;
 
     {iconKey === 'success' && (
       /* CHECK SUCCÈS VALIDÉ */
-      <g filter={`url(#shadow-${iconKey})`}>
+      <g filter={`url(#${shadowId})`}>
         <circle cx="32" cy="32" r="15" fill={c.fill} fill-opacity="0.2" stroke={c.stroke} stroke-width="2.2" />
         <path
           d="M24 32.5L29.5 38L40 26.5"
