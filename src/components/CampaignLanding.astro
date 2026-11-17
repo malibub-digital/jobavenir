@@ -83,12 +83,12 @@ const isAgri = campaign.slug === 'innovation-agricole';
     <div class="bg-white p-5 sm:p-9 rounded-3xl shadow-xl shadow-orange-950/10 border-2 border-orange-200/90 max-w-3xl mx-auto text-left relative z-20">
       
       <!-- 1. CE QU'IL Y A À GAGNER (2 CARTES VALORISÉES) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-stretch">
-        <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/40 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm hover:shadow-md transition-all flex items-start gap-4">
-          <PremiumIcon name="money" size={56} variant="gold" class="shrink-0 mt-0.5" />
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 items-stretch">
+        <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/40 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 shadow-sm hover:shadow-md transition-all flex items-start gap-3 sm:gap-4">
+          <PremiumIcon name="money" size={48} variant="gold" class="shrink-0 mt-0.5" />
           <div class="min-w-0 flex-1">
-            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug whitespace-nowrap">
-              {campaign.prizes.grandPrizeCount} Grands Prix de&nbsp;{campaign.prizes.grandPrizeAmount}
+            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug">
+              {campaign.prizes.grandPrizeCount} Grands Prix de&nbsp;<span class="whitespace-nowrap">{campaign.prizes.grandPrizeAmount}</span>
             </div>
             <div class="text-xs sm:text-sm text-stone-600 mt-1 leading-normal">
               Appui financier de lancement ou coup d'accélérateur pour améliorer votre business + vitrine officielle.
@@ -96,10 +96,10 @@ const isAgri = campaign.slug === 'innovation-agricole';
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 shadow-sm hover:shadow-md transition-all flex items-start gap-4">
-          <PremiumIcon name={isAgri ? "leaf" : "innovation"} size={56} variant="emerald" class="shrink-0 mt-0.5" />
+        <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 shadow-sm hover:shadow-md transition-all flex items-start gap-3 sm:gap-4">
+          <PremiumIcon name={isAgri ? "leaf" : "innovation"} size={48} variant="emerald" class="shrink-0 mt-0.5" />
           <div class="min-w-0 flex-1">
-            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug whitespace-nowrap">
+            <div class="text-base sm:text-lg font-black text-stone-900 leading-snug">
               {campaign.prizes.laureateCount} Projets publiés sur Mali Job
             </div>
             <div class="text-xs sm:text-sm text-stone-600 mt-1 leading-normal">
