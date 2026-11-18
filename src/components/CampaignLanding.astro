@@ -70,9 +70,9 @@ const isAgri = campaign.slug === 'innovation-agricole';
     </h1>
 
     <!-- BANDEAU DATE LIMITE ULTRA-VISIBLE -->
-    <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-amber-50 border-2 border-amber-300 text-stone-900 text-xs sm:text-sm font-bold shadow-xs mb-3">
+    <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-amber-50 border-2 border-amber-300 text-stone-900 text-xs sm:text-sm font-bold shadow-xs mb-3 text-left">
       <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-600 text-white shrink-0 text-xs shadow-xs animate-pulse">⏱️</span>
-      <span>Date limite de participation : <strong class="text-orange-700 underline decoration-orange-400 font-extrabold">{campaign.submission?.deadline || "30 Novembre 2026 à 23h59"}</strong></span>
+      <span>Date limite de participation&nbsp;:<br class="xs:hidden sm:hidden" /> <strong class="text-orange-700 underline decoration-orange-400 font-extrabold whitespace-nowrap">{campaign.submission?.deadline || "30 Novembre 2026 à 23h59"}</strong></span>
     </div>
 
     <p class="text-sm sm:text-base md:text-lg font-medium text-stone-600 max-w-2xl mx-auto mb-8">
@@ -134,21 +134,21 @@ const isAgri = campaign.slug === 'innovation-agricole';
       <!-- 2. REJOINDRE LE GROUPE POUR (2 RAISONS SIMPLES) -->
       <div class="border-t border-stone-200/80 pt-5 mb-5">
         <!-- RAPPEL DATE LIMITE DANS LA CARTE -->
-        <div class="mb-4 flex items-center justify-between gap-3 bg-gradient-to-r from-orange-50 to-amber-50 p-3 sm:p-3.5 rounded-xl border border-orange-200">
+        <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 bg-gradient-to-r from-orange-50 to-amber-50 p-3 sm:p-3.5 rounded-xl border border-orange-200">
           <div class="flex items-center gap-2">
             <span class="text-base sm:text-lg">⏳</span>
             <span class="text-xs sm:text-sm font-bold text-stone-800">
-              Clôture des candidatures :
+              Clôture des candidatures&nbsp;:
             </span>
           </div>
-          <span class="text-xs sm:text-sm font-black text-orange-700 bg-white px-2.5 py-1 rounded-lg border border-orange-200 shadow-2xs whitespace-nowrap">
+          <span class="text-xs sm:text-sm font-black text-orange-700 bg-white px-2.5 py-1 rounded-lg border border-orange-200 shadow-2xs whitespace-nowrap self-start sm:self-auto">
             {campaign.submission?.deadline || "30 Novembre 2026 à 23h59"}
           </span>
         </div>
 
         <div class="text-sm sm:text-base font-black text-stone-900 mb-3 flex items-center gap-2">
           <i class="ml-icon-cellphone-line ml-icon--sm text-orange-600"></i>
-          <span>Rejoignez notre groupe WhatsApp ou Telegram pour :</span>
+          <span>Rejoignez notre groupe WhatsApp ou Telegram pour&nbsp;:</span>
         </div>
 
         <div class="space-y-2.5">
