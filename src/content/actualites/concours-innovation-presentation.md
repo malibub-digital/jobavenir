@@ -3,7 +3,7 @@ title: "Concours d'Innovation Mali Job : 3 × 100 000 FCFA à gagner !"
 date: "Novembre 2026"
 category: "Concours"
 author: "Rédaction Mali Job"
-excerpt: "3 projets récompensés de 100 000 FCFA chacun et 10 projets mis en lumière sur Mali Job. Tous secteurs, ouvert à tous les porteurs de projets."
+excerpt: "3 projets récompensés de 100 000 FCFA chacun et 10 projets mis en lumière sur Mali Job. ➡️ Voir comment candidater en 3 minutes"
 image: "/images/og-concours-innovation.jpg"
 cardVariant: "accent"
 featured: false

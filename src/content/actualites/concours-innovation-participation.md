@@ -3,7 +3,7 @@ title: "Participer au concours : une vidéo de 3 minutes avec votre téléphone"
 date: "Novembre 2026"
 category: "Concours"
 author: "Rédaction Mali Job"
-excerpt: "Pas de dossier écrit ni de matériel pro : filmez votre projet en moins de 3 minutes, en français ou en bambara, et envoyez-le au jury."
+excerpt: "Pas de dossier écrit : filmez votre projet en 3 minutes avec votre téléphone. ➡️ Voir les consignes et envoyer ma vidéo"
 image: "/images/og-concours-candidature-video.jpg"
 cardVariant: "accent"
 featured: false

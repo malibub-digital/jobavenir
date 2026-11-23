@@ -3,7 +3,7 @@ title: "Concours d'Innovation : 100 000 FCFA et une vitrine officielle à gagner
 date: "Novembre 2026"
 category: "Concours"
 author: "Rédaction Mali Job"
-excerpt: "3 lauréats reçoivent 100 000 FCFA chacun. 10 projets ont leur page officielle sur Mali Job pour convaincre clients et partenaires."
+excerpt: "3 × 100 000 FCFA pour vos projets + 10 pages officielles offertes. ➡️ Je tente ma chance"
 image: "/images/og-concours-innovation.jpg"
 cardVariant: "accent"
 featured: false

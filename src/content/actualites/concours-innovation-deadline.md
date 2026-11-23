@@ -3,7 +3,7 @@ title: "Dernière ligne droite : envoyez votre vidéo avant le 30 novembre !"
 date: "Novembre 2026"
 category: "Concours"
 author: "Rédaction Mali Job"
-excerpt: "Date limite de dépôt des vidéos du Concours d'Innovation Mali Job : 30 novembre 2026 à 23h59. Ne manquez pas votre chance."
+excerpt: "Date limite 30 novembre 2026 à 23h59. ➡️ Envoyez votre vidéo maintenant"
 image: "/images/og-concours-candidature-video.jpg"
 cardVariant: "accent"
 featured: false
