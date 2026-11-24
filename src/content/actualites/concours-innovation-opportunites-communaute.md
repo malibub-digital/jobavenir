@@ -31,21 +31,6 @@ featured: true
   <li><strong>Idées de business & financements :</strong> des fiches projets adaptées aux réalités économiques locales et des subventions.</li>
 </ul>
 
-<div class="my-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
-  <span class="text-emerald-950 font-bold">
-    💬 Vous n'êtes pas encore dans le groupe officiel ou vous souhaitez inviter un proche ?
-  </span>
-  <a
-    href="https://chat.whatsapp.com/DqikQtnuQig3PnL9HxAQki"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold no-underline transition-colors shrink-0 text-center inline-flex items-center gap-1.5"
-  >
-    <span>Rejoindre sur WhatsApp</span>
-    <span>&rarr;</span>
-  </a>
-</div>
-
 <hr class="my-8 border-stone-200" />
 
 <h2 class="text-xl font-black text-stone-900 font-title mb-3">
