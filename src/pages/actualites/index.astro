@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MinimalHeader from "../../components/MinimalHeader.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
@@ -20,6 +22,7 @@ interface NewsItem {
   image?: string;
   cardVariant: 'featured' | 'accent' | 'indigo' | 'standard';
   featured: boolean;
+  isActive: boolean;
 }
 
 const contentDir = path.join(process.cwd(), 'src', 'content', 'actualites');
@@ -32,6 +35,7 @@ if (fs.existsSync(contentDir)) {
     const raw = fs.readFileSync(path.join(contentDir, file), 'utf-8');
     const parsed = matter(raw);
     if (parsed.data.isPlaceholderModel) return;
+    const isActive = parsed.data.is_active !== undefined ? Boolean(parsed.data.is_active) : (parsed.data.draft !== undefined ? !parsed.data.draft : true);
     rawItemsMap.set(slug, {
       slug,
       title: parsed.data.title || slug,
@@ -41,7 +45,8 @@ if (fs.existsSync(contentDir)) {
       excerpt: parsed.data.excerpt || '',
       image: parsed.data.image,
       cardVariant: parsed.data.cardVariant || 'standard',
-      featured: Boolean(parsed.data.featured)
+      featured: Boolean(parsed.data.featured),
+      isActive
     });
   });
 }
@@ -105,6 +110,40 @@ const badgeStyles: Record<string, string> = {
         </div>
       </div>
 
+      <!-- BANDEAU DE CONTRÔLE ADMIN (Visible côté client uniquement si admin connecté) -->
+      <div id="admin-news-controls" class="hidden mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-amber-200 text-amber-900 font-bold">
+            <i class="ml-icon-shield-fill ml-icon--xs"></i>
+          </span>
+          <span class="font-bold text-amber-950 uppercase tracking-wider text-[11px]">Mode Administration</span>
+          <span class="text-stone-500 font-medium hidden sm:inline">| Visibilité des articles :</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2" id="admin-news-status-group">
+          <button
+            type="button"
+            data-admin-news-filter="all"
+            class="admin-news-filter-btn px-3 py-1 rounded-lg font-bold border transition-all bg-amber-600 text-white border-amber-600 shadow-xs cursor-pointer"
+          >
+            Tous les articles
+          </button>
+          <button
+            type="button"
+            data-admin-news-filter="active"
+            class="admin-news-filter-btn px-3 py-1 rounded-lg font-bold border transition-all bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer"
+          >
+            En ligne (Publiés)
+          </button>
+          <button
+            type="button"
+            data-admin-news-filter="inactive"
+            class="admin-news-filter-btn px-3 py-1 rounded-lg font-bold border transition-all bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer"
+          >
+            Dépubliés
+          </button>
+        </div>
+      </div>
+
       <!-- Barre d'outils et Filtres par catégorie -->
       <div class="flex flex-wrap items-center justify-between gap-4 mb-10 pb-4 border-b border-[var(--ml-color-neutral-200)]">
         <div class="flex flex-wrap items-center gap-2">
@@ -124,9 +163,11 @@ const badgeStyles: Record<string, string> = {
           const cmsBase = `src/content/actualites/${item.slug}.md`;
           return (
             <article
-              class={`rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:-translate-y-1.5 relative group ${item.featured ? 'md:col-span-2 lg:col-span-2 flex-col md:flex-row' : ''} ${cardBgStyles[item.cardVariant]}`}
+              class={`actualite-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:-translate-y-1.5 relative group ${item.featured ? 'md:col-span-2 lg:col-span-2 flex-col md:flex-row' : ''} ${cardBgStyles[item.cardVariant]} ${!item.isActive ? 'inactive-actualite opacity-65 bg-stone-50/80 border-dashed border-rose-300' : ''}`}
               data-cms-item-index={idx}
               data-cms-file={cmsBase}
+              data-slug={item.slug}
+              data-is-active={item.isActive ? 'true' : 'false'}
             >
               {item.image && (
                 <div class={`overflow-hidden ${item.featured ? 'md:w-1/2 min-h-[260px]' : 'h-48'} relative`}>
@@ -140,17 +181,24 @@ const badgeStyles: Record<string, string> = {
               <div class={`p-6 flex flex-col justify-between ${item.featured ? 'md:w-1/2' : 'flex-1'}`}>
                 <div>
                   <div class="flex items-center justify-between gap-2 mb-3">
-                    {!item.image ? (
-                      <span class={`text-[11px] uppercase tracking-wider px-3 py-1 rounded-full ${badgeStyles[item.category as keyof typeof badgeStyles] || badgeStyles.Innovation}`} data-cms-bind={`${cmsBase}::category`}>
-                        {item.category}
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class={`admin-inactive-badge inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300 ${item.isActive ? 'hidden' : ''}`}>
+                        <i class="ml-icon-close-circle-line ml-icon--xs text-rose-600"></i>
+                        <span>Dépublié / Masqué</span>
                       </span>
-                    ) : (
-                      <div class="flex items-center gap-2 text-xs text-[var(--ml-color-neutral-500)]">
-                        <time data-cms-bind={`${cmsBase}::date`}>{item.date}</time>
-                        <span>•</span>
-                        <span data-cms-bind={`${cmsBase}::author`}>Par {item.author}</span>
-                      </div>
-                    )}
+
+                      {!item.image ? (
+                        <span class={`text-[11px] uppercase tracking-wider px-3 py-1 rounded-full ${badgeStyles[item.category as keyof typeof badgeStyles] || badgeStyles.Innovation}`} data-cms-bind={`${cmsBase}::category`}>
+                          {item.category}
+                        </span>
+                      ) : (
+                        <div class="flex items-center gap-2 text-xs text-[var(--ml-color-neutral-500)]">
+                          <time data-cms-bind={`${cmsBase}::date`}>{item.date}</time>
+                          <span>•</span>
+                          <span data-cms-bind={`${cmsBase}::author`}>Par {item.author}</span>
+                        </div>
+                      )}
+                    </div>
 
                     <CollectionItemControls
                       collectionPath="src/data/pages/news.json::items"
@@ -181,11 +229,30 @@ const badgeStyles: Record<string, string> = {
                   </p>
                 </div>
 
-                <div class="pt-4 border-t border-[var(--ml-color-neutral-200)]/60 flex items-center justify-between">
+                <div class="pt-4 border-t border-[var(--ml-color-neutral-200)]/60 flex flex-wrap items-center justify-between gap-2">
                   <a href={`/actualites/${item.slug}`} class="text-xs font-bold text-[var(--ml-color-green-700)] hover:text-[var(--ml-color-green-800)] inline-flex items-center gap-1.5 group no-underline">
                     <span>Lire l'article</span>
                     <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
                   </a>
+
+                  <!-- Action rapide admin (visible uniquement si admin connecté) -->
+                  <div class="admin-actualite-actions hidden">
+                    <button
+                      type="button"
+                      class={`admin-toggle-actualite-btn px-2.5 py-1 text-xs font-bold rounded-lg transition-colors cursor-pointer border flex items-center gap-1.5 shadow-xs ${
+                        !item.isActive
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                          : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+                      }`}
+                      data-slug={item.slug}
+                      title={!item.isActive ? "Republier l'article pour le rendre visible au public" : "Dépublier l'article pour le masquer au public"}
+                    >
+                      <span class="admin-toggle-actualite-icon">
+                        <i class={!item.isActive ? "ml-icon-check-line" : "ml-icon-close-line"}></i>
+                      </span>
+                      <span class="admin-toggle-actualite-text">{!item.isActive ? 'Republier' : 'Dépublier'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </article>
@@ -201,4 +268,141 @@ const badgeStyles: Record<string, string> = {
     contact={siteConfig.contact}
     footerLinks={siteConfig.footerLinks}
   />
+
+  <script>
+    import { getAdminCookieToken } from '@malihub/sites-core/utils/auth.js';
+
+    function initActualitesListing() {
+      const adminControls = document.getElementById('admin-news-controls');
+      const adminActions = document.querySelectorAll('.admin-actualite-actions');
+      const adminFilterBtns = document.querySelectorAll('.admin-news-filter-btn');
+      const cards = document.querySelectorAll<HTMLElement>('.actualite-card');
+
+      const token = getAdminCookieToken();
+      const isLoggedIn = Boolean(token && token.length > 0);
+
+      let currentAdminFilter = 'all'; // 'all' | 'active' | 'inactive'
+
+      if (isLoggedIn) {
+        adminControls?.classList.remove('hidden');
+        adminActions.forEach(a => a.classList.remove('hidden'));
+      }
+
+      function applyNewsFilters() {
+        cards.forEach(card => {
+          const isActive = card.getAttribute('data-is-active') !== 'false';
+
+          if (!isLoggedIn) {
+            // Utilisateur standard : ne voir QUE les articles actifs
+            if (!isActive) {
+              card.classList.add('hidden');
+            } else {
+              card.classList.remove('hidden');
+            }
+            return;
+          }
+
+          // Admin connecté : filtrage selon le filtre sélectionné
+          if (currentAdminFilter === 'active' && !isActive) {
+            card.classList.add('hidden');
+          } else if (currentAdminFilter === 'inactive' && isActive) {
+            card.classList.add('hidden');
+          } else {
+            card.classList.remove('hidden');
+          }
+        });
+      }
+
+      // Initialisation visibilité
+      applyNewsFilters();
+
+      // Écouteur des filtres admin
+      if (isLoggedIn) {
+        adminFilterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const filter = btn.getAttribute('data-admin-news-filter') || 'all';
+            currentAdminFilter = filter;
+            adminFilterBtns.forEach(b => {
+              b.className = 'admin-news-filter-btn px-3 py-1 rounded-lg font-bold border transition-all bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer';
+            });
+            btn.className = 'admin-news-filter-btn px-3 py-1 rounded-lg font-bold border transition-all bg-amber-600 text-white border-amber-600 shadow-xs cursor-pointer';
+            applyNewsFilters();
+          });
+        });
+
+        // Gestion du clic 1-clic direct Dépublier / Republier
+        document.addEventListener('click', async (e) => {
+          const target = e.target as HTMLElement | null;
+          const btn = target?.closest('.admin-toggle-actualite-btn') as HTMLButtonElement | null;
+          if (!btn) return;
+
+          const card = btn.closest('.actualite-card') as HTMLElement | null;
+          if (!card) return;
+
+          const slug = btn.getAttribute('data-slug') || card.getAttribute('data-slug');
+          if (!slug) return;
+
+          const currentActive = card.getAttribute('data-is-active') !== 'false';
+          const targetActive = !currentActive;
+
+          btn.setAttribute('disabled', 'true');
+          const iconSpan = btn.querySelector('.admin-toggle-actualite-icon');
+          const textSpan = btn.querySelector('.admin-toggle-actualite-text');
+          if (textSpan) textSpan.textContent = '...';
+
+          try {
+            const res = await fetch('/api/admin/actualites', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                slug,
+                action: 'toggle-publish',
+                isActive: targetActive
+              })
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.error || 'Erreur lors du changement de statut');
+            }
+
+            card.setAttribute('data-is-active', targetActive ? 'true' : 'false');
+            const badge = card.querySelector('.admin-inactive-badge');
+
+            if (targetActive) {
+              card.classList.remove('inactive-actualite', 'opacity-65', 'bg-stone-50/80', 'border-dashed', 'border-rose-300');
+              if (iconSpan) iconSpan.innerHTML = '<i class="ml-icon-close-line"></i>';
+              if (textSpan) textSpan.textContent = 'Dépublier';
+              btn.className = 'admin-toggle-actualite-btn px-2.5 py-1 text-xs font-bold rounded-lg transition-colors cursor-pointer border flex items-center gap-1.5 shadow-xs bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100';
+              btn.setAttribute('title', "Dépublier l'article pour le masquer au public");
+              if (badge) badge.classList.add('hidden');
+            } else {
+              card.classList.add('inactive-actualite', 'opacity-65', 'bg-stone-50/80', 'border-dashed', 'border-rose-300');
+              if (iconSpan) iconSpan.innerHTML = '<i class="ml-icon-check-line"></i>';
+              if (textSpan) textSpan.textContent = 'Republier';
+              btn.className = 'admin-toggle-actualite-btn px-2.5 py-1 text-xs font-bold rounded-lg transition-colors cursor-pointer border flex items-center gap-1.5 shadow-xs bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100';
+              btn.setAttribute('title', "Republier l'article pour le rendre visible au public");
+              if (badge) badge.classList.remove('hidden');
+            }
+
+            applyNewsFilters();
+          } catch (err: any) {
+            alert(err.message || 'Impossible de modifier la publication');
+            if (textSpan) textSpan.textContent = currentActive ? 'Dépublier' : 'Republier';
+          } finally {
+            btn.removeAttribute('disabled');
+          }
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initActualitesListing);
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      initActualitesListing();
+    }
+    document.addEventListener('astro:after-swap', initActualitesListing);
+  </script>
 </BaseLayout>

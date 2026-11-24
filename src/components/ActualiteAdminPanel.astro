@@ -1,0 +1,241 @@
+---
+// src/components/ActualiteAdminPanel.astro
+interface Props {
+  slug: string;
+  isActive: boolean;
+  title: string;
+  category?: string;
+  date?: string;
+}
+
+const {
+  slug,
+  isActive = true,
+  title,
+  category = 'Général',
+  date = ''
+} = Astro.props;
+---
+
+<!-- 
+  Panneau Admin In-Page pour Actualités
+  Condition : Visible UNIQUEMENT si l'administrateur est authentifié.
+  La classe 'hidden' est retirée dynamiquement par le script si token présent.
+-->
+<div
+  id="actualite-admin-root"
+  class="hidden border-2 border-amber-400 bg-amber-50/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 mb-8 shadow-lg text-stone-900 transition-all duration-200"
+  data-slug={slug}
+  data-title={title}
+  data-active={isActive ? 'true' : 'false'}
+>
+  <!-- Barre d'en-tête admin -->
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5">
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-amber-200 text-amber-950 text-sm font-bold shadow-xs">
+        <i class="ml-icon-shield-fill ml-icon--xs"></i>
+      </span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-black uppercase tracking-wider text-amber-950">Mode Administration & Modération</span>
+          <span
+            id="admin-status-badge"
+            class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs ${
+              isActive
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                : 'bg-rose-100 text-rose-800 border border-rose-300'
+            }`}
+          >
+            <span id="admin-status-dot" class={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+            <span id="admin-status-text">{isActive ? 'En ligne / Publié' : 'Dépublié / Masqué'}</span>
+          </span>
+        </div>
+        <p class="text-[11px] text-amber-800/80 mt-0.5">
+          Article : <strong class="text-amber-950">{title}</strong> ({slug})
+        </p>
+      </div>
+    </div>
+
+    <!-- Actions rapides en-tête -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <!-- Bouton 1-clic direct pour basculer la visibilité (Dépublier / Republier) -->
+      <button
+        type="button"
+        id="admin-toggle-publish-btn"
+        class={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+          isActive
+            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 hover:border-rose-300'
+            : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
+        }`}
+      >
+        <span id="admin-toggle-btn-icon">
+          <i class={isActive ? "ml-icon-close-line ml-icon--xs" : "ml-icon-check-line ml-icon--xs"}></i>
+        </span>
+        <span id="admin-toggle-btn-text">{isActive ? "Dépublier l'article" : "Publier l'article"}</span>
+      </button>
+
+      <!-- Lien vers liste des actualités -->
+      <a
+        href="/actualites"
+        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-stone-700 hover:bg-stone-50 border border-stone-200 hover:border-stone-300 shadow-xs transition-all no-underline"
+      >
+        <span>&larr;</span>
+        <span>Toutes les actualités</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Toast / Message de notification dynamique -->
+  <div
+    id="admin-notification"
+    class="hidden mt-3 p-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all"
+    role="alert"
+  >
+    <div class="flex items-center gap-2">
+      <span id="admin-notification-icon">✅</span>
+      <span id="admin-notification-message">Action effectuée</span>
+    </div>
+    <button type="button" id="admin-notification-close" class="text-stone-400 hover:text-stone-600 text-sm cursor-pointer">✕</button>
+  </div>
+</div>
+
+<script>
+  import { getAdminCookieToken } from '@malihub/sites-core/utils/auth.js';
+
+  function initActualiteAdminPanel() {
+    const root = document.getElementById('actualite-admin-root');
+    if (!root) return;
+
+    function updateVisibility() {
+      const token = getAdminCookieToken();
+      const isAuthenticated = Boolean(token && token.length > 0);
+
+      if (isAuthenticated) {
+        root.classList.remove('hidden');
+      } else {
+        root.classList.add('hidden');
+      }
+    }
+
+    document.addEventListener('cms:editing-toggled', () => {
+      updateVisibility();
+    });
+
+    updateVisibility();
+
+    const slug = root.getAttribute('data-slug') || '';
+    let isActive = root.getAttribute('data-active') === 'true';
+
+    const statusBadge = document.getElementById('admin-status-badge');
+    const statusDot = document.getElementById('admin-status-dot');
+    const statusText = document.getElementById('admin-status-text');
+    const togglePublishBtn = document.getElementById('admin-toggle-publish-btn') as HTMLButtonElement | null;
+    const toggleBtnIcon = document.getElementById('admin-toggle-btn-icon');
+    const toggleBtnText = document.getElementById('admin-toggle-btn-text');
+
+    const notification = document.getElementById('admin-notification');
+    const notificationIcon = document.getElementById('admin-notification-icon');
+    const notificationMessage = document.getElementById('admin-notification-message');
+    const notificationClose = document.getElementById('admin-notification-close');
+
+    let notifTimeout: any = null;
+    function showNotification(msg: string, type: 'success' | 'error' = 'success') {
+      if (!notification || !notificationIcon || !notificationMessage) return;
+      if (notifTimeout) clearTimeout(notifTimeout);
+
+      notificationMessage.textContent = msg;
+      notificationIcon.innerHTML = type === 'success' 
+        ? '<i class="ml-icon-check-line text-emerald-600"></i>' 
+        : '<i class="ml-icon-close-line text-rose-600"></i>';
+
+      notification.className = `mt-3 p-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
+        type === 'success' 
+          ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' 
+          : 'bg-rose-50 text-rose-900 border border-rose-200'
+      }`;
+      notification.classList.remove('hidden');
+
+      notifTimeout = setTimeout(() => {
+        notification.classList.add('hidden');
+      }, 5000);
+    }
+
+    notificationClose?.addEventListener('click', () => {
+      notification?.classList.add('hidden');
+    });
+
+    // Bascule de publication 1-clic
+    togglePublishBtn?.addEventListener('click', async () => {
+      const token = getAdminCookieToken();
+      if (!token) {
+        showNotification('Session admin requise. Veuillez vous connecter.', 'error');
+        return;
+      }
+
+      const targetActive = !isActive;
+      togglePublishBtn.disabled = true;
+      if (toggleBtnText) toggleBtnText.textContent = 'En cours...';
+
+      try {
+        const res = await fetch('/api/admin/actualites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            slug,
+            action: 'toggle-publish',
+            isActive: targetActive
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Erreur lors du changement de visibilité');
+        }
+
+        isActive = targetActive;
+        root.setAttribute('data-active', isActive ? 'true' : 'false');
+
+        // Mise à jour de l'UI
+        if (isActive) {
+          statusBadge?.classList.remove('bg-rose-100', 'text-rose-800', 'border-rose-300');
+          statusBadge?.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+          statusDot?.classList.remove('bg-rose-500');
+          statusDot?.classList.add('bg-emerald-500');
+          if (statusText) statusText.textContent = 'En ligne / Publié';
+
+          togglePublishBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 hover:border-rose-300';
+          if (toggleBtnIcon) toggleBtnIcon.innerHTML = '<i class="ml-icon-close-line ml-icon--xs"></i>';
+          if (toggleBtnText) toggleBtnText.textContent = "Dépublier l'article";
+
+          showNotification("L'article est maintenant en ligne et visible par les usagers.", 'success');
+        } else {
+          statusBadge?.classList.remove('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+          statusBadge?.classList.add('bg-rose-100', 'text-rose-800', 'border-rose-300');
+          statusDot?.classList.remove('bg-emerald-500');
+          statusDot?.classList.add('bg-rose-500');
+          if (statusText) statusText.textContent = 'Dépublié / Masqué';
+
+          togglePublishBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm';
+          if (toggleBtnIcon) toggleBtnIcon.innerHTML = '<i class="ml-icon-check-line ml-icon--xs"></i>';
+          if (toggleBtnText) toggleBtnText.textContent = "Publier l'article";
+
+          showNotification("L'article a été dépublié. Il est masqué pour le grand public.", 'success');
+        }
+      } catch (err: any) {
+        showNotification(err.message || 'Impossible de modifier la visibilité', 'error');
+        if (toggleBtnText) toggleBtnText.textContent = isActive ? "Dépublier l'article" : "Publier l'article";
+      } finally {
+        togglePublishBtn.disabled = false;
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initActualiteAdminPanel);
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    initActualiteAdminPanel();
+  }
+  document.addEventListener('astro:after-swap', initActualiteAdminPanel);
+</script>

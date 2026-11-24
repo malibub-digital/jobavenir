@@ -6,16 +6,19 @@
   },
   "items": [
     {
-      "slug": "guichet-apej"
+      "slug": "concours-innovation-opportunites-communaute"
     },
     {
-      "slug": "programme-stages-apej"
+      "slug": "concours-innovation-participation"
     },
     {
-      "slug": "digitalisation-formulaires"
+      "slug": "concours-innovation-lots"
     },
     {
-      "slug": "eoj-orientation-insertion"
+      "slug": "concours-innovation-deadline"
+    },
+    {
+      "slug": "concours-innovation-presentation"
     }
   ]
 }

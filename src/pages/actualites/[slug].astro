@@ -3,6 +3,7 @@ export const prerender = false;
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import MinimalHeader from "../../components/MinimalHeader.astro";
+import ActualiteAdminPanel from "../../components/ActualiteAdminPanel.astro";
 import Footer from '@malihub/sites-core/components/Footer.astro';
 import CmsImageField from '@malihub/sites-core/components/CmsImageField.astro';
 import siteConfig from '../../../site.config.json';
@@ -22,6 +23,7 @@ let article: Record<string, any> = {
   image: '',
   excerpt: '',
   content: '<p>Contenu indisponible.</p>',
+  isActive: true,
   isPlaceholderModel: false,
   laureateBadge: '',
   projectName: '',
@@ -45,6 +47,7 @@ if (fs.existsSync(filePath)) {
     image: parsed.data.image || '',
     excerpt: parsed.data.excerpt || '',
     content: parsed.content || '',
+    isActive: parsed.data.is_active !== undefined ? Boolean(parsed.data.is_active) : (parsed.data.draft !== undefined ? !parsed.data.draft : true),
     isPlaceholderModel: Boolean(parsed.data.isPlaceholderModel),
     laureateBadge: parsed.data.laureateBadge || '',
     projectName: parsed.data.projectName || '',
@@ -138,6 +141,15 @@ const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${
         <span>/</span>
         <span class="text-stone-800 font-semibold truncate max-w-xs" data-cms-bind={`${cmsBase}::title`}>{article.title}</span>
       </nav>
+
+      <!-- PANNEAU D'ADMINISTRATION IN-PAGE -->
+      <ActualiteAdminPanel
+        slug={targetSlug}
+        isActive={article.isActive}
+        title={article.title}
+        category={article.category}
+        date={article.date}
+      />
 
       <article class="bg-white border border-stone-200 rounded-3xl overflow-hidden shadow-sm p-6 md:p-10">
         <div class="flex flex-wrap items-center gap-2.5 text-xs text-stone-500 mb-4">

@@ -4,7 +4,7 @@ date: "Novembre 2026"
 category: "Concours"
 author: "Rédaction Mali Job"
 excerpt: "Date limite 30 novembre 2026 à 23h59. ➡️ Envoyez votre vidéo maintenant"
-image: "/images/og-concours-candidature-video.jpg"
+image: "/images/og-concours-deadline.jpg"
 cardVariant: "accent"
 featured: false
 ---

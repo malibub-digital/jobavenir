@@ -4,7 +4,7 @@ date: "Novembre 2026"
 category: "Concours"
 author: "Rédaction Mali Job"
 excerpt: "3 × 100 000 FCFA pour vos projets + 10 pages officielles offertes. ➡️ Je tente ma chance"
-image: "/images/og-concours-innovation.jpg"
+image: "/images/og-concours-lots.jpg"
 cardVariant: "accent"
 featured: false
 ---
