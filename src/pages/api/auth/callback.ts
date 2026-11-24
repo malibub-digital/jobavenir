@@ -1,6 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
+import { hashSha256 } from '@malihub/sites-core/utils/auth.js';
 
 export const GET: APIRoute = async ({ request, redirect, cookies }) => {
   const url = new URL(request.url);
@@ -100,7 +101,10 @@ export const GET: APIRoute = async ({ request, redirect, cookies }) => {
       userSession.email === 'sylvaintoe@gmail.com';
 
     if (isAdmin) {
-      cookies.set('cms_admin_token', 'mali_connect_authenticated', {
+      const rawSecret = (typeof import.meta !== 'undefined' && import.meta.env?.CMS_ADMIN_SECRET) || process.env.CMS_ADMIN_SECRET || 'admin123';
+      const expectedHash = await hashSha256(rawSecret);
+
+      cookies.set('cms_admin_token', expectedHash, {
         path: '/',
         httpOnly: false,
         secure: url.protocol === 'https:',
