@@ -106,26 +106,26 @@ const footerLogos = [
       <section id="bamanankan" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
         <div class="p-6 sm:p-8">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">Bamanankan</div>
-          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Mali Baara Grand Innovation Concours</h1>
-          <p class="text-base font-bold text-orange-600 mb-3">3 x 100.000 FCFA + Porozɛ 10 minnu bɛ jira</p>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Mali Job ka Fɛɛrɛ kura ɲɔgɔndanba</h1>
+          <p class="text-base font-bold text-orange-600 mb-3">Waa 20 (100 000 FCFA) × 3 + Porozɛ 10 minnu bɛ jira kɛnɛ kan</p>
 
           <!-- BANDEAU DATE LIMITE -->
           <div class="mb-5 flex items-center justify-between gap-2 bg-amber-50 p-3 rounded-xl border border-amber-300 text-xs sm:text-sm font-bold text-stone-800">
             <span class="inline-flex items-center gap-1.5">
               <span>⏱️</span>
-              <span>Labanna don (Date limite) :</span>
+              <span>Waati dan :</span>
             </span>
-            <span class="text-orange-700 font-black">{campaign.submission?.deadline || "30 Nowanburukalo 2026"}</span>
+            <span class="text-orange-700 font-black">{campaign.submission?.deadline === "30 Novembre 2026 à 23h59" ? "Nowanburukalo tile 30 san 2026 — 23h59" : campaign.submission?.deadline === "Ouverture prochaine" ? "A bɛna da wuli sɔɔni" : (campaign.submission?.deadline || "Nowanburukalo tile 30 san 2026 — 23h59")}</span>
           </div>
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
               <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
               <div class="min-w-0">
-                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">I bɛ se ka min sɔrɔ</h2>
+                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Aw bɛ se ka min sɔrɔ</h2>
                 <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                  <li><strong class="whitespace-nowrap">3 Jaraba 100.000&nbsp;FCFA</strong> kelen-kelen bɛɛ la k'aw dɛmɛ ka porozɛ daminɛ walima k'a ɲɛnajira ka teliya</li>
-                  <li><strong>Porozɛ 10</strong> jirala Mali Baara ɲɛ ofisiyali dɔ kan walasa jɛɲɔgɔnw ni waridonnaw bɛna u ye</li>
+                  <li><strong>Mɔgɔ 3 fɔlɔ minnu bɛ se sɔrɔ :</strong> <strong class="whitespace-nowrap">waa 20 (100&nbsp;000&nbsp;FCFA)</strong> bɛ di u kelen-kelen bɛɛ ma walasa k'u dɛmɛ ka porozɛ daminɛ walima k'a ɲɛtaa teliya</li>
+                  <li><strong>Porozɛ 10</strong> bɛna jira Mali Job ka siti ɲɛ kɛrɛnkɛrɛnnen kan, walasa jɛɲɔgɔnw ni waridonnaw k'u ye</li>
                 </ul>
               </div>
             </div>
@@ -135,10 +135,10 @@ const footerLogos = [
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Aw bɛ se ka aw sen don a la cogo di?</h2>
                 <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
-                  <li>Aw ka fara an ka WhatsApp walima Telegram kulu kan (lienw bɛ duguma)</li>
-                  <li>Wideyo min tɛ miniti 3 bɔ, o ta ni i ka telefɔni ye</li>
-                  <li>Aw ye aw ka poroze jira: aw bɛ gɛlɛya min ɲɛnabɔ ani aw ka fura</li>
-                  <li>I ka wideyo ci nimɔrɔ min dira kulu kɔnɔ</li>
+                  <li>Aw ka don an ka WhatsApp walima Telegram kulu kɔnɔ (siraw bɛ duguma)</li>
+                  <li>Aw ka wideyo dɔ ta ni aw ka telefɔni ye, <strong>a kana tɛmɛ miniti 3 kan</strong></li>
+                  <li>Aw ka aw ka porozɛ jira : aw bɛ gɛlɛya min ɲɛnabɔ ani aw ka fɛɛrɛ</li>
+                  <li>Nimɔrɔ min bɛna di aw ma kulu kɔnɔ, aw ka aw ka wideyo ci o kan</li>
                 </ol>
               </div>
             </div>
@@ -146,16 +146,16 @@ const footerLogos = [
             <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 flex items-center gap-4 shadow-xs">
               <PremiumIcon name="success" size={56} variant="emerald" class="shrink-0" />
               <div class="min-w-0">
-                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">A ye fu ye</h2>
-                <p class="text-xs sm:text-sm text-stone-700 m-0">U sendon sara tɛ. A dabɔra ka ɲɛsin porozɛ ɲɛmɔgɔ kamalenninw bɛɛ ma Mali kɔnɔ.</p>
+                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">Sara t'a la</h2>
+                <p class="text-xs sm:text-sm text-stone-700 m-0">Aw tɛ wari si sara ka aw sen don a la. A dayɛlɛlen bɛ Mali funankɛ porozɛtigiw bɛɛ ye.</p>
               </div>
             </div>
 
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
-              <h2 class="text-sm font-black text-stone-900 mb-3">💬 Aw ka fara kulu kan</h2>
+              <h2 class="text-sm font-black text-stone-900 mb-3">💬 Aw ka don kuluw kɔnɔ</h2>
               <div class="flex flex-col sm:flex-row gap-3">
-                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">WhatsApp</a>
-                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Telegram</a>
+                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don WhatsApp kɔnɔ</a>
+                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don Telegram kɔnɔ</a>
               </div>
             </div>
           </div>
@@ -167,7 +167,7 @@ const footerLogos = [
         <div class="p-6 sm:p-8">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">ߒߞߏ</div>
           <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">ߡߊ߬ߟߌ ߖߐߔ (ߡߊ߬ߟߌ ߓߊ߯ߙߊ߫ ߞߏ) ߞߎ߲߬ߦߌ߬ߙߊ߬ߟߌ ߢߐ߲߯ߘߊ߲ߓߊ</h1>
-          <p class="text-base font-bold text-orange-600 mb-3">ߛߋߝߊ ߥߊ߯ ߂߀ (100 000 FCFA) × ߃ + ߖߊ߬ߕߋ߬ߛߌ߰ ߁߀ ߡߍ߲ ߠߎ߬ ߡߊߦߋߙߋ߲ߣߍ߲</p>
+          <p class="text-base font-bold text-orange-600 mb-3">ߛߋߝߊ ߥߊ߯ ߂߀ <bdi dir="ltr">(100&nbsp;000&nbsp;FCFA)</bdi> × ߃ + ߖߊ߬ߕߋ߬ߛߌ߰ ߁߀ ߡߍ߲ ߠߎ߬ ߡߊߦߋߙߋ߲ߣߍ߲</p>
 
           <!-- BANDEAU DATE LIMITE -->
           <div class="mb-5 flex items-center justify-between gap-2 bg-amber-50 p-3 rounded-xl border border-amber-300 text-xs sm:text-sm font-bold text-stone-800">
@@ -184,7 +184,7 @@ const footerLogos = [
               <div class="min-w-0">
                 <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">ߊߟߎ߫ ߓߍߛߋ߫ ߞߊ߬ ߡߍ߲ ߛߐ߬ߘߐ߲߬</h2>
                 <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc ps-4">
-                  <li><strong>ߡߐ߰ ߃ ߝߟߐ߫ ߡߍ߲ ߠߎ߫ ߡߊߣߊ߬ ߛߎߘߊ߲߫ :</strong> ߛߋߝߊ ߥߊ߯ ߂߀ (100 000 FCFA) ߓߍߣߊ߬ ߘߴߊ߬ߟߎ߫ ߞߋߟߋ߲߫-ߞߋߟߋ߲߫ ߡߊ߬ ߛߊ߫ ߞߵߊ߬ߟߎ߬ ߟߊ߫ ߖߊ߬ߕߋ߬ߛߌ߰ ߟߎ߬ ߓߐߢߟߊ߫</li>
+                  <li><strong>ߡߐ߰ ߃ ߝߟߐ߫ ߡߍ߲ ߠߎ߫ ߡߊߣߊ߬ ߛߎߘߊ߲߫ :</strong> ߛߋߝߊ ߥߊ߯ ߂߀ <bdi dir="ltr">(100&nbsp;000&nbsp;FCFA)</bdi> ߓߍߣߊ߬ ߘߴߊ߬ߟߎ߫ ߞߋߟߋ߲߫-ߞߋߟߋ߲߫ ߡߊ߬ ߛߊ߫ ߞߵߊ߬ߟߎ߬ ߟߊ߫ ߖߊ߬ߕߋ߬ߛߌ߰ ߟߎ߬ ߓߐߢߟߊ߫</li>
                   <li><strong>ߖߊ߬ߕߋ߬ߛߌ߰ ߁߀</strong> ߓߍߣߊ߬ ߟߊߖߍ߲ߛߍ߲߫ ߡߊ߬ߟߌ ߖߐߔ ߞߐߜߍ߫ ߓߟߏߡߊߞߊ߬ߣߍ߲ ߞߊ߲߬ ߛߊ߫ ߒ߬ ߞߏߢߐ߲߮ ߠߎ߬ ߣߌ߫ ߖߐ߰ߣߍ߲߬ߦߊ߬ߟߊ ߟߎ߬ ߦߴߊ߬ ߡߊߝߟߍ߫</li>
                 </ul>
               </div>
