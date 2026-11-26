@@ -20,6 +20,8 @@ if (!campaign) {
   return Astro.redirect(`/concours/${(siteConfig as any).activeCampaignSlug || "innovation-2026-c1"}`);
 }
 
+const translatedWhatsappGroupUrl = "https://chat.whatsapp.com/GCOebHI61jC41GdDOvVCi7";
+
 const footerLogos = [
   { src: "/images/logo-apej.svg", alt: "APEJ Mali" },
   { src: "/images/logo-eoj.svg", alt: "EOJ Mali" },
@@ -94,7 +96,7 @@ const footerLogos = [
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
               <h2 class="text-sm font-black text-stone-900 mb-3">💬 Rejoignez les groupes</h2>
               <div class="flex flex-col sm:flex-row gap-3">
-                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Rejoindre WhatsApp</a>
+                <a href={translatedWhatsappGroupUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Rejoindre WhatsApp</a>
                 <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Rejoindre Telegram</a>
               </div>
             </div>
@@ -154,7 +156,7 @@ const footerLogos = [
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
               <h2 class="text-sm font-black text-stone-900 mb-3">💬 Aw ka don kuluw kɔnɔ</h2>
               <div class="flex flex-col sm:flex-row gap-3">
-                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don WhatsApp kɔnɔ</a>
+                <a href={translatedWhatsappGroupUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don WhatsApp kɔnɔ</a>
                 <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don Telegram kɔnɔ</a>
               </div>
             </div>
@@ -214,7 +216,7 @@ const footerLogos = [
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
               <h2 class="text-sm font-black text-stone-900 mb-3">💬 ߊߟߎ߫ ߦߋ߫ ߦߟߍ߬ ߞߙߎ ߟߎ߫ ߞߊ߲߬</h2>
               <div class="flex flex-col sm:flex-row gap-3">
-                <a href={campaign.community.whatsappGroupUrl || "#"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">WhatsApp</a>
+                <a href={translatedWhatsappGroupUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">WhatsApp</a>
                 <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Telegram</a>
               </div>
             </div>
