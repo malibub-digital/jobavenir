@@ -19,8 +19,8 @@ const {
 
 <!-- 
   Panneau Admin In-Page pour Actualités
-  Condition : Visible UNIQUEMENT si l'administrateur est authentifié.
-  La classe 'hidden' est retirée dynamiquement par le script si token présent.
+  Condition stricte : Visible UNIQUEMENT si l'administrateur est authentifié ET que le mode Édition est actif !
+  La classe 'hidden' est conservée par défaut, et retirée dynamiquement par le script quand body.cms-mode-editing est présent.
 -->
 <div
   id="actualite-admin-root"
@@ -37,7 +37,7 @@ const {
       </span>
       <div>
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-xs font-black uppercase tracking-wider text-amber-950">Mode Administration & Modération</span>
+          <span class="text-xs font-black uppercase tracking-wider text-amber-950">Mode Édition & Modération</span>
           <span
             id="admin-status-badge"
             class={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs ${
@@ -106,17 +106,20 @@ const {
     const root = document.getElementById('actualite-admin-root');
     if (!root) return;
 
+    // Règle stricte : Ne s'afficher QUE si l'administrateur est authentifié ET que le mode Édition est actif
     function updateVisibility() {
       const token = getAdminCookieToken();
       const isAuthenticated = Boolean(token && token.length > 0);
+      const isEditing = document.body.classList.contains('cms-mode-editing');
 
-      if (isAuthenticated) {
+      if (isAuthenticated && isEditing) {
         root.classList.remove('hidden');
       } else {
         root.classList.add('hidden');
       }
     }
 
+    // Écouter le basculement du mode édition depuis l'AdminToolbar
     document.addEventListener('cms:editing-toggled', () => {
       updateVisibility();
     });

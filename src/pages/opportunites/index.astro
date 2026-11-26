@@ -549,10 +549,27 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
 
       let currentAdminFilter = 'all'; // 'all' | 'active' | 'inactive'
 
-      if (isLoggedIn) {
-        adminControls?.classList.remove('hidden');
-        adminActionContainers.forEach(container => container.classList.remove('hidden'));
+      function updateAdminVisibility() {
+        const isEditing = document.body.classList.contains('cms-mode-editing');
+        const showAdminUI = isLoggedIn && isEditing;
+
+        if (showAdminUI) {
+          adminControls?.classList.remove('hidden');
+          adminActionContainers.forEach(container => container.classList.remove('hidden'));
+        } else {
+          adminControls?.classList.add('hidden');
+          adminActionContainers.forEach(container => container.classList.add('hidden'));
+        }
+
+        applyFilters();
       }
+
+      // Écouter le basculement du mode édition depuis l'AdminToolbar
+      document.addEventListener('cms:editing-toggled', () => {
+        updateAdminVisibility();
+      });
+
+      updateAdminVisibility();
 
       const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
       const clearSearchBtn = document.getElementById('clear-search-btn');
@@ -641,7 +658,10 @@ const pageDescription = "Explorez les offres d'emploi, stages professionnels, fo
           const isActive = card.getAttribute('data-is-active') !== 'false';
 
           // 0. Vérification d'autorisation et filtre admin
-          if (!isLoggedIn) {
+          const isEditing = document.body.classList.contains('cms-mode-editing');
+          const canModerate = isLoggedIn && isEditing;
+
+          if (!canModerate) {
             if (!isActive) {
               card.classList.add('hidden');
               return;
