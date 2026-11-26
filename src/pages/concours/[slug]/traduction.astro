@@ -105,29 +105,29 @@ const footerLogos = [
       </section>
 
       <!-- BAMANANKAN -->
-      <section id="bamanankan" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
+      <section id="bamanankan" lang="bm" class="bg-white rounded-3xl border border-amber-200 shadow-sm mb-8 scroll-mt-20">
         <div class="p-6 sm:p-8">
           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200/60 mb-4">Bamanankan</div>
-          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Mali Job ka ɲɔgɔndanba — Porozɛ kuraw</h1>
-          <p class="text-base font-bold text-orange-600 mb-3">Waa 20 (100 000 FCFA) × 3 + Porozɛ 10 minnu bɛ jira kɛnɛ kan</p>
+          <h1 class="text-2xl sm:text-3xl font-black text-stone-900 font-title leading-tight mb-1">Mali Job ká ɲɔ́gɔndanba — Pórozɛ kúraw</h1>
+          <p class="text-base font-bold text-orange-600 mb-3">Wáa 20 (100 000 FCFA) × 3 + Pórozɛ 10 mínnu bɛ́ jìra kɛ́nɛ kàn</p>
 
           <!-- BANDEAU DATE LIMITE -->
           <div class="mb-5 flex items-center justify-between gap-2 bg-amber-50 p-3 rounded-xl border border-amber-300 text-xs sm:text-sm font-bold text-stone-800">
             <span class="inline-flex items-center gap-1.5">
               <span>⏱️</span>
-              <span>Waati dan :</span>
+              <span>Wáati dàn :</span>
             </span>
-            <span class="text-orange-700 font-black">{campaign.submission?.deadline === "30 Novembre 2026 à 23h59" ? "Nowanburukalo tile 30 san 2026 — 23h59" : campaign.submission?.deadline === "Ouverture prochaine" ? "A bɛna da wuli sɔɔni" : (campaign.submission?.deadline || "Nowanburukalo tile 30 san 2026 — 23h59")}</span>
+            <span class="text-orange-700 font-black">{campaign.submission?.deadline === "30 Novembre 2026 à 23h59" ? "Nowanburukalo tìle 30 sàn 2026 — 23h59" : campaign.submission?.deadline === "Ouverture prochaine" ? "À bɛ́nà dá wúli sɔ́ɔni" : (campaign.submission?.deadline || "Nowanburukalo tìle 30 sàn 2026 — 23h59")}</span>
           </div>
 
           <div class="space-y-4">
             <div class="bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 p-4 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center gap-4 shadow-xs">
               <PremiumIcon name="money" size={56} variant="gold" class="shrink-0" />
               <div class="min-w-0">
-                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Aw bɛ se ka min sɔrɔ</h2>
+                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Áw bɛ́ sé kà mîn sɔ̀rɔ</h2>
                 <ul class="text-xs sm:text-sm text-stone-700 space-y-1 list-disc pl-4">
-                  <li><strong>Mɔgɔ 3 fɔlɔ minnu bɛ se sɔrɔ :</strong> <strong class="whitespace-nowrap">waa 20 (100&nbsp;000&nbsp;FCFA)</strong> bɛ di u kelen-kelen bɛɛ ma walasa k'u dɛmɛ ka porozɛ daminɛ walima k'a ɲɛtaa teliya</li>
-                  <li><strong>Porozɛ 10</strong> bɛna jira Mali Job ka siti ɲɛ kɛrɛnkɛrɛnnen kan, walasa jɛɲɔgɔnw ni waridonnaw k'u ye</li>
+                  <li><strong>Mɔ̀gɔ 3 fɔ́lɔ mínnu bɛ́ sé sɔ̀rɔ :</strong> <strong class="whitespace-nowrap">wáa 20 (100&nbsp;000&nbsp;FCFA)</strong> bɛ́ dí ù kélen-kélen bɛ́ɛ mà wálasa k'ù dɛ̀mɛ kà pórozɛ dámìnɛ wàlímà k'à ɲɛ́taa téliya</li>
+                  <li><strong>Pórozɛ 10</strong> bɛ́nà jìra Mali Job ká siti ɲɛ́ kɛ́rɛnkɛrɛnnen kàn, wálasa jɛ̀ɲɔgɔnw ni wáridonnaw k'ù yé</li>
                 </ul>
               </div>
             </div>
@@ -135,12 +135,12 @@ const footerLogos = [
             <div class="bg-gradient-to-br from-stone-50 via-white to-stone-50/60 p-4 sm:p-5 rounded-2xl border-2 border-stone-200 flex items-center gap-4 shadow-xs">
               <PremiumIcon name="video" size={56} variant="river" class="shrink-0" />
               <div class="min-w-0">
-                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Aw bɛ se ka aw sen don a la cogo di?</h2>
+                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1.5">Áw bɛ́ sé kà áw sèn dòn à lá cógo dì?</h2>
                 <ol class="text-xs sm:text-sm text-stone-700 space-y-1 list-decimal pl-4">
-                  <li>Aw ka don an ka WhatsApp walima Telegram kulu kɔnɔ (siraw bɛ duguma)</li>
-                  <li>Aw ka wideyo dɔ ta ni aw ka telefɔni ye, <strong>a kana tɛmɛ miniti 3 kan</strong></li>
-                  <li>Aw ka aw ka porozɛ jira : aw bɛ gɛlɛya min ɲɛnabɔ ani aw ka fɛɛrɛ</li>
-                  <li>Nimɔrɔ min bɛna di aw ma kulu kɔnɔ, aw ka aw ka wideyo ci o kan</li>
+                  <li>Áw ká dòn án ká WhatsApp wàlímà Telegram kúlu kɔ́nɔ (síraw bɛ́ dùguma)</li>
+                  <li>Áw ká wideyo dɔ́ tà ni áw ká tèlefɔni yé, <strong>à kànâ tɛ̀mɛ míniti 3 kàn</strong></li>
+                  <li>Áw ká áw ká pórozɛ jìra : áw bɛ́ gɛ̀lɛya mîn ɲɛ́nabɔ àní áw ká fɛ̀ɛrɛ</li>
+                  <li>Nimɔrɔ mîn bɛ́nà dí áw mà kúlu kɔ́nɔ, áw ká áw ká wideyo cí ò kàn</li>
                 </ol>
               </div>
             </div>
@@ -148,16 +148,16 @@ const footerLogos = [
             <div class="bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 p-4 sm:p-5 rounded-2xl border-2 border-emerald-300 flex items-center gap-4 shadow-xs">
               <PremiumIcon name="success" size={56} variant="emerald" class="shrink-0" />
               <div class="min-w-0">
-                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">Sara t'a la</h2>
-                <p class="text-xs sm:text-sm text-stone-700 m-0">Aw tɛ wari si sara ka aw sen don a la. A dayɛlɛlen bɛ Mali funankɛ porozɛtigiw bɛɛ ye.</p>
+                <h2 class="text-sm sm:text-base font-black text-stone-900 mb-1">Sàra t'à lá</h2>
+                <p class="text-xs sm:text-sm text-stone-700 m-0">Áw tɛ́ wári sí sàra kà áw sèn dòn à lá. À dáyɛ̀lɛlen bɛ́ Mali fúnankɛ pórozɛtigiw bɛ́ɛ yé.</p>
               </div>
             </div>
 
             <div class="bg-white p-4 rounded-xl border-2 border-amber-300/80">
-              <h2 class="text-sm font-black text-stone-900 mb-3">💬 Aw ka don kuluw kɔnɔ</h2>
+              <h2 class="text-sm font-black text-stone-900 mb-3">💬 Áw ká dòn kúluw kɔ́nɔ</h2>
               <div class="flex flex-col sm:flex-row gap-3">
-                <a href={translatedWhatsappGroupUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don WhatsApp kɔnɔ</a>
-                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Don Telegram kɔnɔ</a>
+                <a href={translatedWhatsappGroupUrl} target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Dòn WhatsApp kɔ́nɔ</a>
+                <a href={campaign.community.telegramGroupUrl || "https://t.me/malijob_innovation"} target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-4 rounded-xl text-center text-xs no-underline transition-colors">Dòn Telegram kɔ́nɔ</a>
               </div>
             </div>
           </div>
